@@ -1,2 +1,9 @@
-node_modules
-dist
+node_modules/
+dist/
+.pub/
+packages/
+.packages
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
