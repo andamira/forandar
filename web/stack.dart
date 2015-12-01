@@ -8,6 +8,16 @@ abstract class Stack {
 	Stack(this.maxSize) {
 		this.data = new Uint32List(this.maxSize);
 	}
+
+	/// Returns the representation of the stack.
+	Print() {
+		return this.data.sublist(0, this.size);
+	}
+
+	@override
+	String toString() {
+		return "(${this.size}) ${this.Print()}";
+	}
 }
 
 /// Last In First Out Stack Implementation.
@@ -147,11 +157,6 @@ class LifoStack extends Stack {
 			this.data[this.size - 1] = this.data[this.size - 2];
 			this.data[this.size - 2] = this.data[this.size++];
 		}
-	}
-
-	/// Returns the representation of the stack.
-	Print() {
-		return this.data.sublist(0, this.size);
 	}
 }
 

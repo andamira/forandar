@@ -32,26 +32,26 @@ class TempTests {
 
 		this.separator();
 
-		t.Push(82); print("Push(82) > (${t.size}) ${t.Print()}");
-		t.Push(25); print("Push(25) > (${t.size}) ${t.Print()}");
-		t.Push(11); print("Push(11) > (${t.size}) ${t.Print()}");
-		t.Push(3);  print("Push(11) > (${t.size}) ${t.Print()}");
+		t.Push(82); print("Push(82) >\t${t}");
+		t.Push(25); print("Push(25) >\t${t}");
+		t.Push(11); print("Push(11) >\t${t}");
+		t.Push(3);  print("Push(11) >\t${t}");
 
-		t.Rot(); print("Rot() > (${t.size}) ${t.Print()}");
-		t.RotCC(); print("Rotcc() > (${t.size}) ${t.Print()}");
+		t.Rot(); print("Rot() >\t\t${t}");
+		t.RotCC(); print("Rotcc() >\t${t}");
 
-		t.Over(); print("Over() > (${t.size}) ${t.Print()}");
-		t.Swap(); print("Swap() > (${t.size}) ${t.Print()}");
-		t.Dup(); print("Dup() > (${t.size}) ${t.Print()}");
+		t.Over(); print("Over() >\t${t}");
+		t.Swap(); print("Swap() >\t${t}");
+		t.Dup(); print("Dup() >\t\t${t}");
 
-		t.Pick(4); print("Pick(4) > (${t.size}) ${t.Print()}");
+		t.Pick(4); print("Pick(4) >\t${t}");
 
-		//t.Roll(4); print("Roll(4) > (${t.size}) ${t.Print()}");
+		//t.Roll(4); print("Roll(4) >\t${t)}");
 
-		t.Nip(); print("Nip() > (${t.size}) ${t.Print()}");
-		t.Tuck(); print("Tuck() > (${t.size}) ${t.Print()}");
+		t.Nip(); print("Nip() >\t\t${t}");
+		t.Tuck(); print("Tuck() >\t${t}");
 
-		print("Pop() > ${t.Pop()} (${t.size}) ${t.Print()}");
+		print("Pop() > ${t.Pop()}\t${t}");
 
 		this.footer("/stack");
 	}
@@ -79,8 +79,8 @@ class TempTests {
 		this.separator();
 
 		/// Tests some [dataStack] manipulation calling [Word]s from the [Dictionary] 
-		t.wordsMap["OVER"].code(); print("OVER > (${this.vm.dataStack.size}) ${this.vm.dataStack.Print()}");
-		t.wordsMap["?DUP"].code(); print("?DUP > (${this.vm.dataStack.size}) ${this.vm.dataStack.Print()}");
+		t.wordsMap["OVER"].code(); print("OVER >\t\t${this.vm.dataStack}");
+		t.wordsMap["?DUP"].code(); print("?DUP >\t\t${this.vm.dataStack}");
 		
 
 
