@@ -1,16 +1,20 @@
 library daranfor;
 
+import 'dart:collection';
 import 'dart:typed_data';
 
+part 'dictionary.dart';
 part 'stack.dart';
 part 'temp_tests.dart';
+part 'vm.dart';
 
 void main() {
-	var stackData = new LifoStack(256);
-	var stackReturn = new LifoStack(32);
 
-	// Temporary Tests
-	var test = new TempTests();
-	test.TestStack(stackData, "stackData");
+	/// Creates the Forth Virtual Machine
+	VM forth = new VM();
+
+	/// Runs the temporary tests
+	var test = new TempTests(forth);
+	test.TestStack(forth.dataStack, "forth.dataStack");
+	test.TestDictionary(forth.dict, "forth.dict");
 }
-

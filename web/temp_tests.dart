@@ -1,8 +1,11 @@
 part of daranfor;
 
+/// Custom Tests
 class TempTests {
 
-	TempTests() {
+	final VM vm;
+
+	TempTests(VM this.vm) {
 	}
 
 	header(String str, e, name) {
@@ -18,36 +21,78 @@ class TempTests {
 	separator() {
 		print("----------------");
 	}
+	
 
+	/// Tests a [Stack] instance
+	TestStack(Stack t, String name) {
+		this.header("stack", t, name);
 
-	// Test the Stack
-	TestStack(Stack s, String name) {
-		this.header("stack", s, name);
-
-		print("length: ${s.data.length} cells, ${s.data.lengthInBytes} bytes");
-		print("size: (${s.size}) ${s.List()}");
+		print("length: ${t.data.length} cells, ${t.data.lengthInBytes} bytes");
+		print("size: (${t.size}) ${t.Print()}");
 
 		this.separator();
 
-		s.Push(82); print("push 82 > (${s.size}) ${s.List()}");
-		s.Push(25); print("push 25 > (${s.size}) ${s.List()}");
-		s.Push(11); print("push 11 > (${s.size}) ${s.List()}");
-		s.Push(3);  print("push 11 > (${s.size}) ${s.List()}");
+		t.Push(82); print("Push(82) > (${t.size}) ${t.Print()}");
+		t.Push(25); print("Push(25) > (${t.size}) ${t.Print()}");
+		t.Push(11); print("Push(11) > (${t.size}) ${t.Print()}");
+		t.Push(3);  print("Push(11) > (${t.size}) ${t.Print()}");
 
-		s.Rot(); print("rot > (${s.size}) ${s.List()}");
-		s.RotCC(); print("rotcc > (${s.size}) ${s.List()}");
-		//s.rotate(3); print("rotate > (${s.size}) ${s.List()}");
+		t.Rot(); print("Rot() > (${t.size}) ${t.Print()}");
+		t.RotCC(); print("Rotcc() > (${t.size}) ${t.Print()}");
 
-		s.Over(); print("over > (${s.size}) ${s.List()}");
-		s.Swap(); print("swap > (${s.size}) ${s.List()}");
+		t.Over(); print("Over() > (${t.size}) ${t.Print()}");
+		t.Swap(); print("Swap() > (${t.size}) ${t.Print()}");
+		t.Dup(); print("Dup() > (${t.size}) ${t.Print()}");
 
-		print("pop > ${s.Pop()} (${s.size}) ${s.List()}");
-		s.Dup(); print("dup > (${s.size}) ${s.List()}");
-		print("pop > ${s.Pop()} (${s.size}) ${s.List()}");
+		t.Pick(4); print("Pick(4) > (${t.size}) ${t.Print()}");
+
+		//t.Roll(4); print("Roll(4) > (${t.size}) ${t.Print()}");
+
+		t.Nip(); print("Nip() > (${t.size}) ${t.Print()}");
+		t.Tuck(); print("Tuck() > (${t.size}) ${t.Print()}");
+
+		print("Pop() > ${t.Pop()} (${t.size}) ${t.Print()}");
 
 		this.footer("/stack");
 	}
 
-	// Test the ...
+	/// Tests a [DataSpace] instance.
+	TestDataSpace(DataSpace t, String name) {
+		this.header("dataSpace", t, name);
+		this.separator();
+		this.footer("/dataSpace");
+	}
+
+	/// Tests a [Dictionary] instance.
+	TestDictionary(Dictionary t, String name) {
+
+		this.header("dictionary", t, name);
+		print("nº words: ${t.wordsMap.length} in map, ${t.wordsList.length} in list");
+		this.separator();
+
+		// lists the words
+		t.wordsMap.forEach( (key, value) {
+			print("${value.st} \"$key\" ${value.isImmediate ? "[Immediate]" : ""} ${value.isCompileOnly ? "[CompileOnly]" : ""} "
+				//"code=\"${value.code.toString().substring(15)}\"");
+				"code=\"${value.code}\"");
+		});
+		this.separator();
+
+		/// Tests some [dataStack] manipulation calling [Word]s from the [Dictionary] 
+		t.wordsMap["OVER"].code(); print("OVER > (${this.vm.dataStack.size}) ${this.vm.dataStack.Print()}");
+		t.wordsMap["?DUP"].code(); print("?DUP > (${this.vm.dataStack.size}) ${this.vm.dataStack.Print()}");
+		
+
+
+		this.footer("/dictionary");
+	}
+
+	// Test VM (Virtual Machine)
+	// TODO
+	TestVM(VM t, String name) {
+		this.header("VM", t, name);
+		this.separator();
+		this.footer("/VM");
+	}
 }
 
