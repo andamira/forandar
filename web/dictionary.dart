@@ -1,4 +1,4 @@
-part of daranfor;
+part of forandar;
 
 /// Encapsulates a Forth Word
 class Word {

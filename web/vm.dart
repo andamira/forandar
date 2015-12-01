@@ -1,4 +1,4 @@
-part of daranfor;
+part of forandar;
 
 class VM {
 	// Dictionary

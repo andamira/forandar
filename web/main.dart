@@ -1,4 +1,4 @@
-library daranfor;
+library forandar;
 
 import 'dart:collection';
 import 'dart:typed_data';
