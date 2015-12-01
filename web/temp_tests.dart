@@ -3,9 +3,9 @@ part of forandar;
 /// Custom Tests
 class TempTests {
 
-	final VM vm;
+	final VirtualMachine vm;
 
-	TempTests(VM this.vm) {
+	TempTests(VirtualMachine this.vm) {
 	}
 
 	header(String str, e, name) {
@@ -87,12 +87,11 @@ class TempTests {
 		this.footer("/dictionary");
 	}
 
-	// Test VM (Virtual Machine)
-	// TODO
-	TestVM(VM t, String name) {
-		this.header("VM", t, name);
+	/// TODO: Tests a [VirtualMachine] instance.
+	TestVirtualMachine(VirtualMachine t, String name) {
+		this.header("VirtualMachine", t, name);
 		this.separator();
-		this.footer("/VM");
+		this.footer("/VirtualMachine");
 	}
 }
 

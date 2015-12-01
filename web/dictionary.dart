@@ -33,8 +33,8 @@ class Dictionary {
 	/// List of words retrievable by index
 	List<Word> wordsList = [];
 
-	/// Stores the parent Virtual Machine
-	VM vm;
+	/// Stores the parent [VirtualMachine]
+	VirtualMachine vm;
 
 	/// [Dictionary] Constructor
 	Dictionary(this.vm) {

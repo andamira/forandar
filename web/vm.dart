@@ -1,6 +1,6 @@
 part of forandar;
 
-class VM {
+class VirtualMachine {
 	// Dictionary
 	Dictionary dict;
 
@@ -14,8 +14,8 @@ class VM {
 	DataSpace codeSpace;
 
 
-	/// Constructs the [VM] Virtual Machine
-	VM () {
+	/// Constructs the [VirtualMachine]
+	VirtualMachine () {
 
 		/// Creates the Stacks
 		this.dataStack    = new LifoStack(256);

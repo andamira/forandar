@@ -10,11 +10,11 @@ part 'vm.dart';
 
 void main() {
 
-	/// Creates the Forth Virtual Machine
-	VM forth = new VM();
+	/// Creates the Forth [VirtualMachine]
+	VirtualMachine forth = new VirtualMachine();
 
 	/// Runs the temporary tests
-	var test = new TempTests(forth);
+	TempTests test = new TempTests(forth);
 	test.TestStack(forth.dataStack, "forth.dataStack");
 	test.TestDictionary(forth.dict, "forth.dict");
 }
