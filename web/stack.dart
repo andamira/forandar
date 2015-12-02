@@ -5,6 +5,7 @@ abstract class Stack {
 	final int maxSize;
 	int size = 0;
 
+	/// Constructs the [Stack]
 	Stack(this.maxSize) {
 		this.data = new Uint32List(this.maxSize);
 	}
@@ -21,12 +22,12 @@ abstract class Stack {
 }
 
 /// Last In First Out Stack Implementation.
-///
 class LifoStack extends Stack {
 
 	LifoStack(maxSize) : super(maxSize);
 
-	/// Removes the top stack item and discard it.
+	/// Removes the top stack item and discards it.
+	///
 	/// ( a -- )
 	void Drop() {
 		if (this.size > 0) {
@@ -35,6 +36,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Duplicates the top stack item.
+	///
 	/// ( a -- a a )
 	void Dup() {
 		if (this.size > 0 && this.size < this.maxSize) {
@@ -43,6 +45,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Drops the first item below the top of stack.
+	///
 	/// ( a b -- b )
 	void Nip() {
 		if (this.size > 1) {
@@ -50,16 +53,18 @@ class LifoStack extends Stack {
 		}
 	}
 
-	// Places a copy of a on top of the stack.
-	// ( a b -- a b a )
+	/// Places a copy of a on top of the stack.
+	///
+	/// ( a b -- a b a )
 	void Over() {
 		if (this.size > 1 && this.size < this.maxSize) {
 			this.data[this.size] = this.data[this.size++ - 2];
 		}
 	}
 
-	// Returns the last stack item WITHOUT removing it.
-	// ( a -- )
+	/// Returns the last stack item WITHOUT removing it.
+	///
+	/// ( a -- )
 	int Peek() {
 		if (this.size > 0) {
 			return this.data[size - 1];
@@ -77,6 +82,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Returns the last stack item.
+	///
 	/// ( a -- )
 	int Pop() {
 		if (this.size > 0) {
@@ -85,6 +91,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Adds an additional stack item.
+	///
 	/// ( -- a )
 	void Push(int i) {
 		if (this.size < this.maxSize) {
@@ -92,12 +99,8 @@ class LifoStack extends Stack {
 		}
 	}
 
-	/*
-	void PushList(List<int>) {
-	}
-	*/
-
 	/// TODO: Rotates i+1 items on the top of the stack.
+	///
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
 	void Roll(int i) {
@@ -118,6 +121,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Rotates the top three stack entries.
+	///
 	/// ( a b c -- b c a )
 	void Rot() {
 		if (this.size > 2) {
@@ -128,7 +132,8 @@ class LifoStack extends Stack {
 		}
 	}
 
-	/// Rotates the top three stack entries Counter-Clockwise.
+	/// Rotates counter-clockwise the top three stack entries.
+	///
 	/// ( a b c -- c a b )
 	void RotCC() {
 		if (this.size > 2) {
@@ -140,6 +145,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Exchanges the top two stack items.
+	///
 	/// ( a b -- b a )
 	void Swap() {
 		if (this.size > 1) {
@@ -150,6 +156,7 @@ class LifoStack extends Stack {
 	}
 
 	/// Copies the first (top) stack item below the second stack item.
+	///
 	/// ( a b -- b a b )
 	void Tuck() {
 		if (this.size > 1) {

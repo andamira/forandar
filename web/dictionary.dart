@@ -1,91 +1,121 @@
 part of forandar;
 
-/// Encapsulates a Forth Word
+/// A Forth definition.
 class Word {
 
-	/// The forth word, same as map key 
-	final String name; 
+	/// The word name as it is used by Forth.
+	///
+	/// All uppercase. It is its key in [wordsMap].
+	String name;
 
-	/// Word Flags
-	final bool isImmediate;
-	final bool isCompileOnly; // restricted word?
-	bool hasCompleted; // compilation finished?
-
-	/// The execution code for this word
-	final Function code;
-
-	/// Integer Pointer to this word in [wordsList]
+	/// A pointer to this word in [wordsList].
 	int st;
 
-	// TODO: pointer to dataSpace and/or codeSpace 
+	/// A flag that indicates if the word is immediate.
+	final bool isImmediate;
 
+	/// A flag that indicates if the word is restricted.
+	final bool isCompileOnly;
 
-	/// [Word] Constructor
-	Word(this.name, this.isImmediate, this.isCompileOnly, this.code) {}
+	/// A flag that indicates if the compilation has completed.
+	bool hasCompleted;
+
+	/// The execution code for this word.
+	final Function code;
+
+	// TODO: pointer to dataSpace and/or codeSpace.
+
+	Word(this.isImmediate, this.isCompileOnly, this.code, [this.name, this.st]);
 }
 
-/// Encapsulates all the dictionary properties and methods
+/// A searchable collection for all defined [Word]s.
+///
+/// Defines the primitives and contains both primitives and : words.
 class Dictionary {
 
-	/// List of Words retrievable by the word's name
+	/// List of [Word]s retrievable by the word's name.
 	Map<String, Word> wordsMap = new SplayTreeMap();
 
-	/// List of words retrievable by index
+	/// List of [Word]s retrievable by index.
 	List<Word> wordsList = [];
 
-	/// Stores the parent [VirtualMachine]
+	/// The parent [VirtualMachine].
 	VirtualMachine vm;
 
-	/// [Dictionary] Constructor
+	/// Constants for the flags of the [Word]
+	static const immediate      = true;
+	static const compileOnly    = true;
+
 	Dictionary(this.vm) {
 
-		/// Populates [wordsMap] with the primitives
-		createPrimitives();
-
-		/// Copies all the words from [wordsMap] to [wordsList] and update its [Word.st] property.
-		this.wordsMap.forEach(this.wordFromMapToList);
+		/// Adds the primitives to the dictionary.
+		includeStandardPrimitives();
+		includeExtendedPrimitives();
 	}
 
-	/*
-	void addWord() {
-	}
-	*/
-
-	/// Adds a word already present in [wordsMap] to the [wordsList]
-	void wordFromMapToList(key, value) {
-
-		this.wordsList.add(value);
-		this.wordsList.last.st = this.wordsList.length;
+	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
+	void addWord(String str, bool isImmediate, bool isCompileOnly, Function f) {
+		this.wordsList.add(new Word(isImmediate, isCompileOnly, f, str, this.wordsList.length + 1));
+		this.wordsMap[str] = this.wordsList.last;
 	}
 
-	/// Defines the Forth Primitives and adds them to [wordsMap]
-	createPrimitives() {
+	/// Defines the [Forth standard primitives][core].
+	///
+	/// [core]: http://forth-standard.org/standard/core/
+	includeStandardPrimitives() {
 		
-		// Words that manipulate [dataStack]
+		// Words that manipulate [dataStack].
 
-		this.wordsMap["."] = new Word("-ROT", false, false, this.vm.dataStack.RotCC);
-		this.wordsMap[".S"] = new Word("-ROT", false, false, this.vm.dataStack.RotCC);
-		this.wordsMap["DUP"] = new Word("DUP", false, false, this.vm.dataStack.Dup);
-		this.wordsMap["?DUP"] = new Word("?DUP", false, false, () {
+		addWord(".", false, false, (){}); // TODO
+		addWord(".S", false, false, (){}); // TODO
+
+		addWord("DUP", false, false, this.vm.dataStack.Dup);
+		addWord("?DUP", false, false, () {
 			if (this.vm.dataStack.size > 0) vm.dataStack.Dup();
 		});
-		this.wordsMap["DROP"] = new Word("DROP", false, false, this.vm.dataStack.Drop);
-		this.wordsMap["OVER"] = new Word("OVER", false, false, this.vm.dataStack.Over);
-		this.wordsMap["SWAP"] = new Word("SWAP", false, false, this.vm.dataStack.Swap);
-		this.wordsMap["ROT"] = new Word("ROT", false, false, this.vm.dataStack.Rot);
-		this.wordsMap["-ROT"] = new Word("-ROT", false, false, this.vm.dataStack.RotCC);
-		this.wordsMap["NIP"] = new Word("NIP", false, false, this.vm.dataStack.Nip);
-		this.wordsMap["TUCK"] = new Word("TUCK", false, false, this.vm.dataStack.Tuck);
+		addWord("DROP", false, false, this.vm.dataStack.Drop);
+		addWord("OVER", false, false, this.vm.dataStack.Over);
+		addWord("SWAP", false, false, this.vm.dataStack.Swap);
+		addWord("ROT", false, false, this.vm.dataStack.Rot);
+		addWord("-ROT", false, false, this.vm.dataStack.RotCC);
+		addWord("NIP", false, false, this.vm.dataStack.Nip);
+		addWord("TUCK", false, false, this.vm.dataStack.Tuck);
 
-		// Words that manipulate [returnStack]
-
-		// Words that manipulate multiple stacks.
-
-		// Move data FROM the [dataStack] TO the [returnStack]
-		// ( a -- R: a )
-		this.wordsMap[">R"] = new Word(">R", true, false, () {
+		/// Moves data FROM [dataStack] TO [returnStack].
+		///
+		/// [toR][link] ( x -- ) ( R: -- x )
+		/// [link]: http://forth-standard.org/standard/core/toR
+		addWord(">R", false, false, () {
 			vm.returnStack.Push(vm.dataStack.Pop());
 		});
+
+	}
+
+	/// Forth Primitives that are not part of the standard.
+	///
+	/// [Gforth Word Index][http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Word-Index.html#Word-Index]
+	includeExtendedPrimitives() {
+
+		/// Tries to find the name token nt of the word represented by xt.
+		///
+		/// Returns 0 if it fails.
+		/// Note that in the current implementation xt and nt are exactly the same.
+		/// [toName] ( xt -- nt|0 )
+		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
+		addWord(">NAME", false, false, () {}); // TODO
+
+
+		/// Tries to find the name of the [Word] represented by nt.
+		///
+		/// Note that in the current implementation xt and nt are exactly the same.
+		/// [nameToString] ( nt -- addr count )
+		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
+		addWord("NAME>STRING", false, false, () {}); // TODO
+
+
+		///
+		/// : id.  ( nt -- )  name>string type ;
+		addWord("ID.", false, false, () {}); // TODO
 	}
 }
 
