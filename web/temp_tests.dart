@@ -69,15 +69,11 @@ class TempTests {
 
 		// lists the words
 		t.wordsMap.forEach( (key, value) {
-			print("${value.st} \"${value.name}\""
-
-				"\t\t"
-				//"\t${value.name.length<4 && value.st < 10? "\t" : "" }" // make the smart-tabs smarter
-
+			print("${value.st}\t${value.name}\t"
 				"${value.isImmediate ? "[immediate]" : ""} "
 				"${value.isCompileOnly ? "[compileOnly]" : ""} "
-				"code=\"${value.code.toString().substring(15)}\"");
-				//"code=\"${value.code}\"");
+				"code=\"${value.code.toString().split(" ").last.replaceFirst("'", "Function: ").replaceAll("':.", "()")}\""
+				);
 		});
 		this.separator();
 
