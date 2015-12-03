@@ -26,10 +26,7 @@ class TempTests {
 	/// Tests a [Stack] instance
 	TestStack(Stack t, String name) {
 		this.header("stack", t, name);
-
 		print("length: ${t.data.length} cells, ${t.data.lengthInBytes} bytes");
-		print("size: (${t.size}) ${t.Print()}");
-
 		this.separator();
 
 		t.Push(82); print("Push(82) >\t${t}");
@@ -41,6 +38,7 @@ class TempTests {
 		t.RotCC(); print("Rotcc() >\t${t}");
 
 		t.Over(); print("Over() >\t${t}");
+		print("Pop() > ${t.Pop()}\t${t}");
 		t.Swap(); print("Swap() >\t${t}");
 		t.Dup(); print("Dup() >\t\t${t}");
 
@@ -49,9 +47,8 @@ class TempTests {
 		//t.Roll(4); print("Roll(4) >\t${t)}");
 
 		t.Nip(); print("Nip() >\t\t${t}");
-		t.Tuck(); print("Tuck() >\t${t}");
-
 		print("Pop() > ${t.Pop()}\t${t}");
+		t.Tuck(); print("Tuck() >\t${t}");
 
 		this.footer("/stack");
 	}
@@ -72,9 +69,15 @@ class TempTests {
 
 		// lists the words
 		t.wordsMap.forEach( (key, value) {
-			print("${value.st} \"$key\" ${value.isImmediate ? "[Immediate]" : ""} ${value.isCompileOnly ? "[CompileOnly]" : ""} "
-				//"code=\"${value.code.toString().substring(15)}\"");
-				"code=\"${value.code}\"");
+			print("${value.st} \"${value.name}\""
+
+				"\t\t"
+				//"\t${value.name.length<4 && value.st < 10? "\t" : "" }" // make the smart-tabs smarter
+
+				"${value.isImmediate ? "[immediate]" : ""} "
+				"${value.isCompileOnly ? "[compileOnly]" : ""} "
+				"code=\"${value.code.toString().substring(15)}\"");
+				//"code=\"${value.code}\"");
 		});
 		this.separator();
 

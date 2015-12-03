@@ -89,6 +89,13 @@ class Dictionary {
 			vm.returnStack.Push(vm.dataStack.Pop());
 		});
 
+		/// Make the most recent definition an immediate word.
+		///
+		/// [IMMEDIATE][link] ( -- )
+		/// [link]: http://forth-standard.org/standard/core/IMMEDIATE
+		addWord("IMMEDIATE", immediate, false, () {
+			this.wordsList.last.isImmediate = true;
+		});
 	}
 
 	/// Forth Primitives that are not part of the standard.
@@ -100,7 +107,7 @@ class Dictionary {
 		///
 		/// Returns 0 if it fails.
 		/// Note that in the current implementation xt and nt are exactly the same.
-		/// [toName] ( xt -- nt|0 )
+		/// [toName][link] ( xt -- nt|0 )
 		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 		addWord(">NAME", false, false, () {}); // TODO
 
@@ -108,13 +115,15 @@ class Dictionary {
 		/// Tries to find the name of the [Word] represented by nt.
 		///
 		/// Note that in the current implementation xt and nt are exactly the same.
-		/// [nameToString] ( nt -- addr count )
+		/// [nameToString][link] ( nt -- addr count )
 		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 		addWord("NAME>STRING", false, false, () {}); // TODO
 
 
+		/// TODO
 		///
-		/// : id.  ( nt -- )  name>string type ;
+		/// [id.][link] ( nt -- )  name>string type ;
+		/// [link]: TODO
 		addWord("ID.", false, false, () {}); // TODO
 	}
 }
