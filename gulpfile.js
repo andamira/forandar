@@ -13,6 +13,7 @@ gulp.task("compile", function() {
 	}))
 	.pipe(rename('forandar.js'))
 	.pipe(gulp.dest('./dist'))
+	.pipe(gulp.dest('html'))
 });
 
 gulp.task("compile-min", function() {
@@ -27,6 +28,7 @@ gulp.task("compile-min", function() {
 	.pipe(uglify())
 	.pipe(rename('forandar.min.js'))
 	.pipe(gulp.dest('./dist'))
+	.pipe(gulp.dest('html'))
 });
 
 gulp.task( 'default',
