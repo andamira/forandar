@@ -1,15 +1,23 @@
 var gulp   = require("gulp");
 var dart   = require("gulp-dart");
 var uglify = require("gulp-uglify");
-var gzip   = require("gulp-gzip");
+var rename = require("gulp-rename");
 
-gulp.task("default", function() {
+gulp.task("compile", function() {
 	return gulp.src('web/main.dart')
 	.pipe(dart({
 		"dest": "dist",
 		"minify": "true",
+		"suppress-warnings": "true",
+		"terse": "true",
+		"no-source-maps": "true",
 	}))
 	.pipe(uglify())
-	.pipe(gzip({ extension: 'gz', gzipOptions: { level: 9 } }))
-	.pipe(gulp.dest('./'))
+	.pipe(rename('forandar.min.js'))
+	.pipe(gulp.dest('./dist'))
 });
+
+gulp.task( 'default',
+	[ 'compile' ]
+);
+
