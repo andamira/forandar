@@ -9,7 +9,7 @@ class TempTests {
 	}
 
 	header(String str, e, name) {
-		print("\n>>>>>>TEST>>>>>> $str");
+		window.console.info("\n>>>>>>TEST>>>>>> $str");
 
 		print('"$name" $e');
 	}

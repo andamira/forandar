@@ -3,7 +3,7 @@ var dart   = require("gulp-dart");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
 
-gulp.task("compile", function() {
+gulp.task("dev", function() {
 	return gulp.src('web/main.dart')
 	.pipe(dart({
 		"dest": "dist",
@@ -16,7 +16,7 @@ gulp.task("compile", function() {
 	.pipe(gulp.dest('html'))
 });
 
-gulp.task("compile-min", function() {
+gulp.task("prod", function() {
 	return gulp.src('web/main.dart')
 	.pipe(dart({
 		"dest": "dist",
@@ -32,6 +32,6 @@ gulp.task("compile-min", function() {
 });
 
 gulp.task( 'default',
-	[ 'compile-min' ]
+	[ 'dev' ]
 );
 

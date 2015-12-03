@@ -4,8 +4,18 @@
 		<title>Forandar (testground)</title>
 	</head>
 	<body>
-		<h3>Forandar 0.2.3</h3>
-		<p>Open the browser inspector console to see the output.</p>
-		<script src="forandar.min.js"></script>
+		<h3>Forandar 0.2.5</h3>
+		<p>Please, open the browser inspector console to see the output.</p>
+		<script src="forandar.js" defer></script>
+		<script>
+			var forandar = {
+				source: "forth_source.fs",
+				config: {
+					dataStackSize: 512,
+					returnStackSize: 64,
+					controlStackSize: 32,
+				}
+			};
+		</script>
 	</body>
 </html>
