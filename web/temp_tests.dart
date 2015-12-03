@@ -72,8 +72,7 @@ class TempTests {
 			print("${value.st}\t${value.name}\t"
 				"${value.isImmediate ? "[immediate]" : ""} "
 				"${value.isCompileOnly ? "[compileOnly]" : ""} "
-				"code=\"${value.code.toString().split(" ").last.replaceFirst("'", "Function: ").replaceAll("':.", "()")}\""
-				);
+			);
 		});
 		this.separator();
 

@@ -7,6 +7,18 @@ gulp.task("compile", function() {
 	return gulp.src('web/main.dart')
 	.pipe(dart({
 		"dest": "dist",
+		"suppress-warnings": "true",
+		"terse": "true",
+		"no-source-maps": "true",
+	}))
+	.pipe(rename('forandar.js'))
+	.pipe(gulp.dest('./dist'))
+});
+
+gulp.task("compile-min", function() {
+	return gulp.src('web/main.dart')
+	.pipe(dart({
+		"dest": "dist",
 		"minify": "true",
 		"suppress-warnings": "true",
 		"terse": "true",
@@ -18,6 +30,6 @@ gulp.task("compile", function() {
 });
 
 gulp.task( 'default',
-	[ 'compile' ]
+	[ 'compile-min' ]
 );
 
