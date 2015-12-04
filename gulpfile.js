@@ -40,7 +40,7 @@ gulp.task("compile-prod", function(cb) {
 
 gulp.task('prune', ['compile-prod'], function(cb) {
     del([
-        'web/forandar.dart.js.deps'
+        'web/forandar.dart.js.*'
     ], cb)
 });
 

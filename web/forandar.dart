@@ -1,9 +1,9 @@
 library forandar;
 
 import 'dart:collection';
-import 'dart:convert' show JSON;
+import 'dart:convert';
 import 'dart:html';
-import 'dart:js' show context, JsObject;
+import 'dart:js';
 import 'dart:typed_data';
 
 part 'parts/dictionary.dart';
