@@ -6,10 +6,10 @@ import 'dart:html';
 import 'dart:js' show context, JsObject;
 import 'dart:typed_data';
 
-part 'dictionary.dart';
-part 'stack.dart';
-part 'temp_tests.dart';
-part 'vm.dart';
+part 'parts/dictionary.dart';
+part 'parts/stack.dart';
+part 'parts/temp_tests.dart';
+part 'parts/vm.dart';
 
 /// The global options.
 ///
