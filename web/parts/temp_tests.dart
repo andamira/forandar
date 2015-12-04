@@ -5,50 +5,58 @@ class TempTests {
 
 	final VirtualMachine vm;
 
-	TempTests(VirtualMachine this.vm) {
-	}
+	TempTests(VirtualMachine this.vm);
+
+	/// Wraps console print for debug, info warn & error
+	///
+	/// https://api.dartlang.org/1.13.0/dart-html/Console-class.html
+	printD(String s) => window.console.debug(s);
+	printI(String s) => window.console.info(s);
+	printW(String s) => window.console.warn(s);
+	printE(String s) => window.console.error(s);
 
 	header(String str, e, name) {
-		window.console.info("\n>>>>>>TEST>>>>>> $str");
-
-		print('"$name" $e');
+		print("");
+		printI("\n");
+		printD(">>>>>>TEST>>>>>> $str");
+		printD('"$name" $e');
 	}
 
 	footer(String str) {
-		print("<<<<<<<<<<<<<<<< $str");
+		printD("<<<<<<<<<<<<<<<< $str");
 	}
 
 	separator() {
-		print("----------------");
+		printD("----------------");
 	}
 	
 
 	/// Tests a [Stack] instance
 	TestStack(Stack t, String name) {
 		this.header("stack", t, name);
-		print("length: ${t.data.length} cells, ${t.data.lengthInBytes} bytes");
+		printD("length: ${t.data.length} cells, ${t.data.lengthInBytes} bytes");
 		this.separator();
 
-		t.Push(82); print("Push(82) >\t${t}");
-		t.Push(25); print("Push(25) >\t${t}");
-		t.Push(11); print("Push(11) >\t${t}");
-		t.Push(3);  print("Push(11) >\t${t}");
+		t.Push(82); printD("Push(82) >\t${t}");
+		t.Push(25); printD("Push(25) >\t${t}");
+		t.Push(11); printD("Push(11) >\t${t}");
+		t.Push(3);  printD("Push(11) >\t${t}");
 
-		t.Rot(); print("Rot() >\t\t${t}");
-		t.RotCC(); print("Rotcc() >\t${t}");
+		t.Rot(); printD("Rot() >\t\t${t}");
+		t.RotCC(); printD("Rotcc() >\t${t}");
 
-		t.Over(); print("Over() >\t${t}");
-		print("Pop() > ${t.Pop()}\t${t}");
-		t.Swap(); print("Swap() >\t${t}");
-		t.Dup(); print("Dup() >\t\t${t}");
+		t.Over(); printD("Over() >\t${t}");
+		printD("Pop() > ${t.Pop()}\t${t}");
+		t.Swap(); printD("Swap() >\t${t}");
+		t.Dup(); printD("Dup() >\t\t${t}");
 
-		t.Pick(4); print("Pick(4) >\t${t}");
+		t.Pick(4); printD("Pick(4) >\t${t}");
 
-		//t.Roll(4); print("Roll(4) >\t${t)}");
+		//t.Roll(4); printD("Roll(4) >\t${t)}");
 
-		t.Nip(); print("Nip() >\t\t${t}");
-		print("Pop() > ${t.Pop()}\t${t}");
-		t.Tuck(); print("Tuck() >\t${t}");
+		t.Nip(); printD("Nip() >\t\t${t}");
+		printD("Pop() > ${t.Pop()}\t${t}");
+		t.Tuck(); printD("Tuck() >\t${t}");
 
 		this.footer("/stack");
 	}
@@ -64,12 +72,12 @@ class TempTests {
 	TestDictionary(Dictionary t, String name) {
 
 		this.header("dictionary", t, name);
-		print("nº words: ${t.wordsMap.length} in map, ${t.wordsList.length} in list");
+		printD("nº words: ${t.wordsMap.length} in map, ${t.wordsList.length} in list");
 		this.separator();
 
 		// lists the words
 		t.wordsMap.forEach( (key, value) {
-			print("${value.st}\t${value.name}\t"
+			printD("${value.st}\t${value.name}\t"
 				"${value.isImmediate ? "[immediate]" : ""} "
 				"${value.isCompileOnly ? "[compileOnly]" : ""} "
 			);
@@ -77,8 +85,8 @@ class TempTests {
 		this.separator();
 
 		/// Tests some [dataStack] manipulation calling [Word]s from the [Dictionary] 
-		t.wordsMap["OVER"].code(); print("OVER >\t\t${this.vm.dataStack}");
-		t.wordsMap["?DUP"].code(); print("?DUP >\t\t${this.vm.dataStack}");
+		t.wordsMap["OVER"].code(); printD("OVER >\t\t${this.vm.dataStack}");
+		t.wordsMap["?DUP"].code(); printD("?DUP >\t\t${this.vm.dataStack}");
 		
 
 
