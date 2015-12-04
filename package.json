@@ -9,8 +9,9 @@
     "node": ">=4.0.0"
   },
   "description": "Forth implementation in Dart",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "devDependencies": {
+    "del": "2.x",
     "gulp": "3.x",
     "gulp-dart": "0.x",
     "gulp-rename": "1.x",

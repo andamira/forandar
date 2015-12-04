@@ -1,35 +1,68 @@
+// Dependencies
+
 var gulp   = require("gulp");
 var dart   = require("gulp-dart");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
+var del    = require("del");
 
-gulp.task("dev", function() {
-	return gulp.src('web/main.dart')
+
+// Tasks for Compiling
+
+gulp.task("compile-dev", function(cb) {
+	return gulp.src('web/forandar.dart')
 	.pipe(dart({
-		"dest": "dist",
+		"dest": "web",
+		"checked": "true",
 		"suppress-warnings": "true",
 		"terse": "true",
-		"no-source-maps": "true",
 	}))
-	.pipe(rename('forandar.js'))
-	.pipe(gulp.dest('./dist'))
-	.pipe(gulp.dest('html'))
+	.pipe(rename('forandar.dart.js'))
+	.pipe(gulp.dest('web'))
 });
 
-gulp.task("prod", function() {
-	return gulp.src('web/main.dart')
+gulp.task("compile-prod", function(cb) {
+	return gulp.src('web/forandar.dart')
 	.pipe(dart({
-		"dest": "dist",
+		"dest": "web",
 		"minify": "true",
 		"suppress-warnings": "true",
 		"terse": "true",
 		"no-source-maps": "true",
 	}))
 	.pipe(uglify())
-	.pipe(rename('forandar.min.js'))
-	.pipe(gulp.dest('./dist'))
-	.pipe(gulp.dest('html'))
+	.pipe(rename('forandar.dart.js'))
+	.pipe(gulp.dest('web'))
 });
+
+
+// Misc Tasks
+
+gulp.task('prune', ['compile-prod'], function(cb) {
+    del([
+        'web/forandar.dart.js.deps'
+    ], cb)
+});
+
+gulp.task('clean', function(cb) {
+    del([
+        'web/forandar.dart.js*'
+    ], cb)
+});
+
+
+// Final (Development | Production) Tasks
+
+gulp.task( 'dev',
+	[ 'compile-dev' ]
+);
+
+gulp.task( 'prod',
+	[ 'compile-prod', 'prune' ]
+);
+
+
+// Default Task
 
 gulp.task( 'default',
 	[ 'dev' ]
