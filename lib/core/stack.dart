@@ -68,6 +68,8 @@ class LifoStack extends Stack {
 	int Peek() {
 		if (this.size > 0) {
 			return this.data[size - 1];
+		} else {
+			return null;
 		}
 	}
 
@@ -87,6 +89,8 @@ class LifoStack extends Stack {
 	int Pop() {
 		if (this.size > 0) {
 			return this.data[--size];
+		} else {
+			return null;
 		}
 	}
 
@@ -105,7 +109,7 @@ class LifoStack extends Stack {
 	/// ( a b c ... i --  )
 	void Roll(int i) {
 		if (this.size > 0 && i > 0) {
-			var t = this.data.sublist(this.size - 1 - i, this.size);
+			// var t = this.data.sublist(this.size - 1 - i, this.size);
 
 			/*
 			// convert to loop

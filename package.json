@@ -9,7 +9,7 @@
     "node": ">=4.0.0"
   },
   "description": "A Forth implementation in Dart",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "devDependencies": {
     "del": "^2.2.0",
     "gulp": "^3.9.0",

@@ -6,6 +6,8 @@ var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
 var del    = require("del");
 
+var exec = require('child_process').exec;
+
 
 // Tasks for Compiling
 
@@ -34,6 +36,17 @@ gulp.task("compile-prod", function(cb) {
 	.pipe(rename('forandar.dart.js'))
 	.pipe(gulp.dest('web'))
 });
+
+
+// Tasks for Debugging
+
+gulp.task('analyzer', function (cb) {
+  exec('dartanalyzer lib/*.dart', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+})
 
 
 // Misc Tasks
