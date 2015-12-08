@@ -1,6 +1,6 @@
 import "package:test/test.dart";
 
-import "package:forandar/core.dart";
+import "package:forandar/forandar.dart";
 
 void main() {
 

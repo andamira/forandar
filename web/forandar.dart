@@ -1,4 +1,4 @@
-import 'package:forandar/core.dart';
+import 'package:forandar/forandar.dart';
 import 'package:forandar/web.dart';
 
 var codeOutput;

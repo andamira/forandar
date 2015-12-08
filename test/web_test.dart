@@ -2,7 +2,7 @@
 
 import "package:test/test.dart";
 
-import "package:forandar/core.dart";
+import "package:forandar/forandar.dart";
 import "package:forandar/web.dart";
 
 void main() {
