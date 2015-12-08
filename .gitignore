@@ -1,7 +1,8 @@
 node_modules/
 doc/api/
 .pub/
-packages/
+pubspec.lock
+packages
 .packages
 *.dart.js
 *.js_

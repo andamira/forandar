@@ -1,79 +1,79 @@
-library forandar;
+import 'package:forandar/core.dart';
+import 'package:forandar/web.dart';
 
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:html';
-import 'dart:js';
-import 'dart:typed_data';
+var codeOutput;
+var consoleOutput;
 
-part 'parts/dictionary.dart';
-part 'parts/stack.dart';
-part 'parts/temp_tests.dart';
-part 'parts/vm.dart';
+void main() async {
 
-/// The global options.
-///
-/// This default values can be overriden later,
-/// by values provided in the javascript context.
-class Configuration {
+	// TODO https://stackoverflow.com/questions/26848783/wait-for-future-to-complete/26962630#26962630
 
-	Map<String, dynamic> option = new Map();
+    /// Initializes the configuration.
+    ///   
+    /// Overrides any configuration specified in the javascript context.
+    Configuration config = await loadConfiguration();
 
-	Configuration () {
-		option['dataStackSize']    = 256;
-		option['returnStackSize']  = 32;
-		option['controlStackSize'] = 32;
-
-		option['dataSpaceSize']    = 1024;
-		option['codeSpaceSize']    = 1024;
-	}
+    /// Creates the Forth [VirtualMachine]
+    VirtualMachine forth = new VirtualMachine(config);
 }
-
-/// The main function
-void main() {
-
-	/// Initializes the configuration.
-	///
-	/// Overrides any configuration specified in the javascript context.
-	Configuration config = loadConfiguration();
-
-	/// Creates the Forth [VirtualMachine]
-	VirtualMachine forth = new VirtualMachine(config);
-
-	/// Runs the temporary tests
-	TempTests test = new TempTests(forth);
-	test.TestStack(forth.dataStack, "forth.dataStack");
-	test.TestDictionary(forth.dict, "forth.dict");
-}
-
 
 /// Defines and loads the global options.
 ///
 /// Overrides the default values with the fetched data.
-loadConfiguration() {
+loadConfiguration() async {
 
-	/// Create the default [Configuration] object
-	Configuration c = new Configuration();
+    /// Create the default [Configuration] object
+    Configuration c = new Configuration();
 
-	if (context.hasProperty('forandar')) {
+    if (context.hasProperty('forandar')) {
 
-		/// Overrides the properties specified in
-		c.option.forEach((key, value) {
+        JsObject forandar= context['forandar'];
 
-			var newValue = context['forandar']['config'][key];
+        /// Overrides the properties specified in
+        c.option.forEach((key, value) {
 
-			// If it's valid and different from the default
-			if (newValue != null && newValue != value) {
-				window.console.info("Override config.option['$key'] $value > $newValue");
-				c.option[key] = newValue;
-			}
-		});
+            var newValue = forandar['config'][key];
 
-		// Fetches a single Forth source code (TODO)
-		// var source = context(['forandar']['source']);
-	}
+            // If it's valid and different from the default
+            if (newValue != null && newValue != value) {
+                window.console.info("Override config.option['$key'] $value > $newValue");
+                c.option[key] = newValue;
+            }
+        });
 
-	return c;
+
+        // TEMP
+        codeOutput = querySelector('#codeOutput');
+        consoleOutput = querySelector('#consoleOutput');
+
+        /// Fetches the Forth source code
+        ///
+        /// For now it only supports loading a single file
+        String source = forandar['source'].toString();
+
+        if (source != null) {
+            //source = "https://www.dartlang.org/f/portmanteaux.json"; // TEMP
+
+            try {
+                var fCode = await HttpRequest.getString(source);
+                codeOutput.querySelector('h3').appendHtml(' <span class="filename">$source</pre>');
+                codeOutput.querySelector('code').appendText(fCode);
+
+            } catch (e) {
+                window.console.error('Couldn\'t open $path');
+                //handleError(e);
+            }
+
+        }
+    }
+
+    return c;
 }
+
+/*
+handleError(Object error) {
+  codeOutput.children.add(new LIElement()..text = 'Request failed.');
+}
+*/
 
 

@@ -8,13 +8,13 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "description": "Forth implementation in Dart",
-  "version": "0.2.6",
+  "description": "A Forth implementation in Dart",
+  "version": "0.2.8",
   "devDependencies": {
-    "del": "2.x",
-    "gulp": "3.x",
-    "gulp-dart": "0.x",
-    "gulp-rename": "1.x",
-    "gulp-uglify": "1.x"
+    "del": "^2.2.0",
+    "gulp": "^3.9.0",
+    "gulp-dart": "^0.2.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.1"
   }
 }

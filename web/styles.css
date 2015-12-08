@@ -1,0 +1,37 @@
+body {
+}
+
+pre {
+	margin: 0;
+}
+
+h3 {
+	margin: 2em 0 0;
+	padding: 0.5em;
+
+	background-color: #f3f3f3;
+	border-bottom: 1px solid #e3e3e3;
+	color: #666;
+	font-family: monospace;
+}
+
+#codeOutput {}
+#consoleOutput {}
+
+code.output {
+
+	display: block;
+	padding: 1em;
+	max-height: 30em;
+	overflow: scroll;
+
+	background-color: #f9f9f9;
+}
+
+.filename {
+	padding: 0.4em;
+	border: 1px solid #dadada;
+	background-color: #eaeaea;
+	font-family: monospace;
+	font-size: 80%;
+}

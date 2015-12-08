@@ -2,15 +2,15 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Forandar (testground)</title>
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		<h3>Forandar 0.2.6</h3>
-		<p>Please, open the browser inspector console to see the output.</p>
+		<h1>forandar 0.2.7</h1>
 		<script src="forandar.dart" type="application/dart"></script>
 		<script src="dart.js" defer></script>
 		<script>
 			var forandar = {
-				source: "forth_source.fs",
+				source: "./source.fs",
 				config: {
 					dataStackSize: 512,
 					returnStackSize: 64,
@@ -18,5 +18,13 @@
 				}
 			};
 		</script>
+		<div id="codeOutput" >
+			<h3>Code Output:</h3>
+			<pre><code class="output"></code></pre>
+		</div>
+		<div id="consoleOutput" >
+			<h3>Console Output:</h3>
+			<pre><code class="output"></code></pre>
+		</div>
 	</body>
 </html>
