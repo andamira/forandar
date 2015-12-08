@@ -63,6 +63,31 @@ class Dictionary {
 	///
 	/// [core]: http://forth-standard.org/standard/core/
 	includeStandardPrimitives() {
+
+		// Control
+		addWord("INTERPRET", false, false, (){
+
+			/// Reads the next word from source.
+
+				/// Search this word in the current dictionary.
+
+					/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
+
+					/// If this word != [isImmediate] and we are in compile mode, compile it.
+
+					/// Executes the word In any other case.
+
+				/// If word is not found, tries to convert it to a number in current base.
+
+					/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
+
+					/// If we are in compiling, compile the number in the data space.
+
+					/// If we are interpreting leave it in the stack.
+
+			/// Loop ends when there are no more words.
+
+		});
 		
 		// Words that manipulate [dataStack].
 
@@ -93,7 +118,7 @@ class Dictionary {
 		///
 		/// [IMMEDIATE][link] ( -- )
 		/// [link]: http://forth-standard.org/standard/core/IMMEDIATE
-		addWord("IMMEDIATE", immediate, false, () {
+		addWord("IMMEDIATE", false, false, () {
 			this.wordsList.last.isImmediate = true;
 		});
 	}
@@ -111,14 +136,12 @@ class Dictionary {
 		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 		addWord(">NAME", false, false, () {}); // TODO
 
-
 		/// Tries to find the name of the [Word] represented by nt.
 		///
 		/// Note that in the current implementation xt and nt are exactly the same.
 		/// [nameToString][link] ( nt -- addr count )
 		/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 		addWord("NAME>STRING", false, false, () {}); // TODO
-
 
 		/// TODO
 		///
