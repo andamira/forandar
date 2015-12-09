@@ -2,16 +2,50 @@
 
 var gulp   = require("gulp");
 var dart   = require("gulp-dart");
-var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
+var uglify = require("gulp-uglify");
+var gutil  = require("gulp-util");
 var del    = require("del");
 
 var exec = require('child_process').exec;
 
+// Help Task
+gulp.task("help", function(cb) {
+	gutil.log(gutil.colors.blue.bgBlack('+----Task-----------------Description---------------------------'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
 
-// Tasks for Compiling
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'dev', '\t', gutil.colors.blue('compile js for development (sourcemaps)'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-o web/forandar.dart.js web/forandar.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'prod', '\t', gutil.colors.blue('compile js production (uglify)'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-m --no-source-maps -o web/forandar.dart.js web/forandar.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'clean', '\t', gutil.colors.blue('delete all js output'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `rm web/forandar.dart.js*'));
 
-gulp.task("compile-dev", function(cb) {
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'test', '\t', gutil.colors.blue('Run tests'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `pub run test`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'debug', '\t', gutil.colors.blue('Debug library'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `dartanalyzer lib/*.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'speed', '\t', gutil.colors.blue('Speed benchmark'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `dart benchmark/*.dart`'));
+
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('+---------------------------------------------------------------'));
+});
+
+
+// JavaScript related Tasks
+// ------------------------
+
+// Compiles to js for development.
+gulp.task("js-dev", function(cb) {
 	return gulp.src('web/forandar.dart')
 	.pipe(dart({
 		"dest": "web",
@@ -23,7 +57,8 @@ gulp.task("compile-dev", function(cb) {
 	.pipe(gulp.dest('web'))
 });
 
-gulp.task("compile-prod", function(cb) {
+// Compiles to js for production.
+gulp.task("js-prod", function(cb) {
 	return gulp.src('web/forandar.dart')
 	.pipe(dart({
 		"dest": "web",
@@ -37,26 +72,14 @@ gulp.task("compile-prod", function(cb) {
 	.pipe(gulp.dest('web'))
 });
 
-
-// Tasks for Debugging
-
-gulp.task('analyzer', function (cb) {
-  exec('dartanalyzer lib/*.dart', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-})
-
-
-// Misc Tasks
-
+// Cleans unneeded dart2js output for production
 gulp.task('prune', ['compile-prod'], function(cb) {
     del([
         'web/forandar.dart.js.*'
     ], cb)
 });
 
+// Cleans all dart2js output, including the js file
 gulp.task('clean', function(cb) {
     del([
         'web/forandar.dart.js*'
@@ -64,20 +87,48 @@ gulp.task('clean', function(cb) {
 });
 
 
-// Final (Development | Production) Tasks
+// Debug Tasks
+// -----------
+
+// Run dartanalyzer over the library code
+gulp.task('debug', function (cb) {
+  exec('dartanalyzer lib/*.dart', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+})
+
+// Run tests
+gulp.task('test', function (cb) {
+  exec('pub run test', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+});
+// Benchmark
+gulp.task('speed', function (cb) {
+  exec('dart benchmark/*.dart', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+});
+
+
+// Main (Development | Production) Tasks
+// -------------------------------------
 
 gulp.task( 'dev',
-	[ 'compile-dev' ]
+	[ 'js-dev' ]
 );
-
 gulp.task( 'prod',
-	[ 'compile-prod', 'prune' ]
+	[ 'js-prod', 'prune' ]
 );
-
 
 // Default Task
-
 gulp.task( 'default',
-	[ 'dev' ]
+	[ 'help' ]
 );
 
