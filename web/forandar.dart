@@ -6,6 +6,8 @@ var consoleOutput;
 
 void main() async {
 
+	updateVersion();
+
 	// TODO https://stackoverflow.com/questions/26848783/wait-for-future-to-complete/26962630#26962630
 
     /// Initializes the configuration.
@@ -15,6 +17,11 @@ void main() async {
 
     /// Creates the Forth [VirtualMachine]
     VirtualMachine forth = new VirtualMachine(config);
+}
+
+/// Updates forandar version in HTML
+updateVersion() async {
+	querySelector('.forandar-version').appendText(forandarVersion);
 }
 
 /// Defines and loads the global options.

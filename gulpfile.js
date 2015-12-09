@@ -73,7 +73,7 @@ gulp.task("js-prod", function(cb) {
 });
 
 // Cleans unneeded dart2js output for production
-gulp.task('prune', ['compile-prod'], function(cb) {
+gulp.task('prune', ['js-prod'], function(cb) {
     del([
         'web/forandar.dart.js.*'
     ], cb)

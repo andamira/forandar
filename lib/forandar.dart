@@ -1,14 +1,15 @@
 library forandar;
 
-// import 'dart:async';
+//import 'dart:async';
 import 'dart:collection';
-// import 'dart:convert';
+//import 'dart:convert';
 import 'dart:typed_data';
 
 part 'core/dictionary.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
 
+String forandarVersion = '0.2.10';
 
 /// The global options.
 ///
