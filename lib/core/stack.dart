@@ -10,9 +10,22 @@ abstract class Stack {
 		this.data = new Uint32List(this.maxSize);
 	}
 
+	/// Clears all the contents of the stack.
+	Clear() {
+		this.size = 0;
+	}
+
 	/// Returns the representation of the stack.
 	Print() {
 		return this.data.sublist(0, this.size);
+	}
+
+	/// Replaces the content of the [Stack] with the one from a list
+	Replace(List<int> l) {
+		this.size = 0;
+		l.forEach( (v){
+			this.data[this.size++] = v;
+		});
 	}
 
 	@override
@@ -28,10 +41,19 @@ class LifoStack extends Stack {
 
 	/// Removes the top stack item and discards it.
 	///
-	/// ( a -- )
+	/// ( a b -- a )
 	void Drop() {
 		if (this.size > 0) {
 			this.size--;
+		}
+	}
+
+	/// Removes the top 2 stack items and discards them.
+	///
+	/// ( a b c -- a )
+	void Drop2() {
+		if (this.size > 1) {
+			this.size -= 2;
 		}
 	}
 
@@ -41,6 +63,18 @@ class LifoStack extends Stack {
 	void Dup() {
 		if (this.size > 0 && this.size < this.maxSize) {
 			this.data[this.size] = this.data[this.size++ - 1];
+		}
+	}
+
+	/// Duplicates the top stack pair of items
+	///
+	/// ( a b -- a b a b )
+	void Dup2() {
+		try {
+			this.data[this.size] = this.data[this.size++ - 2];
+			this.data[this.size] = this.data[this.size++ - 2];
+		} catch(e) {
+			print(e);
 		}
 	}
 
@@ -169,5 +203,6 @@ class LifoStack extends Stack {
 			this.data[this.size - 2] = this.data[this.size++];
 		}
 	}
+
 }
 
