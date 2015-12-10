@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:args/args.dart';
+
 import 'package:forandar/forandar.dart';
 import 'package:forandar/cli.dart';
 
-main() async {
+main(List<String> args) async {
 
-	// TEMP: List all files in the current directory in UNIX-like operating systems.
-	ProcessResult results = await Process.run('ls', ['-l']);
-	print(results.stdout);
+	// FILE                              load FILE (with `require')
+	// -e STRING, --evaluate STRING      interpret STRING (with `EVALUATE')
+
+
 }
 
