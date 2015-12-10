@@ -30,5 +30,8 @@ class Configuration {
 	}
 }
 
+/// The default [Configuration] object.
+Configuration config = new Configuration();
+
 void main() {}
 

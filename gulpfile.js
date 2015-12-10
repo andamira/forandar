@@ -43,6 +43,8 @@ gulp.task("help", function(cb) {
 
 // JavaScript related Tasks
 // ------------------------
+//
+// Alternative: https://www.dartlang.org/tools/pub/dart2js-transformer.html
 
 // Compiles to js for development.
 gulp.task("js-dev", function(cb) {

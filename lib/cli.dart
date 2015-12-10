@@ -1,4 +1,4 @@
-library forandar;
+library cli;
 
 import 'dart:io';
 

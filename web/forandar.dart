@@ -29,22 +29,20 @@ updateVersion() async {
 /// Overrides the default values with the fetched data.
 loadConfiguration() async {
 
-    /// Create the default [Configuration] object
-    Configuration c = new Configuration();
 
     if (context.hasProperty('forandar')) {
 
         JsObject forandar= context['forandar'];
 
-        /// Overrides the properties specified in
-        c.option.forEach((key, value) {
+        /// Overrides the properties specified in the JavaScriptcontext
+        config.option.forEach((key, value) {
 
             var newValue = forandar['config'][key];
 
             // If it's valid and different from the default
             if (newValue != null && newValue != value) {
                 window.console.info("Override config.option['$key'] $value > $newValue");
-                c.option[key] = newValue;
+                config.option[key] = newValue;
             }
         });
 
@@ -82,5 +80,4 @@ handleError(Object error) {
   codeOutput.children.add(new LIElement()..text = 'Request failed.');
 }
 */
-
 

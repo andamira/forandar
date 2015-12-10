@@ -1,4 +1,4 @@
-library forandar;
+library web;
 
 import 'dart:html';
 export 'dart:html'; // TEMP
