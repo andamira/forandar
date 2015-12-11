@@ -9,7 +9,14 @@ part 'core/dictionary.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
 
-String forandarVersion = '0.2.12';
+/// The version of this library.
+String forandarVersion = '0.2.13';
+
+/// The default [Configuration] object.
+Configuration config = new Configuration();
+
+/// The default [SourceQueue] object.
+InputQueue input = new InputQueue();
 
 /// The global options.
 ///
@@ -18,8 +25,10 @@ String forandarVersion = '0.2.12';
 /// in the case of web apps, or with command line parameters.
 class Configuration {
 
+	// The Map that stores the options.
 	Map<String, dynamic> option = new Map();
 
+	// Initializes with the default values.
 	Configuration () {
 		option['dataStackSize']    = 256;
 		option['returnStackSize']  = 32;
@@ -30,8 +39,22 @@ class Configuration {
 	}
 }
 
-/// The default [Configuration] object.
-Configuration config = new Configuration();
+/// Supported types of input
+enum InputType { String, File, Url }
+
+/// The global source code inputs queue.
+///
+/// Stores in order the series of source codes for interpreting,
+/// either as a string, or as a file / URL to be loaded.
+class InputQueue {
+
+	/// Storage for the source code inputs, in order.
+	List<Map<InputType, String>> queue = [ ];
+
+	add(ResourceFrom t, String s) {
+		this.queue.add({t: s});
+	}
+}
 
 void main() {}
 
