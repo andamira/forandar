@@ -35,6 +35,9 @@ gulp.task("help", function(cb) {
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'speed', '\t', gutil.colors.blue('Speed benchmark'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `dart benchmark/*.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'cloc', '\t', gutil.colors.blue('Count lines of code'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `cloc --exclude-dir=node_modules --exclude-ext=dart.js .`'));
 
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('+---------------------------------------------------------------'));
@@ -101,7 +104,7 @@ gulp.task('debug', function (cb) {
   });
 })
 
-// Run tests
+// Run tests.
 gulp.task('test', function (cb) {
   exec('pub run test', function (err, stdout, stderr) {
     console.log(stdout);
@@ -109,7 +112,8 @@ gulp.task('test', function (cb) {
     cb(err);
   });
 });
-// Benchmark
+
+// Benchmark.
 gulp.task('speed', function (cb) {
   exec('dart benchmark/*.dart', function (err, stdout, stderr) {
     console.log(stdout);
@@ -118,6 +122,16 @@ gulp.task('speed', function (cb) {
   });
 });
 
+// Count Lines Of Code.
+//
+// Depends on: https://github.com/AlDanial/cloc
+gulp.task('cloc', function (cb) {
+  exec('cloc --exclude-dir=node_modules --exclude-ext=dart.js .', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+});
 
 // Main (Development | Production) Tasks
 // -------------------------------------
