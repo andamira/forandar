@@ -7,10 +7,17 @@ import 'package:args/args.dart';
 import 'package:forandar/forandar.dart';
 import 'package:forandar/cli.dart';
 
+VirtualMachine forth;
+
 main(List<String> args) async {
 
 	parseArguments(args);
 
+	/// Creates the Forth [VirtualMachine].
+	forth = new VirtualMachine(config);
+
+	/// Includes the primitives dependant on the CLI interface.
+	includeCliPrimitives(forth.dict);
 }
 
 /// Parses the CLI arguments
@@ -60,7 +67,7 @@ void parseArguments(List<String> args) {
 		);
 
 	if (args.isEmpty) {
-		print("TODO: run CLI interpreter");
+		print("TODO: `ACCEPT'");
 	}
 
 	try {
@@ -97,7 +104,7 @@ void parseArguments(List<String> args) {
 		}
 	});
 
-	print(input.queue);
+	print("TEMP: InputQueue = ${input.queue}"); // TEMP
 }
 
 /// Displays usage and exits.

@@ -1,6 +1,9 @@
 import 'package:forandar/forandar.dart';
 import 'package:forandar/web.dart';
 
+VirtualMachine forth;
+Configuration config;
+
 var codeOutput;
 var consoleOutput;
 
@@ -12,29 +15,32 @@ void main() async {
 
     /// Initializes the configuration.
     ///   
-    /// Overrides any configuration specified in the javascript context.
-    Configuration config = await loadConfiguration();
+    /// Overrides any defaults when specified in the JavaScript context.
+    config = await loadConfiguration();
 
-    /// Creates the Forth [VirtualMachine]
-    VirtualMachine forth = new VirtualMachine(config);
+    /// Creates the Forth [VirtualMachine].
+    forth = new VirtualMachine(config);
+
+	/// Includes the primitives dependant on the web interface.
+	includeWebPrimitives(forth.dict);
 }
 
 /// Updates forandar version in HTML
-updateVersion() async {
+void updateVersion() async {
 	querySelector('.forandar-version').appendText(forandarVersion);
 }
 
 /// Defines and loads the global options.
 ///
 /// Overrides the default values with the fetched data.
-loadConfiguration() async {
+Configuration loadConfiguration() async {
 
 
     if (context.hasProperty('forandar')) {
 
         JsObject forandar= context['forandar'];
 
-        /// Overrides the properties specified in the JavaScriptcontext
+        /// Overrides the properties specified in the JavaScript context.
         config.option.forEach((key, value) {
 
             var newValue = forandar['config'][key];
@@ -66,7 +72,6 @@ loadConfiguration() async {
 
             } catch (e) {
                 window.console.error('Couldn\'t open $path');
-                //handleError(e);
             }
 
         }
@@ -74,10 +79,4 @@ loadConfiguration() async {
 
     return c;
 }
-
-/*
-handleError(Object error) {
-  codeOutput.children.add(new LIElement()..text = 'Request failed.');
-}
-*/
 

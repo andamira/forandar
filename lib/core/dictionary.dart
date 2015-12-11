@@ -42,13 +42,16 @@ class Dictionary {
 	/// The parent [VirtualMachine].
 	VirtualMachine vm;
 
-	/// Constants for the flags of the [Word]
+	/// Constants for the flags of the [Word].
 	static const immediate      = true;
 	static const compileOnly    = true;
 
 	Dictionary(this.vm) {
 
 		/// Adds the primitives to the dictionary.
+		///
+		/// The primitives whose implementation depends on the specific interface
+		/// are defined in the files: cli/dictionary.dart and web/dictionary.dart.
 		includeStandardPrimitives();
 		includeExtendedPrimitives();
 	}
@@ -89,7 +92,7 @@ class Dictionary {
 
 		});
 		
-		// Words that manipulate [dataStack].
+		/// Words that manipulate [dataStack].
 
 		addWord(".", false, false, (){}); // TODO
 		addWord(".S", false, false, (){}); // TODO
@@ -111,7 +114,7 @@ class Dictionary {
 		/// [toR][link] ( x -- ) ( R: -- x )
 		/// [link]: http://forth-standard.org/standard/core/toR
 		addWord(">R", false, false, () {
-			vm.returnStack.Push(vm.dataStack.Pop());
+			this.vm.returnStack.Push(this.vm.dataStack.Pop());
 		});
 
 		/// Make the most recent definition an immediate word.

@@ -10,7 +10,7 @@ part 'core/stack.dart';
 part 'core/vm.dart';
 
 /// The version of this library.
-String forandarVersion = '0.2.13';
+String forandarVersion = '0.3.0';
 
 /// The default [Configuration] object.
 Configuration config = new Configuration();
@@ -21,7 +21,7 @@ InputQueue input = new InputQueue();
 /// The global options.
 ///
 /// The default options can be overriden later,
-/// by providing new values either in the javascript context,
+/// by providing new values either in the JavaScript context,
 /// in the case of web apps, or with command line parameters.
 class Configuration {
 
