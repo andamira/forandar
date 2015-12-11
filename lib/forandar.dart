@@ -9,7 +9,7 @@ part 'core/dictionary.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
 
-String forandarVersion = '0.2.10';
+String forandarVersion = '0.2.12';
 
 /// The global options.
 ///

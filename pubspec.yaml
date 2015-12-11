@@ -1,5 +1,5 @@
 name: forandar
-version: 0.2.10
+version: 0.2.12
 description: A forth implementation in Dart
 author: José Luis Cruz <joseluis@andamira.net>
 homepage: https://gitlab.com/andamira/forandar
