@@ -3,13 +3,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/andamira/forandar"
+    "url": "https://github.com/andamira/forandar"
   },
   "engines": {
     "node": ">=4.0.0"
   },
   "description": "A Forth implementation in Dart",
-  "version": "0.2.10",
+  "version": "0.3.1",
   "devDependencies": {
     "del": "^2.2.0",
     "gulp": "^3.9.0",
