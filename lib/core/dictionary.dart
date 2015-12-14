@@ -98,12 +98,46 @@ class Dictionary {
 		addWord(".S", false, false, (){}); // TODO
 
 		addWord("DUP", false, false, this.vm.dataStack.Dup);
+
+		/// Duplicate cell pair x1 x2.
+		///
+		/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
+		///	  over over ;
+		/// [link]: http://forth-standard.org/standard/core/TwoDUP
+		addWord("2DUP", false, false, this.vm.dataStack.Dup2);
+
 		addWord("?DUP", false, false, () {
 			if (this.vm.dataStack.size > 0) vm.dataStack.Dup();
 		});
+
+		/// Remove x from the stack.
+		///
+		/// [DROP][link] ( x -- )
+		/// [link]: http://forth-standard.org/standard/core/DROP
 		addWord("DROP", false, false, this.vm.dataStack.Drop);
+
+		/// Drop cell pair x1 x2 from the stack.
+		///
+		/// [2DROP][link] ( x1 x2 -- )
+		/// [link]: http://forth-standard.org/standard/core/TwoDROP
+		addWord("2DROP", false, false, this.vm.dataStack.Drop2);
+
+		/// Place a copy of x1 on top of the stack.
+		///
+		/// [OVER][link] ( x1 x2 -- x1 x2 x1 )
+		/// [link]: http://forth-standard.org/standard/core/OVER
 		addWord("OVER", false, false, this.vm.dataStack.Over);
+
+		/// Exchange the top two stack items.
+		///
+		/// [SWAP][link] ( x1 x2 -- x2 x1 )
+		/// [link]: http://forth-standard.org/standard/core/SWAP
 		addWord("SWAP", false, false, this.vm.dataStack.Swap);
+
+		/// Rotate the top three stack entries.
+		///
+		/// [ROT][link] ( x1 x2 x3 -- x2 x3 x1 )
+		/// [link]: http://forth-standard.org/standard/core/ROT
 		addWord("ROT", false, false, this.vm.dataStack.Rot);
 		addWord("-ROT", false, false, this.vm.dataStack.RotCC);
 		addWord("NIP", false, false, this.vm.dataStack.Nip);
