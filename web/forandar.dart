@@ -1,9 +1,6 @@
 import 'package:forandar/forandar.dart';
 import 'package:forandar/web.dart';
 
-VirtualMachine forth;
-Configuration config;
-
 var codeOutput;
 var consoleOutput;
 
@@ -16,13 +13,13 @@ void main() async {
     /// Initializes the configuration.
     ///   
     /// Overrides any defaults when specified in the JavaScript context.
-    config = await loadConfiguration();
+    await loadConfiguration();
 
     /// Creates the Forth [VirtualMachine].
-    forth = new VirtualMachine(config);
+	forth = new VirtualMachine(config);
 
 	/// Includes the primitives dependant on the web interface.
-	includeWebPrimitives(forth.dict);
+	includeWordsWeb(forth, forth.dict);
 }
 
 /// Updates forandar version in HTML
@@ -34,7 +31,6 @@ void updateVersion() async {
 ///
 /// Overrides the default values with the fetched data.
 Configuration loadConfiguration() async {
-
 
     if (context.hasProperty('forandar')) {
 
@@ -76,7 +72,5 @@ Configuration loadConfiguration() async {
 
         }
     }
-
-    return c;
 }
 

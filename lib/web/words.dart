@@ -3,7 +3,7 @@ part of web;
 /// Forth Primitives that depends on the web interface.
 /// 
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
-void includeWebPrimitives(Dictionary d) {
+void includeWordsWeb(VirtualMachine vm, Dictionary d) {
 
 	/// Loads a file (URL) and interprets it.
 	///
