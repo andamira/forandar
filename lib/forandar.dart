@@ -9,13 +9,18 @@ part 'core/dictionary.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
 
+part 'core/words.dart';
+
 /// The version of this library.
 String forandarVersion = '0.3.2';
 
-/// The default [Configuration] object.
+/// The Forth Virtual Machine.
+VirtualMachine forth;
+
+/// The default [Configuration].
 Configuration config = new Configuration();
 
-/// The default [SourceQueue] object.
+/// The default [SourceQueue].
 InputQueue input = new InputQueue();
 
 /// The global options.
@@ -51,7 +56,7 @@ class InputQueue {
 	/// Storage for the source code inputs, in order.
 	List<Map<InputType, String>> queue = [ ];
 
-	add(ResourceFrom t, String s) {
+	add(InputType t, String s) {
 		this.queue.add({t: s});
 	}
 }
