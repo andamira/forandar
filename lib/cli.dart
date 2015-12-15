@@ -2,7 +2,7 @@ library cli;
 
 import 'dart:io';
 
-part 'cli/dictionary.dart';
+part 'cli/words.dart';
 
 // TODO:
 // - define CLI class, and common methods
