@@ -13,6 +13,7 @@
     "gulp": "^3.9.0",
     "gulp-dart": "^0.2.3",
     "gulp-rename": "^1.2.2",
+    "gulp-shell": "^0.5.1",
     "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.7"
   }

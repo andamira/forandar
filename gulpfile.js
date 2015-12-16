@@ -5,6 +5,7 @@ var dart   = require("gulp-dart");
 var rename = require("gulp-rename");
 var uglify = require("gulp-uglify");
 var gutil  = require("gulp-util");
+var shell  = require("gulp-shell");
 var del    = require("del");
 
 var exec = require('child_process').exec;
@@ -14,7 +15,7 @@ gulp.task("help", function(cb) {
 	gutil.log(gutil.colors.blue.bgBlack('+----Task-----------------Description---------------------------'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 
-	gutil.log(gutil.colors.blue.bgBlack('|'), 'dev', '\t', gutil.colors.blue('compile js for development (sourcemaps)'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'dev', '\t', gutil.colors.blue('compile js for development (with sourcemaps)'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-o web/forandar.dart.js web/forandar.dart`'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
@@ -96,42 +97,27 @@ gulp.task('clean', function(cb) {
 // -----------
 
 // Run dartanalyzer over the library code
-gulp.task('debug', function (cb) {
-  exec('dartanalyzer lib/*.dart', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-})
+gulp.task('debug', shell.task([
+	'dartanalyzer lib/*.dart'
+]));
 
 // Run tests.
-gulp.task('test', function (cb) {
-  exec('pub run test', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-});
+gulp.task('test', shell.task([
+	'pub run test'
+]));
 
 // Benchmark.
-gulp.task('speed', function (cb) {
-  exec('dart benchmark/*.dart', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-});
+gulp.task('speed', shell.task([
+	'dart benchmark/*.dart'
+]));
 
 // Count Lines Of Code.
 //
 // Depends on: https://github.com/AlDanial/cloc
-gulp.task('cloc', function (cb) {
-  exec('cloc --exclude-dir=node_modules --exclude-ext=dart.js .', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-});
+gulp.task('cloc', shell.task([
+	'cloc --exclude-dir=node_modules,build --exclude-ext=dart.js .'
+]));
+
 
 // Main (Development | Production) Tasks
 // -------------------------------------
