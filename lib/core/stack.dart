@@ -11,7 +11,7 @@ abstract class Stack {
 	}
 
 	/// Clears all the contents of the stack.
-	Clear() {
+	void Clear() {
 		this.size = 0;
 	}
 
@@ -20,8 +20,8 @@ abstract class Stack {
 		return this.data.sublist(0, this.size);
 	}
 
-	/// Replaces the content of the [Stack] with the one from a list
-	Replace(List<int> l) {
+	/// Replaces the content of the [Stack] with the elements of the list
+	void Replace(List<int> l) {
 		this.size = 0;
 		l.forEach( (v){
 			this.data[this.size++] = v;

@@ -19,14 +19,14 @@ gulp.task("help", function(cb) {
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'build-debug', '\t', gutil.colors.blue('build debug version (includes .dart files)'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t\t', gutil.colors.cyan('alias for `gulp clean; pub build --mode=debug'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-dev', '\t', gutil.colors.blue('compile js for development in web/ directory'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-dev', '\t', gutil.colors.blue('compile JS unminified with sourcemaps in web/ directory'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-o web/forandar.dart.js web/forandar.dart`'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-prod', '\t', gutil.colors.blue('compile js for production (uglify)'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-prod', '\t', gutil.colors.blue('compile JS minified and uglified in web/ directory'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-m --no-source-maps -o web/forandar.dart.js web/forandar.dart`'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), 'clean', '\t', gutil.colors.blue('delete all js output'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), 'clean', '\t', gutil.colors.blue('delete all JS and build output'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `rm web/forandar.dart.js* build/web/'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'test', '\t', gutil.colors.blue('Run tests'));
@@ -47,7 +47,7 @@ gulp.task("help", function(cb) {
 //
 // Alternative: https://www.dartlang.org/tools/pub/dart2js-transformer.html
 
-// Compiles to js for development.
+// Compiles to JS for development.
 gulp.task("compile-js-dev", function(cb) {
 	return gulp.src('web/forandar.dart')
 	.pipe(dart({
@@ -60,7 +60,7 @@ gulp.task("compile-js-dev", function(cb) {
 	.pipe(gulp.dest('web'))
 });
 
-// Compiles to js for production.
+// Compiles to JS for production.
 gulp.task("compile-js-prod", function(cb) {
 	return gulp.src('web/forandar.dart')
 	.pipe(dart({
@@ -80,7 +80,7 @@ gulp.task('prune', ['compile-js-prod'], function(cb) {
 	del(['web/forandar.dart.js.*'], cb)
 });
 
-// Cleans all dart2js output, including the js file
+// Cleans all dart2js output, including the JS output file
 gulp.task('clean', function(cb) {
 	del(['web/forandar.dart.js*'], cb)
 	del(['build/web/'], cb)

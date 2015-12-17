@@ -141,7 +141,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 		/// Reads the next word from source.
 
-			/// Search this word in the current dictionary.
+			/// Search the current dictionary for this word.
 
 				/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
 
@@ -155,7 +155,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 				/// If we are in compiling, compile the number in the data space.
 
-				/// If we are interpreting leave it in the stack.
+				/// If we are interpreting leave it on the stack.
 
 		/// Loop ends when there are no more words.
 

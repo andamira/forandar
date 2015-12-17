@@ -17,7 +17,7 @@ main(List<String> args) async {
 	forth = new VirtualMachine(config);
 
 	/// Includes the primitives dependant on the CLI interface.
-	includeCliPrimitives(forth, forth.dict);
+	includeWordsCli(forth, forth.dict);
 }
 
 /// Parses the CLI arguments

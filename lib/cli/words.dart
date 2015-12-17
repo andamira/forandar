@@ -3,7 +3,7 @@ part of cli;
 /// Forth Primitives that depends on the CLI interface.
 /// 
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
-void includeCliPrimitives(VirtualMachine vm, Dictionary d) {
+void includeWordsCli(VirtualMachine vm, Dictionary d) {
 
 	/// Loads a file (URL) and interprets it.
 	///

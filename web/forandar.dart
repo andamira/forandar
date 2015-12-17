@@ -67,7 +67,7 @@ Configuration loadConfiguration() async {
                 codeOutput.querySelector('code').appendText(fCode);
 
             } catch (e) {
-                window.console.error('Couldn\'t open $path');
+                // window.console.error('Couldn\'t open $path');
             }
 
         }
