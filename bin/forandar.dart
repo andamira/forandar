@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:yaml/yaml.dart';
 
 import 'package:forandar/forandar.dart';
 import 'package:forandar/cli.dart';
 
 VirtualMachine forth;
+
 
 main(List<String> args) async {
 
@@ -58,9 +60,9 @@ void parseArguments(List<String> args) {
 		..addFlag('version', abbr: 'v',
 			negatable: false,
 			help: "Print version and exit",
-			callback: (version) {
+			callback: (version) async {
 				if (version) {
-					print("forandar $forandarVersion");
+					print("forandar ${await getVersion()}");
 					exit(0);
 				}
 			}
@@ -113,3 +115,13 @@ void displayUsage(ArgParser p) {
 	exit(0);
 }
 
+
+/// Returns version from pubspec.yaml. Updates global the first time.
+String getVersion() async {
+	if (forandarVersion == "FORANDAR_VERSION") {
+		forandarVersion = await new File('pubspec.yaml').readAsString().then((String contents) {
+			return loadYaml(contents)['version'];
+		});
+	}
+	return forandarVersion;
+}
