@@ -1,12 +1,13 @@
 // Dependencies
 
-var gulp   = require("gulp");
-var dart   = require("gulp-dart");
-var rename = require("gulp-rename");
-var uglify = require("gulp-uglify");
-var gutil  = require("gulp-util");
-var shell  = require("gulp-shell");
-var del    = require("del");
+var gulp     = require("gulp");
+var dart     = require("gulp-dart");
+var rename   = require("gulp-rename");
+var uglify   = require("gulp-uglify");
+var gutil    = require("gulp-util");
+var sequence = require("run-sequence");
+var shell    = require("gulp-shell");
+var del      = require("del");
 
 var exec = require('child_process').exec;
 
@@ -76,14 +77,14 @@ gulp.task("compile-js-prod", function(cb) {
 });
 
 // Cleans unneeded dart2js output for production
-gulp.task('prune', ['compile-js-prod'], function(cb) {
-	del(['web/forandar.dart.js.*'], cb)
+gulp.task('prune', function() {
+	del(['web/forandar.dart.js.*'])
 });
 
 // Cleans all dart2js output, including the JS output file
-gulp.task('clean', function(cb) {
-	del(['web/forandar.dart.js*'], cb)
-	del(['build/web/'], cb)
+gulp.task('clean', function() {
+	del(['web/forandar.dart.js*'])
+	del(['build/web/'])
 });
 
 // Builds the Web interface, minifying js with dart2js, without .dart sources
@@ -126,16 +127,22 @@ gulp.task('cloc', shell.task([
 // -------------------------------------
 
 // Build for development
-gulp.task( 'build', ['clean', 'pub-build']);
+gulp.task( 'build', function(cb) {
+	sequence( 'clean', 'pub-build', cb );
+});
 
 // Build for production
-gulp.task( 'build-debug', ['clean', 'pub-build-debug']);
+gulp.task( 'build-debug', function(cb) {
+	sequence( 'clean', 'pub-build-debug', cb );
+});
 
 // Compile JS for development
 gulp.task( 'js-dev', [ 'compile-js-dev' ]);
 
 // Compile JS for production
-gulp.task( 'js-prod', [ 'compile-js-prod', 'prune' ]);
+gulp.task( 'js-prod', function(cb) {
+	sequence( 'compile-js-prod', 'prune', cb );
+});
 
 // Default Task
 gulp.task( 'default', [ 'help' ]);
