@@ -13,7 +13,7 @@ part 'core/vm.dart';
 part 'core/words.dart';
 
 /// The version of this library.
-String forandarVersion = '0.3.2';
+String forandarVersion = 'FORANDAR_VERSION';
 
 /// The Forth Virtual Machine.
 VirtualMachine forth;

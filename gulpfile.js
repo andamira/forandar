@@ -3,29 +3,37 @@
 var gulp     = require("gulp");
 var dart     = require("gulp-dart");
 var rename   = require("gulp-rename");
+var replace  = require("gulp-replace");
 var uglify   = require("gulp-uglify");
 var gutil    = require("gulp-util");
 var sequence = require("run-sequence");
 var shell    = require("gulp-shell");
 var del      = require("del");
+var fs       = require('fs');
+var yaml     = require('js-yaml');
 
 var exec = require('child_process').exec;
+
+
+// Data
+forandarVersion = yaml.safeLoad(fs.readFileSync('pubspec.yaml', 'utf8')).version;
+
 
 // Help Task
 gulp.task("help", function(cb) {
 	gutil.log(gutil.colors.blue.bgBlack('+----Task-----------------Description---------------------------'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'build', '\t\t', gutil.colors.blue('build release version in build/ directory'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t\t', gutil.colors.cyan('alias for `gulp clean; pub build'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t\t', gutil.colors.cyan('alias for `gulp clean; pub build; gulp update-build-bver'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'build-debug', '\t', gutil.colors.blue('build debug version (includes .dart files)'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t\t', gutil.colors.cyan('alias for `gulp clean; pub build --mode=debug'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t\t', gutil.colors.cyan('alias for `gulp clean; pub build --mode=debug; gulp update-bver'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-dev', '\t', gutil.colors.blue('compile JS unminified with sourcemaps in web/ directory'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-o web/forandar.dart.js web/forandar.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-o web/forandar.dart.js web/forandar.dart && gulp update-jver`'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'js-prod', '\t', gutil.colors.blue('compile JS minified and uglified in web/ directory'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings \\'));
-	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('-m --no-source-maps -o web/forandar.dart.js web/forandar.dart`'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('similar to `dart2js -c --terse --suppress-warnings -m \\'));
+	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('--no-source-maps -o web/forandar.dart.js web/forandar.dart && gulp update-jver`'));
 	gutil.log(gutil.colors.blue.bgBlack('|'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), 'clean', '\t', gutil.colors.blue('delete all JS and build output'));
 	gutil.log(gutil.colors.blue.bgBlack('|'), '\t\t', gutil.colors.cyan('alias for `rm web/forandar.dart.js* build/web/'));
@@ -97,6 +105,21 @@ gulp.task('pub-build-debug', shell.task([
 	'pub build --mode=debug'
 ]));
 
+// Updates the version in the JS build/ output
+gulp.task('update-bver', function() {
+	gulp.src('build/web/forandar.dart.js', {base: './'})
+	.pipe(replace('FORANDAR_VERSION', forandarVersion))
+	.pipe(gulp.dest('./'))
+});
+
+// Updates the version in the JS web/ output
+gulp.task('update-jver', function() {
+	gulp.src('web/forandar.dart.js', {base: './'})
+	.pipe(replace('FORANDAR_VERSION', forandarVersion))
+	.pipe(gulp.dest('./'))
+});
+
+
 // Debug Tasks
 // -----------
 
@@ -128,20 +151,22 @@ gulp.task('cloc', shell.task([
 
 // Build for development
 gulp.task( 'build', function(cb) {
-	sequence( 'clean', 'pub-build', cb );
+	sequence( 'clean', 'pub-build', 'update-bver', cb );
 });
 
 // Build for production
 gulp.task( 'build-debug', function(cb) {
-	sequence( 'clean', 'pub-build-debug', cb );
+	sequence( 'clean', 'pub-build-debug', 'update-bver', cb );
 });
 
 // Compile JS for development
-gulp.task( 'js-dev', [ 'compile-js-dev' ]);
+gulp.task( 'js-dev', function(cb) {
+	sequence( 'compile-js-dev', 'update-jver', cb);
+});
 
 // Compile JS for production
 gulp.task( 'js-prod', function(cb) {
-	sequence( 'compile-js-prod', 'prune', cb );
+	sequence( 'compile-js-prod', 'prune', 'update-jver', cb );
 });
 
 // Default Task
