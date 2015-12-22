@@ -139,25 +139,45 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	d.addWord("INTERPRET", false, false, (){ // TODO
 
-		/// Reads the next word from source.
+		for (var x in vm.input.queue) {
 
-			/// Search the current dictionary for this word.
+			String sourceCode = "";
 
-				/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
+			switch (x.type) {
+				case InputType.String:
+					print("Interpreting string... ${x.str}"); // TEMP
+					sourceCode = x.str;
+					break;
+				case InputType.File:
+					print("Load file... ${x.str}"); // TEMP
+					break;
+				case InputType.Url:
+					print("Load URL... ${x.str}"); // TEMP
+					break;
+			}
 
-				/// If this word != [isImmediate] and we are in compile mode, compile it.
 
-				/// Executes the word In any other case.
+			/// Reads the next word from [sourceCode].
 
-			/// If word is not found, tries to convert it to a number in current base.
+				/// Search the current dictionary for this word.
 
-				/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
+					/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
 
-				/// If we are in compiling, compile the number in the data space.
+					/// If this word != [isImmediate] and we are in compile mode, compile it.
 
-				/// If we are interpreting leave it on the stack.
+					/// Executes the word In any other case.
 
-		/// Loop ends when there are no more words.
+				/// If word is not found, tries to convert it to a number in current base.
+
+					/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
+
+					/// If we are in compiling, compile the number in the data space.
+
+					/// If we are interpreting leave it on the stack.
+
+			/// Loop ends when there are no more words.
+
+		}
 
 	});
 

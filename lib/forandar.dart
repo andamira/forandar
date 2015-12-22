@@ -2,7 +2,7 @@ library forandar;
 
 //import 'dart:async';
 import 'dart:collection';
-//import 'dart:convert';
+import 'dart:convert';
 import 'dart:typed_data';
 
 part 'core/dictionary.dart';
@@ -13,16 +13,9 @@ part 'core/vm.dart';
 part 'core/words.dart';
 
 /// The version of this library.
+///
+/// This placeholder must be filled by the implementation.
 String forandarVersion = 'FORANDAR_VERSION';
-
-/// The Forth Virtual Machine.
-VirtualMachine forth;
-
-/// The default [Configuration].
-Configuration config = new Configuration();
-
-/// The default [SourceQueue].
-InputQueue input = new InputQueue();
 
 /// The global options.
 ///
@@ -40,25 +33,7 @@ class Configuration {
 		option['returnStackSize']  = 32;
 		option['controlStackSize'] = 32;
 
-		option['dataSpaceSize']    = 1024;
-		option['codeSpaceSize']    = 1024;
-	}
-}
-
-/// Supported types of input
-enum InputType { String, File, Url }
-
-/// The global source code inputs queue.
-///
-/// Stores in order the series of source codes for interpreting,
-/// either as a string, or as a file / URL to be loaded.
-class InputQueue {
-
-	/// Storage for the source code inputs, in order.
-	List<Map<InputType, String>> queue = [ ];
-
-	add(InputType t, String s) {
-		this.queue.add({t: s});
+		option['dataSpaceSize']    = 16384;
 	}
 }
 

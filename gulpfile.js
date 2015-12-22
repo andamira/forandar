@@ -12,8 +12,6 @@ var del      = require("del");
 var fs       = require('fs');
 var yaml     = require('js-yaml');
 
-var exec = require('child_process').exec;
-
 
 // Data
 forandarVersion = yaml.safeLoad(fs.readFileSync('pubspec.yaml', 'utf8')).version;

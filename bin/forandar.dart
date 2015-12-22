@@ -5,25 +5,31 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:forandar/forandar.dart';
 import 'package:forandar/cli.dart';
-
-VirtualMachine forth;
-
 
 main(List<String> args) async {
 
-	parseArguments(args);
+	var c = new Configuration();
+	var i = new InputQueueCli();
+
+	/// Parses the arguments from the command line.
+	///
+	/// Updates the default configuration in [c].
+	/// fills the source code input queue in [i].
+	parseArguments(args, i);
 
 	/// Creates the Forth [VirtualMachine].
-	forth = new VirtualMachine(config);
+	var forth = new VirtualMachine(c, i);
 
-	/// Includes the primitives dependant on the CLI interface.
+	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);
+
+	/// TODO: Interprets the code in the input queue.
+	forth.dict.wordsMap['INTERPRET'].code();
 }
 
 /// Parses the CLI arguments
-void parseArguments(List<String> args) {
+void parseArguments(List<String> args, InputQueue i) {
 
 	ArgResults results;
 	ArgParser parser = new ArgParser(allowTrailingOptions: false);
@@ -70,6 +76,7 @@ void parseArguments(List<String> args) {
 
 	if (args.isEmpty) {
 		print("TODO: `ACCEPT'");
+		return;
 	}
 
 	try {
@@ -89,7 +96,7 @@ void parseArguments(List<String> args) {
 			case '-e':
 			case '--evaluate':
 				try {
-					input.add(InputType.String, results['evaluate'][eCounter++]);
+					i.add(InputType.String, results['evaluate'][eCounter++]);
 				} catch(e) {
 					print(e);
 				}
@@ -98,15 +105,13 @@ void parseArguments(List<String> args) {
 			case '-i':
 			case '--include':
 				try {
-					input.add(InputType.File, results['include'][iCounter++]);
+					i.add(InputType.File, results['include'][iCounter++]);
 				} catch(e) {
 					print(e);
 				}
 				break;
 		}
 	});
-
-	print("TEMP: InputQueue = ${input.queue}"); // TEMP
 }
 
 /// Displays usage and exits.
