@@ -11,17 +11,17 @@ abstract class Stack {
 	}
 
 	/// Clears all the contents of the stack.
-	void Clear() {
+	void clear() {
 		this.size = 0;
 	}
 
 	/// Returns the representation of the stack.
-	List<int> Content() {
+	List<int> content() {
 		return this.data.sublist(0, this.size);
 	}
 
 	/// Replaces the content of the [Stack] with the elements of the list
-	void Replace(List<int> l) {
+	void replace(List<int> l) {
 		this.size = 0;
 		l.forEach( (v){
 			this.data[this.size++] = v;
@@ -30,7 +30,7 @@ abstract class Stack {
 
 	@override
 	String toString() {
-		return "stack(${this.size}) ${this.Content()}";
+		return "stack(${this.size}) ${this.content()}";
 	}
 }
 
@@ -42,7 +42,7 @@ class LifoStack extends Stack {
 	/// Removes the top stack item and discards it.
 	///
 	/// ( a b -- a )
-	void Drop() {
+	void drop() {
 		if (this.size > 0) {
 			this.size--;
 		}
@@ -51,7 +51,7 @@ class LifoStack extends Stack {
 	/// Removes the top 2 stack items and discards them.
 	///
 	/// ( a b c -- a )
-	void Drop2() {
+	void drop2() {
 		if (this.size > 1) {
 			this.size -= 2;
 		}
@@ -60,7 +60,7 @@ class LifoStack extends Stack {
 	/// Duplicates the top stack item.
 	///
 	/// ( a -- a a )
-	void Dup() {
+	void dup() {
 		if (this.size > 0 && this.size < this.maxSize) {
 			this.data[this.size] = this.data[this.size++ - 1];
 		}
@@ -69,7 +69,7 @@ class LifoStack extends Stack {
 	/// Duplicates the top stack pair of items
 	///
 	/// ( a b -- a b a b )
-	void Dup2() {
+	void dup2() {
 		try {
 			this.data[this.size] = this.data[this.size++ - 2];
 			this.data[this.size] = this.data[this.size++ - 2];
@@ -81,7 +81,7 @@ class LifoStack extends Stack {
 	/// Drops the first item below the top of stack.
 	///
 	/// ( a b -- b )
-	void Nip() {
+	void nip() {
 		if (this.size > 1) {
 			this.data[this.size - 2] = this.data[--this.size];
 		}
@@ -90,7 +90,7 @@ class LifoStack extends Stack {
 	/// Places a copy of a on top of the stack.
 	///
 	/// ( a b -- a b a )
-	void Over() {
+	void over() {
 		if (this.size > 1 && this.size < this.maxSize) {
 			this.data[this.size] = this.data[this.size++ - 2];
 		}
@@ -99,7 +99,7 @@ class LifoStack extends Stack {
 	/// Returns the last stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	int Peek() {
+	int peek() {
 		if (this.size > 0) {
 			return this.data[size - 1];
 		} else {
@@ -111,7 +111,7 @@ class LifoStack extends Stack {
 	///
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
-	void Pick(int i) {
+	void pick(int i) {
 		if (this.size > i) {
 			this.data[size] = this.data[size++ - 1 - i];
 		}
@@ -120,7 +120,7 @@ class LifoStack extends Stack {
 	/// Returns the last stack item.
 	///
 	/// ( a -- )
-	int Pop() {
+	int pop() {
 		if (this.size > 0) {
 			return this.data[--size];
 		} else {
@@ -131,7 +131,7 @@ class LifoStack extends Stack {
 	/// Adds an additional stack item.
 	///
 	/// ( -- a )
-	void Push(int i) {
+	void push(int i) {
 		if (this.size < this.maxSize) {
 			this.data[size++] = i;
 		}
@@ -141,7 +141,7 @@ class LifoStack extends Stack {
 	///
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
-	void Roll(int i) {
+	void roll(int i) {
 		if (this.size > 0 && i > 0) {
 			// var t = this.data.sublist(this.size - 1 - i, this.size);
 
@@ -161,7 +161,7 @@ class LifoStack extends Stack {
 	/// Rotates the top three stack entries.
 	///
 	/// ( a b c -- b c a )
-	void Rot() {
+	void rot() {
 		if (this.size > 2) {
 			var t = this.data.sublist(this.size - 3, this.size);
 			this.data[this.size - 1] = t[0];
@@ -173,7 +173,7 @@ class LifoStack extends Stack {
 	/// Rotates counter-clockwise the top three stack entries.
 	///
 	/// ( a b c -- c a b )
-	void RotCC() {
+	void rotCC() {
 		if (this.size > 2) {
 			var t = this.data.sublist(this.size - 3, this.size);
 			this.data[this.size - 1] = t[1];
@@ -185,7 +185,7 @@ class LifoStack extends Stack {
 	/// Exchanges the top two stack items.
 	///
 	/// ( a b -- b a )
-	void Swap() {
+	void swap() {
 		if (this.size > 1) {
 			int t = this.data[this.size - 1];
 			this.data[this.size - 1] = this.data[this.size - 2];
@@ -196,13 +196,12 @@ class LifoStack extends Stack {
 	/// Copies the first (top) stack item below the second stack item.
 	///
 	/// ( a b -- b a b )
-	void Tuck() {
+	void tuck() {
 		if (this.size > 1) {
 			this.data[this.size] = this.data[this.size - 1];
 			this.data[this.size - 1] = this.data[this.size - 2];
 			this.data[this.size - 2] = this.data[this.size++];
 		}
 	}
-
 }
 

@@ -30,56 +30,56 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord(".", false, false, (){}); // TODO
 
 	///
-	d.addWord("DUP", false, false, vm.dataStack.Dup);
+	d.addWord("DUP", false, false, vm.dataStack.dup);
 
 	/// Duplicate cell pair x1 x2.
 	///
 	/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
 	///	  over over ;
 	/// [link]: http://forth-standard.org/standard/core/TwoDUP
-	d.addWord("2DUP", false, false, vm.dataStack.Dup2);
+	d.addWord("2DUP", false, false, vm.dataStack.dup2);
 
 	///
 	d.addWord("?DUP", false, false, () {
-		if (vm.dataStack.size > 0) vm.dataStack.Dup();
+		if (vm.dataStack.size > 0) vm.dataStack.dup();
 	});
 
 	/// Remove x from the stack.
 	///
 	/// [DROP][link] ( x -- )
 	/// [link]: http://forth-standard.org/standard/core/DROP
-	d.addWord("DROP", false, false, vm.dataStack.Drop);
+	d.addWord("DROP", false, false, vm.dataStack.drop);
 
 	/// Drop cell pair x1 x2 from the stack.
 	///
 	/// [2DROP][link] ( x1 x2 -- )
 	/// [link]: http://forth-standard.org/standard/core/TwoDROP
-	d.addWord("2DROP", false, false, vm.dataStack.Drop2);
+	d.addWord("2DROP", false, false, vm.dataStack.drop2);
 
 	/// Place a copy of x1 on top of the stack.
 	///
 	/// [OVER][link] ( x1 x2 -- x1 x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/OVER
-	d.addWord("OVER", false, false, vm.dataStack.Over);
+	d.addWord("OVER", false, false, vm.dataStack.over);
 
 	/// Exchange the top two stack items.
 	///
 	/// [SWAP][link] ( x1 x2 -- x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/SWAP
-	d.addWord("SWAP", false, false, vm.dataStack.Swap);
+	d.addWord("SWAP", false, false, vm.dataStack.swap);
 
 	/// Rotate the top three stack entries.
 	///
 	/// [ROT][link] ( x1 x2 x3 -- x2 x3 x1 )
 	/// [link]: http://forth-standard.org/standard/core/ROT
-	d.addWord("ROT", false, false, vm.dataStack.Rot);
+	d.addWord("ROT", false, false, vm.dataStack.rot);
 
 	/// Moves data FROM [dataStack] TO [returnStack].
 	///
 	/// [toR][link] ( x -- ) ( R: -- x )
 	/// [link]: http://forth-standard.org/standard/core/toR
 	d.addWord(">R", false, false, () {
-		vm.returnStack.Push(vm.dataStack.Pop());
+		vm.returnStack.push(vm.dataStack.pop());
 	});
 
 	// Other Words
@@ -115,21 +115,21 @@ void includeWordsStandardCoreExtended(VirtualMachine vm, Dictionary d) {
 	/// Drop the first item below the top of stack.
 	///
 	/// ( x1 x2 -- x2 )
-	d.addWord("NIP", false, false, vm.dataStack.Nip);
+	d.addWord("NIP", false, false, vm.dataStack.nip);
 
 	/// Remove u. Copy the xu to the top of the stack.
 	///
 	/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
 	/// [link]: http://forth-standard.org/standard/core/PICK
 	d.addWord("PICK", false, false, () {
-		vm.dataStack.Pick(vm.dataStack.Pop());
+		vm.dataStack.pick(vm.dataStack.pop());
 	});
 
 	/// Copy the first (top) stack item below the second stack item.
 	///
 	/// [TUCK][link] ( x1 x2 -- x2 x1 x2 )
 	/// [link]: http://forth-standard.org/standard/core/TUCK
-	d.addWord("TUCK", false, false, vm.dataStack.Tuck);
+	d.addWord("TUCK", false, false, vm.dataStack.tuck);
 }
 
 /// Core words that are not part of the standard.
@@ -199,7 +199,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
 
 	///
-	d.addWord("-ROT", false, false, vm.dataStack.RotCC);
+	d.addWord("-ROT", false, false, vm.dataStack.rotCC);
 
 	/// Tries to find the name token nt of the word represented by xt.
 	///
