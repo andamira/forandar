@@ -16,7 +16,7 @@ abstract class Stack {
 	}
 
 	/// Returns the representation of the stack.
-	Print() {
+	List<int> Content() {
 		return this.data.sublist(0, this.size);
 	}
 
@@ -30,7 +30,7 @@ abstract class Stack {
 
 	@override
 	String toString() {
-		return "(${this.size}) ${this.Print()}";
+		return "stack(${this.size}) ${this.Content()}";
 	}
 }
 

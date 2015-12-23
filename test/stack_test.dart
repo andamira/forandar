@@ -11,17 +11,17 @@ void main() {
 
 		test("Constructor Lifostack()", () {
 			s = new LifoStack(256);
-			expect(s.Print(), equals([ ]));
+			expect(s.Content(), equals([ ]));
 		});
 
 		test("Replace()", () {
 			s.Replace([10, 23, 4]);
-			expect(s.Print(), equals([10, 23, 4]));
+			expect(s.Content(), equals([10, 23, 4]));
 		});
 
 		test("Clear()", () {
 			s.Clear();
-			expect(s.Print(), equals([ ]));
+			expect(s.Content(), equals([ ]));
 		});
 
 		test("Push()", () {
@@ -30,7 +30,7 @@ void main() {
 			s.Push(11);
 			s.Push(3);
 			s.Push(60);
-			expect(s.Print(), equals([82, 25, 11, 3, 60]));
+			expect(s.Content(), equals([82, 25, 11, 3, 60]));
 		});
 
 		test("Pop()", () {
@@ -39,22 +39,22 @@ void main() {
 
 		test("Dup()", () {
 			s.Dup();
-			expect(s.Print(), equals([82,25,11,3,3]));
+			expect(s.Content(), equals([82,25,11,3,3]));
 		});
 
 		test("Drop()", () {
 			s.Drop();
-			expect(s.Print(), equals([82,25,11,3]));
+			expect(s.Content(), equals([82,25,11,3]));
 		});
 
 		test("Nip()", () {
 			s.Nip();
-			expect(s.Print(), equals([82,25,3]));
+			expect(s.Content(), equals([82,25,3]));
 		});
 
 		test("Over()", () {
 			s.Over();
-			expect(s.Print(), equals([82,25,3,25]));
+			expect(s.Content(), equals([82,25,3,25]));
 		});
 
 		test("Peek() return value", () {
@@ -62,17 +62,17 @@ void main() {
 		});
 
 		test("Peek() stack status", () {
-			expect(s.Print(), equals([82,25,3,25]));
+			expect(s.Content(), equals([82,25,3,25]));
 		});
 
 		test("Swap()", () {
 			s.Swap();
-			expect(s.Print(), equals([82,25,25,3]));
+			expect(s.Content(), equals([82,25,25,3]));
 		});
 
 		test("Tuck()", () {
 			s.Tuck();
-			expect(s.Print(), equals([82,25,3,25,3]));
+			expect(s.Content(), equals([82,25,3,25,3]));
 		});
 
 		// TODO
@@ -80,27 +80,27 @@ void main() {
 	/*
 		test("Rot()", () {
 			s.Rot();
-			expect(s.Print(), equals([]));
+			expect(s.Content(), equals([]));
 		});
 
 		test("RotCC()", () {
 			s.RotCC();
-			expect(s.Print(), equals([]));
+			expect(s.Content(), equals([]));
 		});
 
 		test("Pick()", () {
 			s.Pick(3);
-			expect(s.Print(), equals([]));
+			expect(s.Content(), equals([]));
 		});
 
 		test("()", () {
-			expect(s.Print(), equals([]));
+			expect(s.Content(), equals([]));
 		});
 
 
 		test("Roll()", () {
 			s.Roll(4);
-			expect(s.Print(), equals([]));
+			expect(s.Content(), equals([]));
 		});
 
 	*/
@@ -110,13 +110,13 @@ void main() {
 			test("Drop2()", () {
 				s.Replace([1,2,3]);
 				s.Drop2();
-				expect(s.Print(), equals([1]));
+				expect(s.Content(), equals([1]));
 			});
 
 			test("Dup2()", () {
 				s.Replace([1,2,3]);
 				s.Dup2();
-				expect(s.Print(), equals([1,2,3,2,3]));
+				expect(s.Content(), equals([1,2,3,2,3]));
 			});
 
 		});
