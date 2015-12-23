@@ -1,5 +1,6 @@
 library cli;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:forandar/forandar.dart';
@@ -15,8 +16,10 @@ part 'cli/words.dart';
 class InputQueueCli extends InputQueue {
 
 	@override
-	void loadFile() {
-		print("TODO loading file."); // TEMP
+	Future<String> loadFile(String f) async {
+
+		var contents = await new File(f).readAsString();
+		return contents;
 	}
 }
 

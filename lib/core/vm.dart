@@ -91,10 +91,10 @@ class InputQueue {
 	}
 
 	/// This function is replaced in the Web library.
-	loadUrl() => print("TEMP no loadUrl");
+	Future<String> loadUrl();
 
 	/// This function is replaced in the CLI library.
-	loadFile() => print("TEMP no loadFile");
+	Future<String> loadFile();
 }
 
 

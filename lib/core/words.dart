@@ -137,45 +137,54 @@ void includeWordsStandardCoreExtended(VirtualMachine vm, Dictionary d) {
 void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 	///
-	d.addWord("INTERPRET", false, false, (){ // TODO
+	d.addWord("INTERPRET", false, false, () async {
 
+		/// Iterates over the [InputQueue] elements
 		for (var x in vm.input.queue) {
 
 			String sourceCode = "";
 
 			switch (x.type) {
 				case InputType.String:
-					print("Interpreting string... ${x.str}"); // TEMP
+					//print("Interpreting string... ${x.str}"); // TEMP
 					sourceCode = x.str;
 					break;
 				case InputType.File:
-					print("Load file... ${x.str}"); // TEMP
+					//print("Interpreting file... ${x.str}"); // TEMP
+					sourceCode = await vm.input.loadFile(x.str);
 					break;
 				case InputType.Url:
-					print("Load URL... ${x.str}"); // TEMP
+					sourceCode = await vm.input.loadUrl(x.str);
 					break;
 			}
 
+			List<String> sourceCodeLines = const LineSplitter().convert("$sourceCode");
+			//print("lines (${sourceCodeLines.length}): $sourceCodeLines"); // TEMP
 
-			/// Reads the next word from [sourceCode].
+			for(final line in sourceCodeLines) {
+				//print("interpreting: $line"); // TEMP
 
-				/// Search the current dictionary for this word.
+				/// Reads the next word from [sourceCode].
 
-					/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
+					/// Search the current dictionary for this word.
 
-					/// If this word != [isImmediate] and we are in compile mode, compile it.
+						/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
 
-					/// Executes the word In any other case.
+						/// If this word != [isImmediate] and we are in compile mode, compile it.
 
-				/// If word is not found, tries to convert it to a number in current base.
+						/// Executes the word In any other case.
 
-					/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
+					/// If word is not found, tries to convert it to a number in current base.
 
-					/// If we are in compiling, compile the number in the data space.
+						/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
 
-					/// If we are interpreting leave it on the stack.
+						/// If we are in compiling, compile the number in the data space.
 
-			/// Loop ends when there are no more words.
+						/// If we are interpreting leave it on the stack.
+
+				/// Loop ends when there are no more words.
+
+			}
 
 		}
 
