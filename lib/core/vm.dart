@@ -90,6 +90,10 @@ class InputQueue {
 		this.queue.add(new InputQueueElement(t, s));
 	}
 
+	void clear() {
+		this.queue = [ ];
+	}
+
 	/// This function is replaced in the Web library.
 	Future<String> loadUrl();
 

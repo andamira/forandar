@@ -7,6 +7,8 @@ import 'package:yaml/yaml.dart';
 
 import 'package:forandar/cli.dart';
 
+VirtualMachine forth;
+
 main(List<String> args) async {
 
 	var c = new Configuration();
@@ -19,7 +21,7 @@ main(List<String> args) async {
 	parseArguments(args, i);
 
 	/// Creates the Forth [VirtualMachine].
-	var forth = new VirtualMachine(c, i);
+	forth = new VirtualMachine(c, i);
 
 	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);
@@ -75,7 +77,8 @@ void parseArguments(List<String> args, InputQueue i) {
 		);
 
 	if (args.isEmpty) {
-		print("TODO: `ACCEPT'");
+		//forth.dict.wordsMap['ACCEPT'].code(); // TODO
+		tempAccept(); // TEMP
 		return;
 	}
 
@@ -122,7 +125,7 @@ void displayUsage(ArgParser p) {
 
 
 /// Returns version from pubspec.yaml. Updates global the first time.
-String getVersion() async {
+Future<String> getVersion() async {
 	if (forandarVersion == "FORANDAR_VERSION") {
 		forandarVersion = await new File('pubspec.yaml').readAsString().then((String contents) {
 			return loadYaml(contents)['version'];
@@ -130,3 +133,21 @@ String getVersion() async {
 	}
 	return forandarVersion;
 }
+
+
+// TEMP CLI Interpreter
+tempAccept() async {
+	stdout.writeln("andamira forandar v${await getVersion()}");
+	stdout.writeln("Type `bye' to exit");
+
+	while(true) {
+
+		forth.input.clear();
+		forth.input.add(InputType.String, stdin.readLineSync());
+
+		await forth.dict.wordsMap['INTERPRET'].code();
+
+		stdout.writeln("   ok ${forth.dataStack.content()}");
+	}
+}
+
