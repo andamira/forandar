@@ -1,5 +1,13 @@
 part of forandar;
 
+
+/// Manages errors.
+throwError(FormatException dartError, ForthError forthError) {
+	// TEMP
+	print("$forthError » $dartError");
+}
+
+/// List of Forth Errors
 class ForthError implements Error {
 
 	num err;
