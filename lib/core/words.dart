@@ -9,11 +9,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// 2DROP 2DUP ?DUP >R DROP DUP IMMEDIATE OVER SWAP ROT
+	// . - + 2DROP 2DUP ?DUP >R DROP DUP IMMEDIATE OVER SWAP ROT
 	//
 	// Not implemented:
 	//
-	// ! # #> #S ' ( * */ */MOD + +! +LOOP , - . ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
+	// ! # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER @ ABORT
 	// ABORT" ABS ACCEPT ALIGN ALIGNED ALLOT AND BASE BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DECIMAL DEPTH DO DOES>
@@ -27,7 +27,20 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// Words that manipulate [dataStack].
 
 	///
-	d.addWord(".", false, false, (){}); // TODO
+	d.addWord(".", false, false, (){
+		print(vm.dataStack.pop());
+	});
+
+	///
+	d.addWord("-", false, false, (){
+		vm.dataStack.swap();
+		vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
+	});
+
+	///
+	d.addWord("+", false, false, (){
+		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
+	});
 
 	///
 	d.addWord("DUP", false, false, vm.dataStack.dup);
@@ -139,54 +152,69 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	d.addWord("INTERPRET", false, false, () async {
 
-		/// Iterates over the [InputQueue] elements
-		for (var x in vm.input.queue) {
+		/// Creates a list with all the lines from the source code strings, files and URLs.
+		await vm.input.fillSourceCodeLines();
 
-			String sourceCode = "";
+		while (true) {
 
-			switch (x.type) {
-				case InputType.String:
-					//print("Interpreting string... ${x.str}"); // TEMP
-					sourceCode = x.str;
-					break;
-				case InputType.File:
-					//print("Interpreting file... ${x.str}"); // TEMP
-					sourceCode = await vm.input.loadFile(x.str);
-					break;
-				case InputType.Url:
-					sourceCode = await vm.input.loadUrl(x.str);
-					break;
+			/// Reads the next word.
+			String wordStr = vm.input.nextWord();
+
+			if (wordStr == null) {
+				break;
 			}
 
-			List<String> sourceCodeLines = const LineSplitter().convert("$sourceCode");
-			//print("lines (${sourceCodeLines.length}): $sourceCodeLines"); // TEMP
+			/// Search for this word in the current dictionary.
+			Word word = d.wordsMap[wordStr];
 
-			for(final line in sourceCodeLines) {
-				//print("interpreting: $line"); // TEMP
+			if( word != null) {
 
-				/// Reads the next word from [sourceCode].
+				/// If this word is compile only and we are not in compile mode, throw err -14.
+				if (word.isCompileOnly && !vm.inCompileMode) {
 
-					/// Search the current dictionary for this word.
+					throwError(e, new ForthError(-13));
 
-						/// If this word = [isCompileOnly] and we are not in compile mode, throw err -14.
+				/// If this word != [isImmediate] and we are in compile mode, compile it.
+				} else if (!word.isImmediate && vm.inCompileMode) {
+					//print("TODO: compile: $wordStr"); // TEMP
+					// ...
 
-						/// If this word != [isImmediate] and we are in compile mode, compile it.
+				/// Executes the word In any other case.
+				} else {
+					//print("execute: $wordStr"); // TEMP
+					word.exec();
+				}
 
-						/// Executes the word In any other case.
 
-					/// If word is not found, tries to convert it to a number in current base.
+			/// If the word is not found in the dictionary.
+			} else {
 
-						/// If that's not possible, throw not-standard sys err "not a word not a number" (not understood).
+				/// Tries to convert it to a number in current base.
+				try {
+					// TODO
+					int number = int.parse(wordStr);
 
-						/// If we are in compiling, compile the number in the data space.
+					/// If we are compiling, compile the number in the data space.
+					if (vm.inCompileMode) {
+						//print("TODO: compile in data space: $number"); // TEMP
+						// ...
 
-						/// If we are interpreting leave it on the stack.
+					/// If we are interpreting leave it on the stack.
+					} else {
+						//print("leave in data stack: $number"); // TEMP
+						vm.dataStack.push(number);
+					}
 
-				/// Loop ends when there are no more words.
+
+				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
+				} catch(e) {
+					throwError(e, new ForthError(-19000));
+				}
 
 			}
-
 		}
+
+		/// Loop ends when there are no more words.
 
 	});
 
@@ -265,7 +293,9 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//   NAME>STRING NR> N>R STATE SYNONYM ;CODE TRAVERSE-WORDLIST
 
 	///
-	d.addWord(".S", false, false, (){}); // TODO
+	d.addWord(".S", false, false, (){
+		print(vm.dataStack);
+	});
 }
 
 

@@ -27,7 +27,7 @@ main(List<String> args) async {
 	includeWordsCli(forth, forth.dict);
 
 	/// TODO: Interprets the code in the input queue.
-	forth.dict.wordsMap['INTERPRET'].code();
+	forth.dict.wordsMap['INTERPRET'].exec();
 }
 
 /// Parses the CLI arguments
@@ -77,7 +77,7 @@ void parseArguments(List<String> args, InputQueue i) {
 		);
 
 	if (args.isEmpty) {
-		//forth.dict.wordsMap['ACCEPT'].code(); // TODO
+		//forth.dict.wordsMap['ACCEPT'].exec(); // TODO
 		tempAccept(); // TEMP
 		return;
 	}
@@ -145,9 +145,9 @@ tempAccept() async {
 		forth.input.clear();
 		forth.input.add(InputType.String, stdin.readLineSync());
 
-		await forth.dict.wordsMap['INTERPRET'].code();
+		await forth.dict.wordsMap['INTERPRET'].exec();
 
-		stdout.writeln("   ok ${forth.dataStack.content()}");
+		stdout.writeln("   ok");
 	}
 }
 

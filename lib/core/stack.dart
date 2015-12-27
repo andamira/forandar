@@ -1,13 +1,13 @@
 part of forandar;
 
 abstract class Stack {
-	Uint32List data;
+	Int32List data;
 	final int maxSize;
 	int size = 0;
 
 	/// Constructs the [Stack]
 	Stack(this.maxSize) {
-		this.data = new Uint32List(this.maxSize);
+		this.data = new Int32List(this.maxSize);
 	}
 
 	/// Clears all the contents of the stack.

@@ -21,11 +21,11 @@ class Word {
 	bool hasCompleted;
 
 	/// The execution code for this word.
-	final Function code;
+	final Function exec;
 
 	// TODO: pointer to dataSpace and/or codeSpace.
 
-	Word(this.isImmediate, this.isCompileOnly, this.code, [this.name, this.st]);
+	Word(this.isImmediate, this.isCompileOnly, this.exec, [this.name, this.st]);
 }
 
 /// A searchable collection for all defined [Word]s.

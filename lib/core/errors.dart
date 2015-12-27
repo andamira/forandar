@@ -2,7 +2,7 @@ part of forandar;
 
 
 /// Manages errors.
-throwError(FormatException dartError, ForthError forthError) {
+throwError(var dartError, ForthError forthError) {
 	// TEMP
 	print("$forthError » $dartError");
 }
@@ -258,7 +258,9 @@ class ForthError implements Error {
 				
 
 			// forandar Errors
-
+			case -19000:
+				this.errStr = 'not a word, not a number (not understood)';
+				break;
 
 		}
 	}
