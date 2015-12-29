@@ -146,7 +146,9 @@ class InputQueue {
 	}
 
 
-	/// Returns the next word.
+	/// Returns the next word as a string.
+	///
+	/// The word is first converted to uppercase.
 	String nextWord() {
 
 		while (this.currentLine < this.sourceCodeLines.length) {
@@ -162,7 +164,7 @@ class InputQueue {
 				this.currentLine++;
 				this.currentLineIndex = 0;
 			} else {
-				return word;
+				return word.toUpperCase();
 			}
 		}
 
