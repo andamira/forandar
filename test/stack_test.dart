@@ -7,10 +7,10 @@ void main() {
 	/// Tests the [Stack] methods
 	group("Stack", () {
 
-		LifoStack s;
+		Stack s;
 
-		test("Constructor Lifostack()", () {
-			s = new LifoStack(256);
+		test("Constructor LifoStackInt()", () {
+			s = new LifoStackInt(256);
 			expect(s.content(), equals([ ]));
 		});
 

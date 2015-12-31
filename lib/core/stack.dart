@@ -1,14 +1,11 @@
 part of forandar;
 
 abstract class Stack {
-	Int32List data;
+	TypedData data;
 	final int maxSize;
 	int size = 0;
 
-	/// Constructs the [Stack]
-	Stack(this.maxSize) {
-		data = new Int32List(maxSize);
-	}
+	Stack(this.maxSize);
 
 	/// Clears all the contents of the stack.
 	void clear() {
@@ -16,12 +13,12 @@ abstract class Stack {
 	}
 
 	/// Returns the representation of the stack.
-	List<int> content() {
+	List<num> content() {
 		return data.sublist(0, size);
 	}
 
 	/// Replaces the content of the [Stack] with the elements of the list
-	void replace(List<int> l) {
+	void replace(List<num> l) {
 		size = 0;
 		l.forEach( (v){
 			data[size++] = v;
@@ -35,7 +32,7 @@ abstract class Stack {
 }
 
 /// Last In First Out Stack Implementation.
-class LifoStack extends Stack {
+abstract class LifoStack extends Stack {
 
 	LifoStack(maxSize) : super(maxSize);
 
@@ -99,7 +96,7 @@ class LifoStack extends Stack {
 	/// Returns the last stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	int peek() {
+	num peek() {
 		if (size > 0) {
 			return data[size - 1];
 		} else {
@@ -111,7 +108,7 @@ class LifoStack extends Stack {
 	///
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
-	void pick(int i) {
+	void pick(num i) {
 		if (size > i) {
 			data[size] = data[size++ - 1 - i];
 		}
@@ -120,7 +117,7 @@ class LifoStack extends Stack {
 	/// Returns the last stack item.
 	///
 	/// ( a -- )
-	int pop() {
+	num pop() {
 		if (size > 0) {
 			return data[--size];
 		} else {
@@ -131,7 +128,7 @@ class LifoStack extends Stack {
 	/// Adds an additional stack item.
 	///
 	/// ( -- a )
-	void push(int i) {
+	void push(num i) {
 		if (size < maxSize) {
 			data[size++] = i;
 		}
@@ -141,7 +138,7 @@ class LifoStack extends Stack {
 	///
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
-	void roll(int i) {
+	void roll(num i) {
 		if (size > 0 && i > 0) {
 			// var t = data.sublist(size - 1 - i, size);
 
@@ -187,7 +184,7 @@ class LifoStack extends Stack {
 	/// ( a b -- b a )
 	void swap() {
 		if (size > 1) {
-			int t = data[size - 1];
+			num t = data[size - 1];
 			data[size - 1] = data[size - 2];
 			data[size - 2] = t;
 		}
@@ -202,6 +199,20 @@ class LifoStack extends Stack {
 			data[size - 1] = data[size - 2];
 			data[size - 2] = data[size++];
 		}
+	}
+}
+
+class LifoStackInt extends LifoStack {
+
+	LifoStackInt(int maxSize) : super(maxSize) {
+		data = new Int32List(maxSize);
+	}
+}
+
+class LifoStackFloat extends LifoStack {
+
+	LifoStackFloat(int maxSize) : super(maxSize) {
+		data = new Float64List(maxSize);
 	}
 }
 

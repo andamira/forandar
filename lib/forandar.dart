@@ -30,10 +30,11 @@ class Configuration {
 	// Initializes with the default values.
 	Configuration () {
 		option['dataStackSize']    = 256;
+		option['floatStackSize']   = 128;
 		option['returnStackSize']  = 32;
 		option['controlStackSize'] = 32;
 
-		option['dataSpaceSize']    = 16384;
+		option['dataSpaceSize']    = 512;
 	}
 }
 

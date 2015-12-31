@@ -36,6 +36,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [Store][link] ( x a-addr -- )
 	/// [link]: http://forth-standard.org/standard/core/Store
+	//
+	// Stores an integer number using four bytes at the specified address.
+	//
+	// https://api.dartlang.org/stable/dart-typed_data/ByteData/setInt32.html
+	// https://en.wikipedia.org/wiki/Two%27s_complement
 	d.addWord("!", false, false, (){
 		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
 	});
@@ -280,9 +285,15 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [FStore][link] ( r f-addr -- )
 	/// [link]: http://forth-standard.org/standard/float/FStore
+	//
+	// Stores a floating point number using eight bytes at the specified address.
+	//
+	// https://api.dartlang.org/stable/dart-typed_data/ByteData/setFloat64.html
+	// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 	d.addWord("F!", false, false, (){
 		// TODO: floatStack
-		vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.dataStack.pop());
+		//vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.floatStack.pop());
+		vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.dataStack.pop().toDouble());
 	});
 }
 

@@ -5,9 +5,10 @@ class VirtualMachine {
 	Dictionary dict;
 
 	// Stacks.
-	LifoStack dataStack;
-	LifoStack returnStack;
-	LifoStack controlStack;
+	LifoStackInt dataStack;
+	LifoStackInt returnStack;
+	LifoStackInt controlStack;
+	LifoStackFloat floatStack;
 
 	// Data Space.
 	DataSpace dataSpace;
@@ -23,10 +24,11 @@ class VirtualMachine {
 	VirtualMachine (Configuration config, InputQueue input) {
 
 		/// Creates the Stacks.
-		dataStack    = new LifoStack(256);
-		dataStack    = new LifoStack(config.option['dataStackSize']);
-		returnStack  = new LifoStack(config.option['returnStackSize']);
-		controlStack = new LifoStack(config.option['controlStackSize']);
+		dataStack    = new LifoStackInt(256);
+		dataStack    = new LifoStackInt(config.option['dataStackSize']);
+		returnStack  = new LifoStackInt(config.option['returnStackSize']);
+		controlStack = new LifoStackInt(config.option['controlStackSize']);
+		floatStack   = new LifoStackFloat(config.option['floatStackSize']);
 
 		/// Creates the main data space.
 		dataSpace = new DataSpace(config.option['dataSpaceSize']);
