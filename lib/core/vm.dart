@@ -46,19 +46,13 @@ class VirtualMachine {
 ///
 /// TODO http://stackoverflow.com/questions/28026648/how-to-improve-dart-performance-of-data-conversion-to-from-binary
 class DataSpace {
-	ByteBuffer buffer;
 	ByteData data;
 	final int maxSize;
 	int size = 0;
 
 	DataSpace(this.maxSize) {
-		//this.data = new ByteData(this.maxSize);
-
-		this.buffer = new Uint8List(this.maxSize).buffer;
-		this.data = new ByteData.view(buffer);
+		this.data = new ByteData(this.maxSize);
 	}
-
-
 }
 
 /// 

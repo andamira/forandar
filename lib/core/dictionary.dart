@@ -5,10 +5,10 @@ class Word {
 
 	/// The word name as it is used by Forth.
 	///
-	/// All uppercase. It is its key in [wordsMap].
+	/// All uppercase. This is its key in [wordsMap].
 	String name;
 
-	/// A pointer to this word in [wordsList].
+	/// An index pointer to this word in [wordsList].
 	int st;
 
 	/// A flag that indicates if the word is immediate.
@@ -37,7 +37,7 @@ class Dictionary {
 	Map<String, Word> wordsMap = new SplayTreeMap();
 
 	/// List of [Word]s retrievable by index.
-	List<Word> wordsList = [];
+	List<Word> wordsList = [ ];
 
 	/// Constants for the flags of the [Word].
 	static const immediate      = true;
@@ -56,8 +56,8 @@ class Dictionary {
 		// has not finished yet, and therefore the global variable forth is null.
 		// The same things happens with this dictionary, and the following words:
 
+		// Core.
 		includeWordsStandardCore(vm, this);
-		includeWordsStandardCoreExtended(vm, this);
 
 		includeWordsNotStandardCore(vm, this);
 		includeWordsNotStandardExtra(vm, this);
@@ -65,17 +65,34 @@ class Dictionary {
 		// Optional Standard Sets.
 		// -----------------------
 
-		// The optional Block word set.
+		// Floats.
+		includeWordsStandardOptionalFloat(vm, this);
+
+		// Block.
 		includeWordsStandardOptionalBlock(vm, this);
 
-		// The optional Programming-Tools word set.
+		// Tools.
 		includeWordsStandardOptionalProgrammingTools(vm, this);
 	}
 
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
 	addWord(String str, bool isImmediate, bool isCompileOnly, Function f) {
+		str = str.toUpperCase();
 		this.wordsList.add(new Word(isImmediate, isCompileOnly, f, str, this.wordsList.length + 1));
 		this.wordsMap[str] = this.wordsList.last;
+	}
+
+	/// Adds a new word, overwriting a pre-existing same-name word.
+	addWordOver(String str, bool isImmediate, bool isCompileOnly, Function f) {
+		str = str.toUpperCase();
+
+		if (this.wordsMap.containsKey(str)) {
+			st = this.wordsMap[str].st;
+			this.wordsList[this.wordsMap[str].st];
+			// this.wordsMap[str] = new Word(isImmediate, isCompileOnly, f, str, null);
+		} else {
+			addWord(String str, bool isImmediate, bool isCompileOnly, Function f)
+		}
 	}
 }
 

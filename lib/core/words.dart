@@ -5,15 +5,18 @@ part of forandar;
 /// [link]: http://forth-standard.org/standard/core/
 void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 
-	// Total: 133
+	// Total: 182 (133 main + 49 extended)
 	//
 	// Implemented:
 	//
-	// . - + 2DROP 2DUP ?DUP >R DROP DUP IMMEDIATE OVER SWAP ROT
+	// ! . - + 2DROP 2DUP ?DUP >R DROP DUP IMMEDIATE OVER SWAP ROT
+	//
+	// NIP PICK TUCK
+	//
 	//
 	// Not implemented:
 	//
-	// ! # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
+	// # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER @ ABORT
 	// ABORT" ABS ACCEPT ALIGN ALIGNED ALLOT AND BASE BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DECIMAL DEPTH DO DOES>
@@ -22,6 +25,20 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// MIN MOD MOVE NEGATE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE U. U< UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD XOR [ ['] [CHAR] ]
+	//
+	// .( .R 0<> 0> 2>R 2R> 2R@ :NONAME <> ?DO ACTION-OF AGAIN BUFFER: C"
+	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE FALSE HEX HOLDS
+	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
+	// S\" SAVE-INPUT SOURCE-ID TO TRUE U.R U> UNUSED VALUE WITHIN
+	// [COMPILE] \
+
+	/// Store x at a-addr.
+	///
+	/// [Store][link] ( x a-addr -- )
+	/// [link]: http://forth-standard.org/standard/core/Store
+	d.addWord("!", false, false, (){
+		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
+	});
 
 	
 	// Words that manipulate [dataStack].
@@ -35,6 +52,10 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("-", false, false, (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
+
+		// TODO:BENCHMARKS
+		// 1) swap: 
+		// 2) read without modifying and
 	});
 
 	///
@@ -69,17 +90,36 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/TwoDROP
 	d.addWord("2DROP", false, false, vm.dataStack.drop2);
 
+	/// Drop the first item below the top of stack.
+	///
+	/// ( x1 x2 -- x2 )
+	d.addWord("NIP", false, false, vm.dataStack.nip);
+
 	/// Place a copy of x1 on top of the stack.
 	///
 	/// [OVER][link] ( x1 x2 -- x1 x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/OVER
 	d.addWord("OVER", false, false, vm.dataStack.over);
 
+	/// Remove u. Copy the xu to the top of the stack.
+	///
+	/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
+	/// [link]: http://forth-standard.org/standard/core/PICK
+	d.addWord("PICK", false, false, () {
+		vm.dataStack.pick(vm.dataStack.pop());
+	});
+
 	/// Exchange the top two stack items.
 	///
 	/// [SWAP][link] ( x1 x2 -- x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/SWAP
 	d.addWord("SWAP", false, false, vm.dataStack.swap);
+
+	/// Copy the first (top) stack item below the second stack item.
+	///
+	/// [TUCK][link] ( x1 x2 -- x2 x1 x2 )
+	/// [link]: http://forth-standard.org/standard/core/TUCK
+	d.addWord("TUCK", false, false, vm.dataStack.tuck);
 
 	/// Rotate the top three stack entries.
 	///
@@ -104,45 +144,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("IMMEDIATE", false, false, () {
 		d.wordsList.last.isImmediate = true;
 	});
-}
-
-/// Defines the [Forth standard CORE EXTENDED primitives][link].
-///
-/// [link]: http://forth-standard.org/standard/core/
-void includeWordsStandardCoreExtended(VirtualMachine vm, Dictionary d) {
-
-	// Total: 49
-	//
-	// Implemented:
-	//
-	// NIP PICK TUCK
-	//
-	// Not implemented:
-	//
-	// .( .R 0<> 0> 2>R 2R> 2R@ :NONAME <> ?DO ACTION-OF AGAIN BUFFER: C"
-	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE FALSE HEX HOLDS
-	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
-	// S\" SAVE-INPUT SOURCE-ID TO TRUE U.R U> UNUSED VALUE WITHIN
-	// [COMPILE] \
-
-	/// Drop the first item below the top of stack.
-	///
-	/// ( x1 x2 -- x2 )
-	d.addWord("NIP", false, false, vm.dataStack.nip);
-
-	/// Remove u. Copy the xu to the top of the stack.
-	///
-	/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
-	/// [link]: http://forth-standard.org/standard/core/PICK
-	d.addWord("PICK", false, false, () {
-		vm.dataStack.pick(vm.dataStack.pop());
-	});
-
-	/// Copy the first (top) stack item below the second stack item.
-	///
-	/// [TUCK][link] ( x1 x2 -- x2 x1 x2 )
-	/// [link]: http://forth-standard.org/standard/core/TUCK
-	d.addWord("TUCK", false, false, vm.dataStack.tuck);
 }
 
 /// Core words that are not part of the standard.
@@ -235,20 +236,54 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// Note that in the current implementation xt and nt are exactly the same.
 	/// [toName][link] ( xt -- nt|0 )
 	/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
-	d.addWord(">NAME", false, false, () {}); // TODO
+	//d.addWord(">NAME", false, false, () {}); // TODO
 
 	/// Tries to find the name of the [Word] represented by nt.
 	///
 	/// Note that in the current implementation xt and nt are exactly the same.
 	/// [nameToString][link] ( nt -- addr count )
 	/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
-	d.addWord("NAME>STRING", false, false, () {}); // TODO
+	//d.addWord("NAME>STRING", false, false, () {}); // TODO
 
 	/// ...
 	///
 	/// [id.][link] ( nt -- )  name>string type ;
 	/// [link]: TODO
-	d.addWord("ID.", false, false, () {}); // TODO
+	//d.addWord("ID.", false, false, () {}); // TODO
+}
+
+/// The optional Floating-Point word set
+///
+/// http://forth-standard.org/standard/float
+includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
+
+	// Total: 79 (31 main + 48 extended)
+	//
+	// Implemented:
+	//
+	// 
+	//
+	// Not Implemented:
+	//
+	// >FLOAT D>F F! F* F+ F- F/ F0< F0= F< F>D F@ FALIGN FALIGNED
+	// FCONSTANT FDEPTH FDROP FDUP FLITERAL FLOAT+ FLOATS FLOOR
+	// FMAX FMIN FNEGATE FOVER FROT FROUND FSWAP FVARIABLE REPRESENT
+	//
+	// DF! DF@ DFALIGN DFALIGNED DFFIELD: DFLOAT+ DFLOATS F** F. F>S
+	// FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
+	// FCOSH FE. FEXP FEXPM1 FFIELD: FLN FLNP1 FLOG FS. FSIN FSINCOS
+	// FSINH FSQRT FTAN FTANH FTRUNC FVALUE F~ PRECISION S>F
+	// SET-PRECISION SF! SF@ SFALIGN SFALIGNED SFFIELD: SFLOAT+ SFLOATS
+	//
+
+	/// Store r at f-addr.
+	///
+	/// [FStore][link] ( r f-addr -- )
+	/// [link]: http://forth-standard.org/standard/float/FStore
+	d.addWord("F!", false, false, (){
+		// TODO: floatStack
+		vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.dataStack.pop());
+	});
 }
 
 /// The optional Block word set.
@@ -268,8 +303,11 @@ includeWordsStandardOptionalBlock(VirtualMachine vm, Dictionary d) {
 	//
 	//   EMPTY-BUFFERS LIST REFILL SCR THRU \
 
+	/// ...
 	///
-	d.addWord("EVALUATE", false, false, (){}); // TODO
+	/// [][link]
+	/// [link]: TODO
+	//d.addWord("EVALUATE", false, false, (){}); // TODO
 }
 
 /// The optional Programming-Tools word set.
@@ -282,20 +320,46 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//
 	// Implemented:
 	//
+	// .S WORDS
 	//
+	// BYE 
 	//
 	// Not implemented:
 	//
-	//   .S ? DUMP SEE WORDS
+	//   ? DUMP SEE 
 	//
-	//   AHEAD ASSEMBLER BYE [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
+	//   AHEAD ASSEMBLER [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
 	//   CS-PICK CS-ROLL EDITOR FORGET NAME>COMPILE NAME>INTERPRET
 	//   NAME>STRING NR> N>R STATE SYNONYM ;CODE TRAVERSE-WORDLIST
 
+	/// Copy and display the values currently on the data stack.
 	///
+	/// [DotS][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/tools/DotS
 	d.addWord(".S", false, false, (){
 		print(vm.dataStack);
 	});
+
+	/// List the definition names in the first word list of the search order.
+	///
+	/// [DotS][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/tools/DotS
+	d.addWord("WORDS", false, false, (){
+		var str = new StringBuffer();
+		for (Word w in d.wordsList.reversed) {
+			str.write("${w.name} ");
+		}
+		print(str);
+	});
+
+	/// Return control to the host operating system, if any.
+	///
+	/// It's re-implemented in CLI.
+	///
+	/// [BYE][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/tools/BYE
+	d.addWord("BYE", false, false, (){});
+
 }
 
 
