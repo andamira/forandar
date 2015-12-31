@@ -23,21 +23,21 @@ class VirtualMachine {
 	VirtualMachine (Configuration config, InputQueue input) {
 
 		/// Creates the Stacks.
-		this.dataStack    = new LifoStack(256);
-		this.dataStack    = new LifoStack(config.option['dataStackSize']);
-		this.returnStack  = new LifoStack(config.option['returnStackSize']);
-		this.controlStack = new LifoStack(config.option['controlStackSize']);
+		dataStack    = new LifoStack(256);
+		dataStack    = new LifoStack(config.option['dataStackSize']);
+		returnStack  = new LifoStack(config.option['returnStackSize']);
+		controlStack = new LifoStack(config.option['controlStackSize']);
 
 		/// Creates the main data space.
-		this.dataSpace = new DataSpace(config.option['dataSpaceSize']);
+		dataSpace = new DataSpace(config.option['dataSpaceSize']);
 		/// Creates the code data space for storing the instructions for non-primitive words.
-		this.objectSpace = new ObjectSpace();
+		objectSpace = new ObjectSpace();
 
 		/// Creates the source code input queue.
 		this.input = input;
 
 		/// Creates the [Dictionary] containing the [Word]s.
-		this.dict = new Dictionary(this);
+		dict = new Dictionary(this);
 	}
 }
 
@@ -51,7 +51,7 @@ class DataSpace {
 	int size = 0;
 
 	DataSpace(this.maxSize) {
-		this.data = new ByteData(this.maxSize);
+		data = new ByteData(maxSize);
 	}
 }
 
@@ -68,8 +68,8 @@ class InputQueueElement {
 	String str;
 
 	InputQueueElement(InputType t, String s) {
-		this.type = t;
-		this.str = s;
+		type = t;
+		str = s;
 	}
 }
 
@@ -91,15 +91,15 @@ class InputQueue {
 
 	/// Adds a new input to the [queue].
 	void add(InputType t, String s) {
-		this.queue.add(new InputQueueElement(t, s));
+		queue.add(new InputQueueElement(t, s));
 	}
 
 	/// Clears the [queue].
 	void clear() {
-		this.queue = [ ];
-		this.sourceCodeLines = [ ];
-		this.currentLine = 0;
-		this.currentLineIndex = 0;
+		queue = [ ];
+		sourceCodeLines = [ ];
+		currentLine = 0;
+		currentLineIndex = 0;
 	}
 
 	/// Loads some URL.
@@ -115,7 +115,7 @@ class InputQueue {
 	/// 
 	Future fillSourceCodeLines() async {
 
-		for (var x in this.queue) {
+		for (var x in queue) {
 
 			String sourceCode = ""; 
 
@@ -124,10 +124,10 @@ class InputQueue {
 					sourceCode = x.str;
 					break;
 				case InputType.File:
-					sourceCode = await this.loadFile(x.str);
+					sourceCode = await loadFile(x.str);
 					break;
 				case InputType.Url:
-					sourceCode = await this.loadUrl(x.str);
+					sourceCode = await loadUrl(x.str);
 					break;
 			}
 
@@ -145,18 +145,18 @@ class InputQueue {
 	/// The word is first converted to uppercase.
 	String nextWord() {
 
-		while (this.currentLine < this.sourceCodeLines.length) {
+		while (currentLine < sourceCodeLines.length) {
 
 			// Index of the next letter.
-			var letter = nextLetter(this.currentLine, this.currentLineIndex);
+			var letter = nextLetter(currentLine, currentLineIndex);
 
 			// Index of the next space.
-			this.currentLineIndex = nextSpace(this.currentLine, letter);
-			var word = this.sourceCodeLines[currentLine].substring(letter, this.currentLineIndex);
+			currentLineIndex = nextSpace(currentLine, letter);
+			var word = sourceCodeLines[currentLine].substring(letter, currentLineIndex);
 
 			if (word == "") {
-				this.currentLine++;
-				this.currentLineIndex = 0;
+				currentLine++;
+				currentLineIndex = 0;
 			} else {
 				return word.toUpperCase();
 			}
@@ -167,9 +167,9 @@ class InputQueue {
 	/// Returns the next letter (not whitespace).
 	int nextLetter(int line, int index) {
 
-		while (index < this.sourceCodeLines[line].length) {
+		while (index < sourceCodeLines[line].length) {
 
-			int codeUnit = this.sourceCodeLines[line].codeUnitAt(index);
+			int codeUnit = sourceCodeLines[line].codeUnitAt(index);
 
 			// SPACE = 0x20;
 			if (codeUnit != 0x20 && !_isWhitespace(codeUnit)) {
@@ -182,9 +182,9 @@ class InputQueue {
 
 	int nextSpace(int line, int index) {
 
-		while (index < this.sourceCodeLines[line].length) {
+		while (index < sourceCodeLines[line].length) {
 
-			int codeUnit = this.sourceCodeLines[line].codeUnitAt(index);
+			int codeUnit = sourceCodeLines[line].codeUnitAt(index);
 
 			// SPACE = 0x20;
 			if (codeUnit == 0x20 && _isWhitespace(codeUnit)) {

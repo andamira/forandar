@@ -209,7 +209,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
 				} catch(e) {
-					throwError(e, new ForthError(-19000));
+					throwError(e, new ForthError(-2048));
 				}
 
 			}

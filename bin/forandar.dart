@@ -147,7 +147,7 @@ tempAccept() async {
 
 		await forth.dict.wordsMap['INTERPRET'].exec();
 
-		stdout.writeln("   ok");
+		stdout.writeln("ok");
 	}
 }
 

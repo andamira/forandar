@@ -78,18 +78,18 @@ class Dictionary {
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
 	addWord(String str, bool isImmediate, bool isCompileOnly, Function f) {
 		str = str.toUpperCase();
-		this.wordsList.add(new Word(isImmediate, isCompileOnly, f, str, this.wordsList.length + 1));
-		this.wordsMap[str] = this.wordsList.last;
+		wordsList.add(new Word(isImmediate, isCompileOnly, f, str, wordsList.length + 1));
+		wordsMap[str] = wordsList.last;
 	}
 
 	/// Adds a new word, overwriting a pre-existing same-name word.
 	addWordOver(String str, bool isImmediate, bool isCompileOnly, Function f) {
 		str = str.toUpperCase();
 
-		if (this.wordsMap.containsKey(str)) {
-			st = this.wordsMap[str].st;
-			this.wordsList[this.wordsMap[str].st];
-			// this.wordsMap[str] = new Word(isImmediate, isCompileOnly, f, str, null);
+		if (wordsMap.containsKey(str)) {
+			st = wordsMap[str].st;
+			wordsList[wordsMap[str].st];
+			// wordsMap[str] = new Word(isImmediate, isCompileOnly, f, str, null);
 		} else {
 			addWord(String str, bool isImmediate, bool isCompileOnly, Function f)
 		}

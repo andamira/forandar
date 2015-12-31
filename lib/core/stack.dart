@@ -7,30 +7,30 @@ abstract class Stack {
 
 	/// Constructs the [Stack]
 	Stack(this.maxSize) {
-		this.data = new Int32List(this.maxSize);
+		data = new Int32List(maxSize);
 	}
 
 	/// Clears all the contents of the stack.
 	void clear() {
-		this.size = 0;
+		size = 0;
 	}
 
 	/// Returns the representation of the stack.
 	List<int> content() {
-		return this.data.sublist(0, this.size);
+		return data.sublist(0, size);
 	}
 
 	/// Replaces the content of the [Stack] with the elements of the list
 	void replace(List<int> l) {
-		this.size = 0;
+		size = 0;
 		l.forEach( (v){
-			this.data[this.size++] = v;
+			data[size++] = v;
 		});
 	}
 
 	@override
 	String toString() {
-		return "stack(${this.size}) ${this.content()}";
+		return "stack(${size}) ${content()}";
 	}
 }
 
@@ -43,8 +43,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a b -- a )
 	void drop() {
-		if (this.size > 0) {
-			this.size--;
+		if (size > 0) {
+			size--;
 		}
 	}
 
@@ -52,8 +52,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a b c -- a )
 	void drop2() {
-		if (this.size > 1) {
-			this.size -= 2;
+		if (size > 1) {
+			size -= 2;
 		}
 	}
 
@@ -61,8 +61,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a -- a a )
 	void dup() {
-		if (this.size > 0 && this.size < this.maxSize) {
-			this.data[this.size] = this.data[this.size++ - 1];
+		if (size > 0 && size < maxSize) {
+			data[size] = data[size++ - 1];
 		}
 	}
 
@@ -71,8 +71,8 @@ class LifoStack extends Stack {
 	/// ( a b -- a b a b )
 	void dup2() {
 		try {
-			this.data[this.size] = this.data[this.size++ - 2];
-			this.data[this.size] = this.data[this.size++ - 2];
+			data[size] = data[size++ - 2];
+			data[size] = data[size++ - 2];
 		} catch(e) {
 			print(e);
 		}
@@ -82,8 +82,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a b -- b )
 	void nip() {
-		if (this.size > 1) {
-			this.data[this.size - 2] = this.data[--this.size];
+		if (size > 1) {
+			data[size - 2] = data[--size];
 		}
 	}
 
@@ -91,8 +91,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a b -- a b a )
 	void over() {
-		if (this.size > 1 && this.size < this.maxSize) {
-			this.data[this.size] = this.data[this.size++ - 2];
+		if (size > 1 && size < maxSize) {
+			data[size] = data[size++ - 2];
 		}
 	}
 
@@ -100,8 +100,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a -- )
 	int peek() {
-		if (this.size > 0) {
-			return this.data[size - 1];
+		if (size > 0) {
+			return data[size - 1];
 		} else {
 			return null;
 		}
@@ -112,8 +112,8 @@ class LifoStack extends Stack {
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
 	void pick(int i) {
-		if (this.size > i) {
-			this.data[size] = this.data[size++ - 1 - i];
+		if (size > i) {
+			data[size] = data[size++ - 1 - i];
 		}
 	}
 
@@ -121,8 +121,8 @@ class LifoStack extends Stack {
 	///
 	/// ( a -- )
 	int pop() {
-		if (this.size > 0) {
-			return this.data[--size];
+		if (size > 0) {
+			return data[--size];
 		} else {
 			return null;
 		}
@@ -132,8 +132,8 @@ class LifoStack extends Stack {
 	///
 	/// ( -- a )
 	void push(int i) {
-		if (this.size < this.maxSize) {
-			this.data[size++] = i;
+		if (size < maxSize) {
+			data[size++] = i;
 		}
 	}
 
@@ -142,19 +142,19 @@ class LifoStack extends Stack {
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
 	void roll(int i) {
-		if (this.size > 0 && i > 0) {
-			// var t = this.data.sublist(this.size - 1 - i, this.size);
+		if (size > 0 && i > 0) {
+			// var t = data.sublist(size - 1 - i, size);
 
 			/*
 			// convert to loop
-			this.data[this.size - 1] = t[0];
-			this.data[this.size - 2] = t[2];
+			data[size - 1] = t[0];
+			data[size - 2] = t[2];
 
-			this.data[this.size - 3] = t[1]; Last
+			data[size - 3] = t[1]; Last
 			*/
 
 			// Do the last one first
-			// this.data[this.size -1 -i] = t[1];
+			// data[size -1 -i] = t[1];
 		}
 	}
 
@@ -162,11 +162,11 @@ class LifoStack extends Stack {
 	///
 	/// ( a b c -- b c a )
 	void rot() {
-		if (this.size > 2) {
-			var t = this.data.sublist(this.size - 3, this.size);
-			this.data[this.size - 1] = t[0];
-			this.data[this.size - 2] = t[2];
-			this.data[this.size - 3] = t[1];
+		if (size > 2) {
+			var t = data.sublist(size - 3, size);
+			data[size - 1] = t[0];
+			data[size - 2] = t[2];
+			data[size - 3] = t[1];
 		}
 	}
 
@@ -174,11 +174,11 @@ class LifoStack extends Stack {
 	///
 	/// ( a b c -- c a b )
 	void rotCC() {
-		if (this.size > 2) {
-			var t = this.data.sublist(this.size - 3, this.size);
-			this.data[this.size - 1] = t[1];
-			this.data[this.size - 2] = t[0];
-			this.data[this.size - 3] = t[2];
+		if (size > 2) {
+			var t = data.sublist(size - 3, size);
+			data[size - 1] = t[1];
+			data[size - 2] = t[0];
+			data[size - 3] = t[2];
 		}
 	}
 
@@ -186,10 +186,10 @@ class LifoStack extends Stack {
 	///
 	/// ( a b -- b a )
 	void swap() {
-		if (this.size > 1) {
-			int t = this.data[this.size - 1];
-			this.data[this.size - 1] = this.data[this.size - 2];
-			this.data[this.size - 2] = t;
+		if (size > 1) {
+			int t = data[size - 1];
+			data[size - 1] = data[size - 2];
+			data[size - 2] = t;
 		}
 	}
 
@@ -197,10 +197,10 @@ class LifoStack extends Stack {
 	///
 	/// ( a b -- b a b )
 	void tuck() {
-		if (this.size > 1) {
-			this.data[this.size] = this.data[this.size - 1];
-			this.data[this.size - 1] = this.data[this.size - 2];
-			this.data[this.size - 2] = this.data[this.size++];
+		if (size > 1) {
+			data[size]     = data[size - 1];
+			data[size - 1] = data[size - 2];
+			data[size - 2] = data[size++];
 		}
 	}
 }
