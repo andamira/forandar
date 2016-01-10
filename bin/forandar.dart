@@ -76,12 +76,6 @@ void parseArguments(List<String> args, InputQueue i) {
 			}
 		);
 
-	if (args.isEmpty) {
-		//forth.dict.wordsMap['ACCEPT'].exec(); // TODO
-		tempAccept(); // TEMP
-		return;
-	}
-
 	try {
 		results = parser.parse(args);
 	} catch (e) {
@@ -115,6 +109,10 @@ void parseArguments(List<String> args, InputQueue i) {
 				break;
 		}
 	});
+
+	/// Runs the interactive interpreter.
+	tempAccept();
+	//forth.dict.wordsMap['ACCEPT'].exec(); // TODO
 }
 
 /// Displays usage and exits.
