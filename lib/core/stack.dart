@@ -27,7 +27,7 @@ abstract class Stack {
 
 	@override
 	String toString() {
-		return "stack(${size}) ${content()}";
+		return "<${size}> ${content()}";
 	}
 }
 
@@ -205,6 +205,8 @@ abstract class LifoStack extends Stack {
 class LifoStackInt extends LifoStack {
 
 	LifoStackInt(int maxSize) : super(maxSize) {
+		// Note: dart2js does not support 64-bit integers and thus does not support Int64List or Uint64List
+		// https://www.dartlang.org/articles/numeric-computation/#considerations-when-dart-is-compiled-to-javascript
 		data = new Int32List(maxSize);
 	}
 }

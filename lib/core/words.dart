@@ -387,20 +387,30 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// 
+	// D>F F! F* F+ F- F/ F>D FSWAP
+	//
+	// F** F. F>S
 	//
 	// Not Implemented:
 	//
-	// >FLOAT D>F F! F* F+ F- F/ F0< F0= F< F>D F@ FALIGN FALIGNED
+	// >FLOAT F0< F0= F< F@ FALIGN FALIGNED
 	// FCONSTANT FDEPTH FDROP FDUP FLITERAL FLOAT+ FLOATS FLOOR
-	// FMAX FMIN FNEGATE FOVER FROT FROUND FSWAP FVARIABLE REPRESENT
+	// FMAX FMIN FNEGATE FOVER FROT FROUND FVARIABLE REPRESENT
 	//
-	// DF! DF@ DFALIGN DFALIGNED DFFIELD: DFLOAT+ DFLOATS F** F. F>S
+	// DF! DF@ DFALIGN DFALIGNED DFFIELD: DFLOAT+ DFLOATS
 	// FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
 	// FCOSH FE. FEXP FEXPM1 FFIELD: FLN FLNP1 FLOG FS. FSIN FSINCOS
 	// FSINH FSQRT FTAN FTANH FTRUNC FVALUE F~ PRECISION S>F
 	// SET-PRECISION SF! SF@ SFALIGN SFALIGNED SFFIELD: SFLOAT+ SFLOATS
 	//
+
+	/// r is the floating-point equivalent of d.
+	///
+	/// [DToF][link] ( d -- ) ( F: -- r ) 
+	/// [link]: http://forth-standard.org/standard/float/DToF
+	d.addWord("D>F", false, false, (){
+		vm.floatStack.push(vm.dataStack.pop().toDouble());
+	});
 
 	/// Store r at f-addr.
 	///
@@ -412,9 +422,110 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	// https://api.dartlang.org/stable/dart-typed_data/ByteData/setFloat64.html
 	// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 	d.addWord("F!", false, false, (){
-		// TODO: floatStack
 		vm.dataSpace.data.setFloat64(vm.dataStack.pop(), vm.floatStack.pop());
 	});
+
+	/// Multiply r1 by r2 giving r3.
+	///
+	/// [FTimes][link] ( F: r1 r2 -- r3 )
+	/// [link]: http://forth-standard.org/standard/float/FTimes
+	d.addWord("F*", false, false, (){
+		vm.floatStack.push(vm.floatStack.pop() * vm.floatStack.pop());
+	});
+
+	/// Add r1 to r2 giving the sum r3.
+	///
+	/// [FPlus][link] ( F: r1 r2 -- r3 )
+	/// [link]: http://forth-standard.org/standard/float/FPlus 
+	d.addWord("F+", false, false, (){
+		vm.floatStack.push(vm.floatStack.pop() + vm.floatStack.pop());
+	});
+
+	/// Subtract r2 from r1, giving r3.
+	///
+	/// [FMinus][link] ( F: r1 r2 -- r3 )
+	/// [link]: http://forth-standard.org/standard/float/FMinus
+	d.addWord("F-", false, false, (){
+		vm.floatStack.swap();
+		vm.floatStack.push(vm.floatStack.pop() - vm.floatStack.pop());
+	});
+
+	/// Divide r1 by r2, giving the quotient r3.
+	///
+	/// [FDiv][link] ( F: r1 r2 -- r3 )
+	/// [link]: http://forth-standard.org/standard/float/FDiv
+	d.addWord("F/", false, false, (){
+		vm.floatStack.swap();
+		vm.floatStack.push(vm.floatStack.pop() / vm.floatStack.pop());
+	});
+
+	/// Raise r1 to the power r2, giving the product r3.
+	///
+	/// [FTimesTimes][link]
+	/// [link]: http://forth-standard.org/standard/float/FTimesTimes
+	d.addWord("F**", false, false, (){
+		vm.floatStack.swap();
+		vm.floatStack.push(pow(vm.floatStack.pop(), vm.floatStack.pop()));
+	});
+
+	/// Display, with a trailing space, the top number on the floating-point stack using fixed-point notation.
+	///
+	/// [Fd][link]
+	/// [link]: http://forth-standard.org/standard/float/Fd
+	d.addWord("F.", false, false, (){
+		print(vm.floatStack.pop());
+	});
+
+	/// d is the double-cell signed-integer equivalent of the integer portion of r.
+	///
+	/// [FToD][link] ( -- d ) ( F: r -- )
+	/// [link]: http://forth-standard.org/standard/float/FToD
+	d.addWord("F>D", false, false, (){
+		vm.dataStack.push(vm.floatStack.pop().toInt()); // FIXME TODO make it double
+	});
+
+	/// d is the single-cell signed-integer equivalent of the integer portion of r.
+	///
+	/// [FToS][link] ( -- d ) ( F: r -- )
+	/// [link]: http://forth-standard.org/standard/float/FToS
+	d.addWord("F>S", false, false, (){
+		vm.dataStack.push(vm.floatStack.pop().toInt());
+	});
+
+	/// r3 is the greater of r1 and r2.
+	///
+	/// [FMAX][link]
+	/// [link]: http://forth-standard.org/standard/float/FMAX
+	d.addWord("FMAX", false, false, (){
+		vm.floatStack.push(max(vm.floatStack.pop(), vm.floatStack.pop()));
+	});
+
+	/// r3 is the lesser of r1 and r2.
+	///
+	/// [FMIN][link]
+	/// [link]: http://forth-standard.org/standard/float/FMIN
+	d.addWord("FMIN", false, false, (){
+		vm.floatStack.push(min(vm.floatStack.pop(), vm.floatStack.pop()));
+	});
+
+	/// Exchange the top two floating-point stack items.
+	///
+	/// [FSWAP][link] a ( F: x1 x2 -- x2 x1 )
+	/// [link]: http://forth-standard.org/standard/float/FSWAP
+	d.addWord("FSWAP", false, false, vm.floatStack.swap);
+
+	/// ...
+	///
+	/// [][link]
+	/// [link]: TODO
+	//d.addWord("", false, false, (){}); // TODO
+
+	/// ...
+	///
+	/// [][link]
+	/// [link]: TODO
+	//d.addWord("", false, false, (){}); // TODO
+
 }
 
 /// The optional Block word set.
