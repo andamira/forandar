@@ -185,7 +185,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			}
 
 			/// Search for this word in the current dictionary.
-			Word word = d.wordsMap[wordStr];
+			Word word = d.wordsMap[wordStr.toUpperCase()];
 
 			if( word != null) {
 
@@ -209,14 +209,28 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			/// If the word is not found in the dictionary.
 			} else {
 
-				/// Tries to convert it to a number.
+				/// Tries to convert the word to a number.
 				try {
 
 					num number;
 					bool isInt = true;
 					int base = vm.dataSpace.data.getInt32(addrBASE);
 
-					// Firstly, tries parsing it to an integer in the current base.
+					// First tries parsing the word to an integer in the current base.
+					//
+					// The interpreter shall recognize integer numbers in the form <anynum>.
+					//
+					//   <anynum> := { <BASEnum> | <decnum> | <hexnum> | <binnum> | <cnum> }
+					//  <BASEnum> := [-]<bdigit><bdigit>*
+					//   <decnum> := #[-]<decdigit><decdigit>*
+					//   <hexnum> := $[-]<hexdigit><hexdigit>*
+					//   <binnum> := %[-]<bindigit><bindigit>*
+					//     <cnum> := '<char>'
+					// <bindigit> := { 0 | 1 }
+					// <decdigit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
+					// <hexdigit> := { <decdigit> | a | b | c | d | e | f | A | B | C | D | E | F }
+					//
+					// <bdigit> represents a digit according to the value of BASE
 					//
 					// https://api.dartlang.org/stable/dart-core/int/parse.html
 					number = int.parse(wordStr,
@@ -224,7 +238,53 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 						onError: (wordStr) => null
 					);
 
-					// If it's not an integer, tries parsing it as a double.
+					// Then tries to parse it as any of the specific forms.
+					if (number == null) {
+
+						// The prefix of the string.
+						String f = wordStr.substring(0,1);
+
+						// Sets the base as decimal,
+						if (f == '#' ) {
+							base = 10;
+						// or as hexadecimal
+						} else if (f == r'$') {
+							base = 16;
+						// or as binary.
+						} else if (f == '%') {
+							base = 2;
+						}
+
+						// Tries to parse the rest of the string.
+						number = int.parse(wordStr.substring(1), radix: base, onError: (wordStr) => null);
+
+						// If it fails, then tries to parse it as a character.
+						if (number == null && wordStr.length == 3 && f == "'" && wordStr.endsWith("'")) {
+							number = wordStr.codeUnitAt(1);
+						}
+
+						// print("NUMBER $number; BASE $base; PREFIX $f"); // TEMP
+					}
+
+
+					// If it's not an integer, tries parsing it as a double cell.
+					// TODO
+
+
+					// If it's not an integer, or a double, tries parsing it as floating point.
+					//
+					// TODO
+					// Must recognize floating-point numbers in this form:
+					// Convertible string := <significand><exponent>
+					// <significand> := [<sign>]<digits>[.<digits0>]
+					// <exponent> := E[<sign>]<digits0>
+					// <sign> := { + | - }
+					// <digits> := <digit><digits0>
+					// <digits0> := <digit>*
+					// <digit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
+					//
+					// These are examples of valid representations of floating-point numbers in program source:
+					// 1E    1.E    1.E0    +1.23E-1    -1.23E+1
 					//
 					// https://api.dartlang.org/stable/dart-core/double/parse.html
 					if (number == null && base == 10) {
@@ -240,12 +300,10 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 					/// If we are compiling, compile the number in the data space.
 					if (vm.inCompileMode) {
-						//print("TODO: compile in data space: $number"); // TEMP
-						// ...
+						// TODO
 
 					/// If we are interpreting leave it on the stack.
 					} else {
-						//print("leave in data stack: $number"); // TEMP
 
 						// Integers go to the dataStack.
 						if (isInt) {

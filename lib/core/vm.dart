@@ -166,13 +166,13 @@ class InputQueue {
 
 			// Index of the next space.
 			currentLineIndex = nextSpace(currentLine, letter);
-			var word = sourceCodeLines[currentLine].substring(letter, currentLineIndex);
+			var wordStr = sourceCodeLines[currentLine].substring(letter, currentLineIndex);
 
-			if (word == "") {
+			if (wordStr == "") {
 				currentLine++;
 				currentLineIndex = 0;
 			} else {
-				return word.toUpperCase();
+				return wordStr;
 			}
 		}
 
