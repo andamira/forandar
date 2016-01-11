@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . - + 2DROP 2DUP ?DUP >R DROP DUP IMMEDIATE OVER SWAP ROT
+	// ! . - + 2DROP 2DUP ?DUP >R BASE DECIMAL DROP DUP IMMEDIATE OVER SWAP ROT
 	//
 	// NIP PICK TUCK
 	//
@@ -18,8 +18,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER @ ABORT
-	// ABORT" ABS ACCEPT ALIGN ALIGNED ALLOT AND BASE BEGIN BL C! C, C@ CELL+
-	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DECIMAL DEPTH DO DOES>
+	// ABORT" ABS ACCEPT ALIGN ALIGNED ALLOT AND BEGIN BL C! C, C@ CELL+
+	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DEPTH DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP LSHIFT M* MAX
 	// MIN MOD MOVE NEGATE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
@@ -46,8 +46,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	});
 
 	
-	// Words that manipulate [dataStack].
-
 	///
 	d.addWord(".", false, false, (){
 		print(vm.dataStack.pop());
@@ -59,7 +57,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
 
 		// TODO:BENCHMARKS
-		// 1) swap: 
+		// 1) swap:
 		// 2) read without modifying and
 	});
 
@@ -74,13 +72,29 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// Duplicate cell pair x1 x2.
 	///
 	/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
-	///	  over over ;
+	///   over over ;
 	/// [link]: http://forth-standard.org/standard/core/TwoDUP
 	d.addWord("2DUP", false, false, vm.dataStack.dup2);
 
 	///
 	d.addWord("?DUP", false, false, () {
 		if (vm.dataStack.size > 0) vm.dataStack.dup();
+	});
+
+	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
+	///
+	/// [BASE][link] ( -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/BASE
+	d.addWord("BASE", false, false, () {
+		vm.dataStack.push(addrBASE);
+	});
+
+	/// Set the numeric conversion radix to ten (decimal).
+	///
+	/// [DECIMAL][link] ( -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/BASE
+	d.addWord("DECIMAL", false, false, () {
+		vm.dataSpace.data.setInt32(addrBASE, 10);
 	});
 
 	/// Remove x from the stack.
@@ -152,7 +166,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 }
 
 /// Core words that are not part of the standard.
-///   
+///
 void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 	///
@@ -195,10 +209,34 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			/// If the word is not found in the dictionary.
 			} else {
 
-				/// Tries to convert it to a number in current base.
+				/// Tries to convert it to a number.
 				try {
-					// TODO
-					int number = int.parse(wordStr);
+
+					num number;
+					bool isInt = true;
+					int base = vm.dataSpace.data.getInt32(addrBASE);
+
+					// Firstly, tries parsing it to an integer in the current base.
+					//
+					// https://api.dartlang.org/stable/dart-core/int/parse.html
+					number = int.parse(wordStr,
+						radix: base == 10 ? null : base,
+						onError: (wordStr) => null
+					);
+
+					// If it's not an integer, tries parsing it as a double.
+					//
+					// https://api.dartlang.org/stable/dart-core/double/parse.html
+					if (number == null && base == 10) {
+						number = double.parse(wordStr, (wordStr) => null);
+
+						// If it's not a double either, throw an error.
+						if (number == null) {
+							throwError(e, new ForthError(-2048));
+						} else {
+							isInt = false;
+						}
+					}
 
 					/// If we are compiling, compile the number in the data space.
 					if (vm.inCompileMode) {
@@ -208,13 +246,23 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 					/// If we are interpreting leave it on the stack.
 					} else {
 						//print("leave in data stack: $number"); // TEMP
-						vm.dataStack.push(number);
+
+						// Integers go to the dataStack.
+						if (isInt) {
+							vm.dataStack.push(number.toInt());
+
+						// Floats go to the floatStack.
+						} else {
+							vm.floatStack.push(number);
+						}
 					}
 
 
 				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
 				} catch(e) {
 					throwError(e, new ForthError(-2048));
+					print("WORD: $wordStr"); // TEMP
+					break;
 				}
 
 			}
@@ -255,6 +303,21 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// [id.][link] ( nt -- )  name>string type ;
 	/// [link]: TODO
 	//d.addWord("ID.", false, false, () {}); // TODO
+
+	/// ...
+	///
+	/// [id.][link] ( nt -- )  name>string type ;
+	/// [link]: TODO
+	//d.addWord("ID.", false, false, () {}); // TODO
+
+	/// Copy and display the values currently on the floating point stack.
+	d.addWord(".FS", false, false, () {
+		print("floatStack: ${vm.floatStack}");
+	});
+
+	// https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Floating-Point-Tutorial.html
+	// fnip ftuck fpick
+	// f~abs f~rel
 }
 
 /// The optional Floating-Point word set
@@ -283,7 +346,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 
 	/// Store r at f-addr.
 	///
-	/// [FStore][link] ( r f-addr -- )
+	/// [FStore][link] ( f-addr -- ) ( F: r -- )
 	/// [link]: http://forth-standard.org/standard/float/FStore
 	//
 	// Stores a floating point number using eight bytes at the specified address.
@@ -292,8 +355,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 	d.addWord("F!", false, false, (){
 		// TODO: floatStack
-		//vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.floatStack.pop());
-		vm.dataSpace.data.setFloat32(vm.dataStack.pop(), vm.dataStack.pop().toDouble());
+		vm.dataSpace.data.setFloat64(vm.dataStack.pop(), vm.floatStack.pop());
 	});
 }
 
@@ -322,7 +384,7 @@ includeWordsStandardOptionalBlock(VirtualMachine vm, Dictionary d) {
 }
 
 /// The optional Programming-Tools word set.
-///   
+///
 /// Contains words most often used during the development of applications.
 /// http://forth-standard.org/standard/tools
 void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
@@ -348,7 +410,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [DotS][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/tools/DotS
 	d.addWord(".S", false, false, (){
-		print(vm.dataStack);
+		print("dataStack: ${vm.dataStack}");
 	});
 
 	/// List the definition names in the first word list of the search order.
@@ -372,5 +434,4 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	d.addWord("BYE", false, false, (){});
 
 }
-
 

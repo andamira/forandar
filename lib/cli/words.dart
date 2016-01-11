@@ -48,6 +48,7 @@ void includeWordsCliDebug(VirtualMachine vm, Dictionary d) {
 		for (var x in vm.dataSpace.data.buffer.asUint8List()) {
 			stdout.write(x.toRadixString(16).replaceAll(new RegExp(r'0'),'_'));
 		}
+		stdout.writeln();
 	});
 
 	/// Prints the [ObjectSpace] content as a string of Bytes in hex.

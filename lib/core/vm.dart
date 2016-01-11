@@ -1,6 +1,16 @@
 part of forandar;
 
+// Global Constants.
+
+// Address for storing the base conversion radix in the data space.
+const addrBASE = 0;
+
+
+/// The Forth Virtual Machine.
+///
+/// Contains the dictionary, stacks, data and object spaces, input queued...
 class VirtualMachine {
+
 	// Dictionary.
 	Dictionary dict;
 
@@ -24,7 +34,6 @@ class VirtualMachine {
 	VirtualMachine (Configuration config, InputQueue input) {
 
 		/// Creates the Stacks.
-		dataStack    = new LifoStackInt(256);
 		dataStack    = new LifoStackInt(config.option['dataStackSize']);
 		returnStack  = new LifoStackInt(config.option['returnStackSize']);
 		controlStack = new LifoStackInt(config.option['controlStackSize']);
@@ -40,6 +49,9 @@ class VirtualMachine {
 
 		/// Creates the [Dictionary] containing the [Word]s.
 		dict = new Dictionary(this);
+
+		/// Sets a default decimal BASE (radix).
+		dict.wordsMap['DECIMAL'].exec();
 	}
 }
 
