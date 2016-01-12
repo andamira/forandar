@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . - + 2DROP 2DUP ?DUP >R BASE DECIMAL DROP DUP IMMEDIATE OVER SWAP ROT
+	// ! . - + 2DROP 2DUP ?DUP >R ALIGN ALIGNED BASE DECIMAL DROP DUP IMMEDIATE OVER SWAP ROT
 	//
 	// NIP PICK TUCK
 	//
@@ -18,7 +18,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER @ ABORT
-	// ABORT" ABS ACCEPT ALIGN ALIGNED ALLOT AND BEGIN BL C! C, C@ CELL+
+	// ABORT" ABS ACCEPT ALLOT AND BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DEPTH DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP LSHIFT M* MAX
@@ -163,6 +163,10 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("IMMEDIATE", false, false, () {
 		d.wordsList.last.isImmediate = true;
 	});
+
+	// Words that do nothing in this implementation
+	d.addWord("ALIGN", false, false, (){});
+	d.addWord("ALIGNED", false, false, (){});
 }
 
 /// Core words that are not part of the standard.
@@ -378,6 +382,32 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	// f~abs f~rel
 }
 
+/// The optional Double-Number word set
+///
+/// http://forth-standard.org/standard/double
+includeWordsStandardOptionalDouble(VirtualMachine vm, Dictionary d) {
+
+	// Total: 23 (20 main + 3 extended)
+	//
+	// Implemented:
+	//
+	// 
+	//
+	// Not Implemented:
+	//
+	// 2CONSTANT 2LITERAL 2VARIABLE D+ D- D. D.R D0< D0= D2* D2/ D<
+	// D= D>S DABS DMAX DMIN DNEGATE M*/ M+
+	//
+	// 2ROT 2VALUE DU<
+	//
+
+	/// 
+	///
+	/// [][link]
+	/// [link]: 
+	//d.addWord("", false, false, (){});
+}
+
 /// The optional Floating-Point word set
 ///
 /// http://forth-standard.org/standard/float
@@ -387,21 +417,21 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// D>F F! F* F+ F- F/ F>D FSWAP
+	// D>F F! F* F+ F- F/ F>D FALIGN FALIGNED FMAX FMIN FSWAP
 	//
-	// F** F. F>S
+	// F** F. F>S DFALIGN DFALIGNED SFALIGN SFALIGNED 
 	//
 	// Not Implemented:
 	//
-	// >FLOAT F0< F0= F< F@ FALIGN FALIGNED
+	// >FLOAT F0< F0= F< F@ 
 	// FCONSTANT FDEPTH FDROP FDUP FLITERAL FLOAT+ FLOATS FLOOR
-	// FMAX FMIN FNEGATE FOVER FROT FROUND FVARIABLE REPRESENT
+	// FNEGATE FOVER FROT FROUND FVARIABLE REPRESENT
 	//
-	// DF! DF@ DFALIGN DFALIGNED DFFIELD: DFLOAT+ DFLOATS
+	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
 	// FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
 	// FCOSH FE. FEXP FEXPM1 FFIELD: FLN FLNP1 FLOG FS. FSIN FSINCOS
 	// FSINH FSQRT FTAN FTANH FTRUNC FVALUE F~ PRECISION S>F
-	// SET-PRECISION SF! SF@ SFALIGN SFALIGNED SFFIELD: SFLOAT+ SFLOATS
+	// SET-PRECISION SF! SF@ SFFIELD: SFLOAT+ SFLOATS
 	//
 
 	/// r is the floating-point equivalent of d.
@@ -526,6 +556,14 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: TODO
 	//d.addWord("", false, false, (){}); // TODO
 
+	// Words that do nothing in this implementation
+	d.addWord("FALIGN", false, false, (){});
+	d.addWord("FALIGNED", false, false, (){});
+	d.addWord("DFALIGN", false, false, (){});
+	d.addWord("DFALIGNED", false, false, (){});
+	d.addWord("SFALIGN", false, false, (){});
+	d.addWord("SFALIGNED", false, false, (){});
+
 }
 
 /// The optional Block word set.
@@ -549,7 +587,7 @@ includeWordsStandardOptionalBlock(VirtualMachine vm, Dictionary d) {
 	///
 	/// [][link]
 	/// [link]: TODO
-	//d.addWord("EVALUATE", false, false, (){}); // TODO
+	//d.addWord("", false, false, (){}); // TODO
 }
 
 /// The optional Programming-Tools word set.
