@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . - + 2DROP 2DUP ?DUP >R @ ALIGN ALIGNED BASE DECIMAL DROP DUP IMMEDIATE NEGATE OVER SWAP ROT
+	// ! . - + 2DROP 2DUP ?DUP >R @ ALIGN ALIGNED BASE DEPTH DECIMAL DROP DUP IMMEDIATE NEGATE OVER SWAP ROT
 	//
 	// NIP PICK TUCK
 	//
@@ -19,7 +19,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// # #> #S ' ( * */ */MOD + +! +LOOP , ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER ABORT
 	// ABORT" ABS ACCEPT ALLOT AND BEGIN BL C! C, C@ CELL+
-	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DEPTH DO DOES>
+	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP LSHIFT M* MAX
 	// MIN MOD MOVE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
@@ -107,6 +107,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/qDUP
 	d.addWord("?DUP", false, false, () {
 		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
+	});
+
+	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
+	///
+	/// [DEPTH][link] ( -- +n )
+	/// [link]: http://forth-standard.org/standard/core/DEPTH
+	d.addWord("DEPTH", false, false, (){
+		vm.dataStack.push(vm.dataStack.size);
 	});
 
 	/// Duplicate x.
@@ -444,15 +452,13 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// D>F F! F* F+ F- F/ F>D FALIGN FALIGNED FMAX FMIN FNEGATE FSWAP
+	// D>F F! F* F+ F- F/ F>D F@ FALIGN FALIGNED FDEPTH FDROP FDUP FMAX FMIN FNEGATE FOVER FROT FROUND FSWAP
 	//
 	// F** F. F>S DFALIGN DFALIGNED SFALIGN SFALIGNED 
 	//
 	// Not Implemented:
 	//
-	// >FLOAT F0< F0= F< F@ 
-	// FCONSTANT FDEPTH FDROP FDUP FLITERAL FLOAT+ FLOATS FLOOR
-	// FOVER FROT FROUND FVARIABLE REPRESENT
+	// >FLOAT F0< F0= F< FCONSTANT FLITERAL FLOAT+ FLOATS FLOOR FVARIABLE REPRESENT
 	//
 	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
 	// FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
@@ -564,6 +570,26 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("FALIGN", false, false, (){});
 	d.addWord("FALIGNED", false, false, (){});
 
+	/// +n is the number of values contained on the floating-point stack.
+	///
+	/// [FDEPTH][link] ( -- +n )
+	/// [link]: http://forth-standard.org/standard/float/FDEPTH
+	d.addWord("FDEPTH", false, false, (){
+		vm.dataStack.push(vm.floatStack.size);
+	});
+
+	/// Remove r from the floating-point stack.
+	///
+	/// [FDROP][link] ( F: r -- )
+	/// [link]: http://forth-standard.org/standard/float/FDROP
+	d.addWord("FDROP", false, false, vm.floatStack.drop);
+
+	/// Duplicate r.
+	///
+	/// [FDUP][link] ( F: r -- r r )
+	/// [link]: http://forth-standard.org/standard/float/FDUP
+	d.addWord("FDUP", false, false, vm.floatStack.dup);
+
 	/// r3 is the greater of r1 and r2.
 	///
 	/// [FMAX][link] ( F: r1 r2 -- r3 )
@@ -586,6 +612,26 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FNEGATE
 	d.addWord("FNEGATE", false, false, (){
 		vm.floatStack.push(-vm.floatStack.pop());
+	});
+
+	/// Place a copy of r1 on top of the floating-point stack.
+	///
+	/// [FOVER][link] ( F: r1 r2 -- r1 r2 r1 )
+	/// [link]: http://forth-standard.org/standard/float/FOVER
+	d.addWord("FOVER", false, false, vm.floatStack.over);
+
+	/// Rotate the top three floating-point stack entries.
+	///
+	/// [FROT][link] ( F: r1 r2 r3 -- r2 r3 r1 )
+	/// [link]: http://forth-standard.org/standard/float/FROT
+	d.addWord("FROT", false, false, vm.floatStack.rot);
+
+	/// Round r1 to an integral value using the "round to nearest" rule, giving r2.
+	///
+	/// [FROUND][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FROUND
+	d.addWord("FROUND", false, false, (){
+		vm.floatStack.push(vm.floatStack.pop().roundToDouble());
 	});
 
 	/// Exchange the top two floating-point stack items.
