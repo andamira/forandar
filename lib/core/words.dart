@@ -9,20 +9,20 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . - + 2DROP 2DUP ?DUP >R ALIGN ALIGNED BASE DECIMAL DROP DUP IMMEDIATE OVER SWAP ROT
+	// ! . - + 2DROP 2DUP ?DUP >R @ ALIGN ALIGNED BASE DECIMAL DROP DUP IMMEDIATE NEGATE OVER SWAP ROT
 	//
 	// NIP PICK TUCK
 	//
 	//
 	// Not implemented:
 	//
-	// # #> #S ' ( * */ */MOD + +! +LOOP , - ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
-	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER @ ABORT
+	// # #> #S ' ( * */ */MOD + +! +LOOP , ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
+	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER ABORT
 	// ABORT" ABS ACCEPT ALLOT AND BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DEPTH DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP LSHIFT M* MAX
-	// MIN MOD MOVE NEGATE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
+	// MIN MOD MOVE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE U. U< UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD XOR [ ['] [CHAR] ]
 	//
@@ -45,29 +45,54 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
 	});
 
-	
+	/// Display n in free field format.
 	///
+	/// [d][link] ( n -- )
+	/// [link]: http://forth-standard.org/standard/core/d
 	d.addWord(".", false, false, (){
 		print(vm.dataStack.pop());
 	});
 
+	/// Subtract n2 | u2 from n1 | u1, giving the difference n3 | u3.
 	///
+	/// [Minus][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
+	/// [link]: http://forth-standard.org/standard/core/Minus
 	d.addWord("-", false, false, (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
-
-		// TODO:BENCHMARKS
-		// 1) swap:
-		// 2) read without modifying and
 	});
 
+	/// Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
 	///
+	/// [Plus][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
+	/// [link]: http://forth-standard.org/standard/core/Plus
 	d.addWord("+", false, false, (){
 		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
 	});
 
+	/// Moves data FROM [dataStack] TO [returnStack].
 	///
-	d.addWord("DUP", false, false, vm.dataStack.dup);
+	/// [toR][link] ( x -- ) ( R: -- x )
+	/// [link]: http://forth-standard.org/standard/core/toR
+	d.addWord(">R", false, false, () {
+		vm.returnStack.push(vm.dataStack.pop());
+	});
+
+	/// x is the value stored at a-addr.
+	///
+	/// [Fetch][link] ( a-addr -- x )
+	/// [link]: http://forth-standard.org/standard/Core/Fetch
+	//
+	// Fetches an integer number using four bytes at the specified address.
+	d.addWord("@", false, false, (){
+		vm.dataStack.push(vm.dataSpace.data.getInt32(vm.dataStack.pop()));
+	});
+
+	/// Drop cell pair x1 x2 from the stack.
+	///
+	/// [2DROP][link] ( x1 x2 -- )
+	/// [link]: http://forth-standard.org/standard/core/TwoDROP
+	d.addWord("2DROP", false, false, vm.dataStack.drop2);
 
 	/// Duplicate cell pair x1 x2.
 	///
@@ -76,10 +101,22 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/TwoDUP
 	d.addWord("2DUP", false, false, vm.dataStack.dup2);
 
+	/// Duplicate x if it is non-zero.
 	///
+	/// [qDUP][link] ( x -- 0 | x x )
+	/// [link]: http://forth-standard.org/standard/core/qDUP
 	d.addWord("?DUP", false, false, () {
-		if (vm.dataStack.size > 0) vm.dataStack.dup();
+		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
 	});
+
+	/// Duplicate x.
+	///
+	/// [DUP][link] ( x -- x x )
+	/// [link]: http://forth-standard.org/standard/core/DUP
+	d.addWord("DUP", false, false, vm.dataStack.dup);
+
+	d.addWord("ALIGN", false, false, (){});
+	d.addWord("ALIGNED", false, false, (){});
 
 	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
 	///
@@ -103,11 +140,13 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/DROP
 	d.addWord("DROP", false, false, vm.dataStack.drop);
 
-	/// Drop cell pair x1 x2 from the stack.
+	/// Negate n1, giving its arithmetic inverse n2.
 	///
-	/// [2DROP][link] ( x1 x2 -- )
-	/// [link]: http://forth-standard.org/standard/core/TwoDROP
-	d.addWord("2DROP", false, false, vm.dataStack.drop2);
+	/// [NEGATE][link] ( n1 -- n2 )
+	/// [link]: http://forth-standard.org/standard/core/NEGATE
+	d.addWord("NEGATE", false, false, (){
+		vm.dataStack.push(-vm.dataStack.pop());
+	});
 
 	/// Drop the first item below the top of stack.
 	///
@@ -146,14 +185,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/ROT
 	d.addWord("ROT", false, false, vm.dataStack.rot);
 
-	/// Moves data FROM [dataStack] TO [returnStack].
-	///
-	/// [toR][link] ( x -- ) ( R: -- x )
-	/// [link]: http://forth-standard.org/standard/core/toR
-	d.addWord(">R", false, false, () {
-		vm.returnStack.push(vm.dataStack.pop());
-	});
-
 	// Other Words
 
 	/// Make the most recent definition an immediate word.
@@ -163,10 +194,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("IMMEDIATE", false, false, () {
 		d.wordsList.last.isImmediate = true;
 	});
-
-	// Words that do nothing in this implementation
-	d.addWord("ALIGN", false, false, (){});
-	d.addWord("ALIGNED", false, false, (){});
 }
 
 /// Core words that are not part of the standard.
@@ -417,7 +444,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// D>F F! F* F+ F- F/ F>D FALIGN FALIGNED FMAX FMIN FSWAP
+	// D>F F! F* F+ F- F/ F>D FALIGN FALIGNED FMAX FMIN FNEGATE FSWAP
 	//
 	// F** F. F>S DFALIGN DFALIGNED SFALIGN SFALIGNED 
 	//
@@ -425,7 +452,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// >FLOAT F0< F0= F< F@ 
 	// FCONSTANT FDEPTH FDROP FDUP FLITERAL FLOAT+ FLOATS FLOOR
-	// FNEGATE FOVER FROT FROUND FVARIABLE REPRESENT
+	// FOVER FROT FROUND FVARIABLE REPRESENT
 	//
 	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
 	// FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
@@ -453,6 +480,16 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 	d.addWord("F!", false, false, (){
 		vm.dataSpace.data.setFloat64(vm.dataStack.pop(), vm.floatStack.pop());
+	});
+
+	/// r is the value stored at f-addr.
+	///
+	/// [FFetch][link] ( f-addr -- ) ( F: -- r )
+	/// [link]: http://forth-standard.org/standard/float/FFetch
+	//
+	// Fetches a floating point number using eight bytes at the specified address.
+	d.addWord("F@", false, false, (){
+		vm.floatStack.push(vm.dataSpace.data.getFloat64(vm.dataStack.pop()));
 	});
 
 	/// Multiply r1 by r2 giving r3.
@@ -500,7 +537,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 
 	/// Display, with a trailing space, the top number on the floating-point stack using fixed-point notation.
 	///
-	/// [Fd][link]
+	/// [Fd][link] ( -- ) ( F: r -- )
 	/// [link]: http://forth-standard.org/standard/float/Fd
 	d.addWord("F.", false, false, (){
 		print(vm.floatStack.pop());
@@ -522,9 +559,14 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.floatStack.pop().toInt());
 	});
 
+	d.addWord("DFALIGN", false, false, (){});
+	d.addWord("DFALIGNED", false, false, (){});
+	d.addWord("FALIGN", false, false, (){});
+	d.addWord("FALIGNED", false, false, (){});
+
 	/// r3 is the greater of r1 and r2.
 	///
-	/// [FMAX][link]
+	/// [FMAX][link] ( F: r1 r2 -- r3 )
 	/// [link]: http://forth-standard.org/standard/float/FMAX
 	d.addWord("FMAX", false, false, (){
 		vm.floatStack.push(max(vm.floatStack.pop(), vm.floatStack.pop()));
@@ -532,10 +574,18 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 
 	/// r3 is the lesser of r1 and r2.
 	///
-	/// [FMIN][link]
+	/// [FMIN][link] ( F: r1 r2 -- r3 )
 	/// [link]: http://forth-standard.org/standard/float/FMIN
 	d.addWord("FMIN", false, false, (){
 		vm.floatStack.push(min(vm.floatStack.pop(), vm.floatStack.pop()));
+	});
+
+	/// r2 is the negation of r1.
+	///
+	/// [FNEGATE][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FNEGATE
+	d.addWord("FNEGATE", false, false, (){
+		vm.floatStack.push(-vm.floatStack.pop());
 	});
 
 	/// Exchange the top two floating-point stack items.
@@ -544,26 +594,14 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FSWAP
 	d.addWord("FSWAP", false, false, vm.floatStack.swap);
 
-	/// ...
-	///
-	/// [][link]
-	/// [link]: TODO
-	//d.addWord("", false, false, (){}); // TODO
-
-	/// ...
-	///
-	/// [][link]
-	/// [link]: TODO
-	//d.addWord("", false, false, (){}); // TODO
-
-	// Words that do nothing in this implementation
-	d.addWord("FALIGN", false, false, (){});
-	d.addWord("FALIGNED", false, false, (){});
-	d.addWord("DFALIGN", false, false, (){});
-	d.addWord("DFALIGNED", false, false, (){});
 	d.addWord("SFALIGN", false, false, (){});
 	d.addWord("SFALIGNED", false, false, (){});
 
+	/// ...
+	///
+	/// [][link]
+	/// [link]: 
+	//d.addWord("", false, false, (){});
 }
 
 /// The optional Block word set.
