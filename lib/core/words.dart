@@ -522,18 +522,18 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// D>F F! F* F+ F- F/ F>D F@ FALIGN FALIGNED FDEPTH FDROP FDUP FMAX FMIN FNEGATE FOVER FROT FROUND FSWAP
+	// D>F F! F* F+ F- F/ F>D F@ FALIGN FALIGNED FDEPTH FDROP FDUP FLOOR FMAX FMIN FNEGATE FOVER FROT FROUND FSIN FSWAP 
 	//
-	// F** F. F>S FABS DFALIGN DFALIGNED SFALIGN SFALIGNED 
+	// DFALIGN DFALIGNED F** F. F>S FABS FATAN FCOS FEXP FLOG FSIN FSQRT FTAN FTRUNC SFALIGN SFALIGNED 
 	//
 	// Not Implemented:
 	//
 	// >FLOAT F0< F0= F< FCONSTANT FLITERAL FLOAT+ FLOATS FLOOR FVARIABLE REPRESENT
 	//
 	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
-	// FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS
-	// FCOSH FE. FEXP FEXPM1 FFIELD: FLN FLNP1 FLOG FS. FSIN FSINCOS
-	// FSINH FSQRT FTAN FTANH FTRUNC FVALUE F~ PRECISION S>F
+	// FACOS FACOSH FALOG FASIN FASINH FATAN2 FATANH
+	// FCOSH FE. FEXPM1 FFIELD: FLN FLNP1 FS. FSINCOS
+	// FSINH FTANH FVALUE F~ PRECISION S>F
 	// SET-PRECISION SF! SF@ SFFIELD: SFLOAT+ SFLOATS
 	//
 
@@ -544,6 +544,9 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("D>F", false, false, (){
 		vm.floatStack.push(vm.dataStack.pop().toDouble());
 	});
+
+	d.addWord("DFALIGN", false, false, (){});
+	d.addWord("DFALIGNED", false, false, (){});
 
 	/// Store r at f-addr.
 	///
@@ -635,17 +638,32 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.floatStack.pop().toInt());
 	});
 
-	d.addWord("DFALIGN", false, false, (){});
-	d.addWord("DFALIGNED", false, false, (){});
-	d.addWord("FALIGN", false, false, (){});
-	d.addWord("FALIGNED", false, false, (){});
-
 	/// r2 is the absolute value of r1.
 	///
 	/// [FABS][link] ( F: r1 -- r2 )
 	/// [link]: http://forth-standard.org/standard/float/FABS
 	d.addWord("FABS", false, false, (){
 		vm.floatStack.push(vm.floatStack.pop().abs());
+	});
+
+	d.addWord("FALIGN", false, false, (){});
+	d.addWord("FALIGNED", false, false, (){});
+
+	/// r2 is the principal radian angle whose tangent is r1.
+	///
+	/// [FATAN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FATAN
+	d.addWord("FATAN", false, false, (){
+		vm.floatStack.push(atan(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+	});
+
+	/// r2 is the cosine of the radian angle r1.
+	///
+	/// [FCOS][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FCOS
+	d.addWord("FCOS", false, false, (){
+		vm.floatStack.push(cos(vm.floatStack.pop()));
 	});
 
 	/// +n is the number of values contained on the floating-point stack.
@@ -667,6 +685,32 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [FDUP][link] ( F: r -- r r )
 	/// [link]: http://forth-standard.org/standard/float/FDUP
 	d.addWord("FDUP", false, false, vm.floatStack.dup);
+
+	/// Raise e to the power r1, giving r2.
+	///
+	/// [FEXP][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FEXP
+	d.addWord("FEXP", false, false, (){
+		vm.floatStack.push(exp(vm.floatStack.pop()));
+	});
+
+	/// r2 is the base-ten logarithm of r1.
+	///
+	/// [FLOG][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FLOG
+	d.addWord("FLOG", false, false, (){
+		vm.floatStack.push(log(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+	});
+
+
+	/// Round r1 to an integral value using the "round toward negative infinity" rule, giving r2.
+	///
+	/// [FLOOR][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FLOOR
+	d.addWord("FLOOR", false, false, (){
+		vm.floatStack.push(vm.floatStack.pop().floorToDouble());
+	});
 
 	/// r3 is the greater of r1 and r2.
 	///
@@ -712,6 +756,14 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(vm.floatStack.pop().roundToDouble());
 	});
 
+	/// r2 is the sine of the radian angle r1.
+	///
+	/// [FSIN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FSIN
+	d.addWord("FSIN", false, false, (){
+		vm.floatStack.push(sin(vm.floatStack.pop()));
+	});
+
 	/// Exchange the top two floating-point stack items.
 	///
 	/// [FSWAP][link] a ( F: x1 x2 -- x2 x1 )
@@ -720,6 +772,32 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 
 	d.addWord("SFALIGN", false, false, (){});
 	d.addWord("SFALIGNED", false, false, (){});
+
+	/// r2 is the square root of r1.
+	///
+	/// [FSQRT][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FSQRT
+	d.addWord("FSQRT", false, false, (){
+		vm.floatStack.push(sqrt(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if r1 is less than zero.
+	});
+
+	/// r2 is the tangent of the radian angle r1.
+	///
+	/// [FTAN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FTAN
+	d.addWord("FTAN", false, false, (){
+		vm.floatStack.push(tan(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if (r1) is zero.
+	});
+
+	/// Round r1 to an integral value using the "round towards zero" rule, giving r2.
+	///
+	/// [FTRUNC][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/TRUNC
+	d.addWord("FTRUNC", false, false, (){
+		vm.floatStack.push(vm.floatStack.pop().truncateToDouble());
+	});
 
 	/// ...
 	///
