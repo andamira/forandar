@@ -9,20 +9,20 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . - + 2DROP 2DUP ?DUP >R @ ABS ALIGN ALIGNED BASE DEPTH DECIMAL DROP DUP IMMEDIATE MAX MIN NEGATE OVER SWAP ROT XOR
+	// ! . / /MOD - + 2DROP 2DUP ?DUP >R @ ABS AND ALIGN ALIGNED BASE DEPTH DECIMAL DROP DUP IMMEDIATE LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP XOR
 	//
 	// NIP PICK TUCK
 	//
 	//
 	// Not implemented:
 	//
-	// # #> #S ' ( * */ */MOD + +! +LOOP , ." / /MOD 0< 0= 1+ 1- 2! 2* 2/
+	// # #> #S ' ( * */ */MOD + +! +LOOP , ." 0< 0= 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER ABORT
-	// ABORT" ACCEPT ALLOT AND BEGIN BL C! C, C@ CELL+
+	// ABORT" ACCEPT ALLOT BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
-	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP LSHIFT M*
-	// MOD MOVE OR POSTPONE QUIT R> R@ RECURSE REPEAT RSHIFT
+	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP M*
+	// MOVE POSTPONE QUIT R> R@ RECURSE REPEAT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE U. U< UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
@@ -45,12 +45,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
 	});
 
-	/// Display n in free field format.
+	/// Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
 	///
-	/// [d][link] ( n -- )
-	/// [link]: http://forth-standard.org/standard/core/d
-	d.addWord(".", false, false, (){
-		print(vm.dataStack.pop());
+	/// [Plus][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
+	/// [link]: http://forth-standard.org/standard/core/Plus
+	d.addWord("+", false, false, (){
+		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
 	});
 
 	/// Subtract n2 | u2 from n1 | u1, giving the difference n3 | u3.
@@ -62,13 +62,54 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
 	});
 
-	/// Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
+	/// Display n in free field format.
 	///
-	/// [Plus][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
-	/// [link]: http://forth-standard.org/standard/core/Plus
-	d.addWord("+", false, false, (){
-		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
+	/// [d][link] ( n -- )
+	/// [link]: http://forth-standard.org/standard/core/d
+	d.addWord(".", false, false, (){
+		print(vm.dataStack.pop());
 	});
+
+	/// Divide n1 by n2, , giving the single-cell quotient n3.
+	///
+	/// [Div][link] ( n1 n2 -- n3 )
+	/// [link]: http://forth-standard.org/standard/core/Div
+	d.addWord("/", false, false, (){
+		vm.dataStack.swap();
+		vm.dataStack.push(vm.dataStack.pop() ~/ vm.dataStack.pop());
+		// TODO: An ambiguous condition exists if n2 is zero.
+		// If n1 and n2 differ in sign, the implementation-defined result
+		// returned will be the same as that returned by either the phrase
+		// >R S>D R> FM/MOD SWAP DROP or the phrase >R S>D R> SM/REM SWAP DROP.
+	});
+
+	/// Divide n1 by n2, giving the single-cell remainder n3 and the single-cell quotient n4.
+	///
+	/// [DivMOD][link] ( n1 n2 -- n3 n4 )
+	/// [link]: http://forth-standard.org/standard/core/DivMOD
+	d.addWord("/MOD", false, false, (){
+		int x = vm.dataStack.pop();
+		int y = vm.dataStack.pop();
+		vm.dataStack.push( y % x);
+		vm.dataStack.push( y ~/ x);
+		// TODO: An ambiguous condition exists if n2 is zero.
+		// If n1 and n2 differ in sign, the implementation-defined result
+		// returned will be the same as that returned by either the phrase
+		// >R S>D R> FM/MOD or the phrase >R S>D R> SM/REM.
+	});
+
+	/// Drop cell pair x1 x2 from the stack.
+	///
+	/// [2DROP][link] ( x1 x2 -- )
+	/// [link]: http://forth-standard.org/standard/core/TwoDROP
+	d.addWord("2DROP", false, false, vm.dataStack.drop2);
+
+	/// Duplicate cell pair x1 x2.
+	///
+	/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
+	///   over over ;
+	/// [link]: http://forth-standard.org/standard/core/TwoDUP
+	d.addWord("2DUP", false, false, vm.dataStack.dup2);
 
 	/// Moves data FROM [dataStack] TO [returnStack].
 	///
@@ -76,6 +117,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/toR
 	d.addWord(">R", false, false, () {
 		vm.returnStack.push(vm.dataStack.pop());
+	});
+
+	/// Duplicate x if it is non-zero.
+	///
+	/// [qDUP][link] ( x -- 0 | x x )
+	/// [link]: http://forth-standard.org/standard/core/qDUP
+	d.addWord("?DUP", false, false, () {
+		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
 	});
 
 	/// x is the value stored at a-addr.
@@ -94,27 +143,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/ABS
 	d.addWord("ABS", false, false, (){
 		vm.dataStack.push(vm.dataStack.pop().abs());
-	});
-
-	/// Drop cell pair x1 x2 from the stack.
-	///
-	/// [2DROP][link] ( x1 x2 -- )
-	/// [link]: http://forth-standard.org/standard/core/TwoDROP
-	d.addWord("2DROP", false, false, vm.dataStack.drop2);
-
-	/// Duplicate cell pair x1 x2.
-	///
-	/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
-	///   over over ;
-	/// [link]: http://forth-standard.org/standard/core/TwoDUP
-	d.addWord("2DUP", false, false, vm.dataStack.dup2);
-
-	/// Duplicate x if it is non-zero.
-	///
-	/// [qDUP][link] ( x -- 0 | x x )
-	/// [link]: http://forth-standard.org/standard/core/qDUP
-	d.addWord("?DUP", false, false, () {
-		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
 	});
 
 	/// x3 is the bit-by-bit logical "and" of x1 with x2.
@@ -177,7 +205,16 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [INVERT][link] ( x1 -- x2 )
 	/// [link]: http://forth-standard.org/standard/core/INVERT
 	d.addWord("INVERT", false, false, (){
-		vm.dataStack.push(~vm.dataStack.pop()); // FIXME? expected 0 => 1, 1 => 0
+		vm.dataStack.push(~vm.dataStack.pop());
+	});
+
+	/// Perform a logical left shift of u bit-places on x1, giving x2.
+	///
+	/// [LSHIFT][link] ( x1 u -- x2 )
+	/// [link]: http://forth-standard.org/standard/core/LSHIFT
+	d.addWord("LSHIFT", false, false, (){
+		vm.dataStack.swap();
+		vm.dataStack.push(vm.dataStack.pop() << vm.dataStack.pop());
 	});
 
 	/// n3 is the greater of n1 and n2.
@@ -196,6 +233,19 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(min(vm.dataStack.pop(), vm.dataStack.pop()));
 	});
 
+	/// Divide n1 by n2, giving the single-cell remainder n3.
+	///
+	/// [MOD][link] ( n1 n2 -- n3 )
+	/// [link]: http://forth-standard.org/standard/core/MOD
+	d.addWord("MOD", false, false, (){
+		vm.dataStack.swap();
+		vm.dataStack.push(vm.dataStack.pop() % vm.dataStack.pop());
+		// TODO: An ambiguous condition exists if n2 is zero.
+		// If n1 and n2 differ in sign, the implementation-defined result
+	    // returned will be the same as that returned by either the phrase
+		// >R S>D R> FM/MOD DROP or the phrase >R S>D R> SM/REM DROP.
+	});
+
 	/// Negate n1, giving its arithmetic inverse n2.
 	///
 	/// [NEGATE][link] ( n1 -- n2 )
@@ -206,7 +256,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 
 	/// Drop the first item below the top of stack.
 	///
-	/// ( x1 x2 -- x2 )
+	/// [NIP][link] ( x1 x2 -- x2 )
+	/// [link]: http://forth-standard.org/standard/core/NIP
 	d.addWord("NIP", false, false, vm.dataStack.nip);
 
 	/// x3 is the bit-by-bit inclusive-or of x1 with x2.
@@ -236,6 +287,15 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [ROT][link] ( x1 x2 x3 -- x2 x3 x1 )
 	/// [link]: http://forth-standard.org/standard/core/ROT
 	d.addWord("ROT", false, false, vm.dataStack.rot);
+
+	/// Perform a logical right shift of u bit-places on x1, giving x2.
+	///
+	/// [RSHIFT][link] ( x1 u -- x2 )
+	/// [link]: http://forth-standard.org/standard/core/RSHIFT
+	d.addWord("RSHIFT", false, false, (){
+		vm.dataStack.swap();
+		vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
+	});
 
 	/// Exchange the top two stack items.
 	///
