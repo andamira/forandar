@@ -449,18 +449,6 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 	//d.addWord("NAME>STRING", false, false, () {}); // TODO
 
-	/// ...
-	///
-	/// [id.][link] ( nt -- )  name>string type ;
-	/// [link]: TODO
-	//d.addWord("ID.", false, false, () {}); // TODO
-
-	/// ...
-	///
-	/// [id.][link] ( nt -- )  name>string type ;
-	/// [link]: TODO
-	//d.addWord("ID.", false, false, () {}); // TODO
-
 	/// Copy and display the values currently on the floating point stack.
 	d.addWord(".FS", false, false, () {
 		print("floatStack: ${vm.floatStack}");
@@ -470,7 +458,6 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	// fnip ftuck fpick
 	// f~abs f~rel
 
-
 	/// Display an integer binary format.
 	d.addWord("SHOWBITS", false, false, () {
 		int norig = vm.dataStack.pop();
@@ -479,12 +466,9 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 			var bit = 0;
 			if (norig & pow(2,i) != 0) bit = 1;
 			str.write(bit);
-			// print("$i : ${pow(2,i)}; $bit"); // TEMP
 		}
 		print("BITS of $norig: ${str}");
 	});
-
-
 }
 
 /// The optional Double-Number word set
@@ -524,16 +508,16 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// D>F F! F* F+ F- F/ F>D F@ FALIGN FALIGNED FDEPTH FDROP FDUP FLOOR FMAX FMIN FNEGATE FOVER FROT FROUND FSIN FSWAP 
 	//
-	// DFALIGN DFALIGNED F** F. F>S FABS FATAN FCOS FEXP FLOG FSIN FSQRT FTAN FTRUNC SFALIGN SFALIGNED 
+	// DFALIGN DFALIGNED F** F. F>S FABS FACOS FALOG FASIN FATAN FATAN2 FCOS FFCOSH EXP FLOG FSIN FSINH FSQRT FTAN FTANH FTRUNC SFALIGN SFALIGNED 
 	//
 	// Not Implemented:
 	//
 	// >FLOAT F0< F0= F< FCONSTANT FLITERAL FLOAT+ FLOATS FLOOR FVARIABLE REPRESENT
 	//
 	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
-	// FACOS FACOSH FALOG FASIN FASINH FATAN2 FATANH
-	// FCOSH FE. FEXPM1 FFIELD: FLN FLNP1 FS. FSINCOS
-	// FSINH FTANH FVALUE F~ PRECISION S>F
+	// FACOSH FASINH FATANH
+	// FE. FEXPM1 FFIELD: FLN FLNP1 FS. FSINCOS
+	// FVALUE F~ PRECISION S>F
 	// SET-PRECISION SF! SF@ SFFIELD: SFLOAT+ SFLOATS
 	//
 
@@ -646,8 +630,34 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(vm.floatStack.pop().abs());
 	});
 
+	/// r2 is the principal radian angle whose cosine is r1.
+	///
+	/// [FACOS][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FACOS
+	d.addWord("FACOS", false, false, (){
+		vm.floatStack.push(acos(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if | r1 | is greater than one.
+	});
+
 	d.addWord("FALIGN", false, false, (){});
 	d.addWord("FALIGNED", false, false, (){});
+
+	/// Raise ten to the power r1, giving r2.
+	///
+	/// [FALOG][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FALOG
+	d.addWord("FALOG", false, false, (){
+		vm.floatStack.push(pow(10, vm.floatStack.pop()));
+	});
+
+	/// r2 is the principal radian angle whose sine is r1.
+	///
+	/// [FASIN][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FASIN
+	d.addWord("FASIN", false, false, (){
+		vm.floatStack.push(asin(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if | r1 | is greater than one.
+	});
 
 	/// r2 is the principal radian angle whose tangent is r1.
 	///
@@ -658,12 +668,31 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
 	});
 
+	/// r3 is the principal radian angle (between -π and π) whose tangent is r1/r2.
+	///
+	/// [FATANTwo][link] ( F: r1 r2 -- r3 )	
+	/// [link]: http://forth-standard.org/standard/float/FATANTwo
+	d.addWord("FATAN2", false, false, (){
+		vm.floatStack.swap();
+		vm.floatStack.push(atan2(vm.floatStack.pop(), vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists r1 and r2 are zero.
+	});
+
 	/// r2 is the cosine of the radian angle r1.
 	///
 	/// [FCOS][link] ( F: r1 -- r2 )	
 	/// [link]: http://forth-standard.org/standard/float/FCOS
 	d.addWord("FCOS", false, false, (){
 		vm.floatStack.push(cos(vm.floatStack.pop()));
+	});
+
+	/// r2 is the hyperbolic cosine of r1.
+	///
+	/// [FCOSH][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FCOSH
+	d.addWord("FCOSH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push((exp(2*x) + 1) / (2 * exp(x)));
 	});
 
 	/// +n is the number of values contained on the floating-point stack.
@@ -764,6 +793,26 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(sin(vm.floatStack.pop()));
 	});
 
+	/// r2 is the hyperbolic sine of r1.
+	///
+	/// [FSINH][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FSINH
+	d.addWord("FSINH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push((exp(2*x) - 1) / (2 * exp(x)));
+	});
+
+	/// r2 is the hyperbolic tangent of r1.
+	///
+	/// [FTAN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FTANH
+	d.addWord("FTANH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push(
+			((exp(2*x) - 1) / (2 * exp(x))) / ((exp(2*x) + 1) / (2 * exp(x)))
+		);
+	});
+
 	/// Exchange the top two floating-point stack items.
 	///
 	/// [FSWAP][link] a ( F: x1 x2 -- x2 x1 )
@@ -798,12 +847,6 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("FTRUNC", false, false, (){
 		vm.floatStack.push(vm.floatStack.pop().truncateToDouble());
 	});
-
-	/// ...
-	///
-	/// [][link]
-	/// [link]: 
-	//d.addWord("", false, false, (){});
 }
 
 /// The optional Block word set.
@@ -879,6 +922,5 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [BYE][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/tools/BYE
 	d.addWord("BYE", false, false, (){});
-
 }
 
