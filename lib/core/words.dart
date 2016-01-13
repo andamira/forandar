@@ -508,17 +508,14 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// D>F F! F* F+ F- F/ F>D F@ FALIGN FALIGNED FDEPTH FDROP FDUP FLOOR FMAX FMIN FNEGATE FOVER FROT FROUND FSIN FSWAP 
 	//
-	// DFALIGN DFALIGNED F** F. F>S FABS FACOS FALOG FASIN FATAN FATAN2 FCOS FFCOSH EXP FLOG FSIN FSINH FSQRT FTAN FTANH FTRUNC SFALIGN SFALIGNED 
+	// DFALIGN DFALIGNED F** F. F>S FABS FACOS FACOSH FALOG FASIN FASINH FATAN FATAN2 FATANH FCOS FCOSH EXP FLOG FLN FLNP1 FSIN FSINCOS FSINH FSQRT FTAN FTANH FTRUNC SFALIGN SFALIGNED
+	//
 	//
 	// Not Implemented:
 	//
-	// >FLOAT F0< F0= F< FCONSTANT FLITERAL FLOAT+ FLOATS FLOOR FVARIABLE REPRESENT
+	// >FLOAT F0< F0= F< FCONSTANT FLITERAL FLOAT+ FLOATS FVARIABLE REPRESENT
 	//
-	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS
-	// FACOSH FASINH FATANH
-	// FE. FEXPM1 FFIELD: FLN FLNP1 FS. FSINCOS
-	// FVALUE F~ PRECISION S>F
-	// SET-PRECISION SF! SF@ SFFIELD: SFLOAT+ SFLOATS
+	// DF! DF@ DFFIELD: DFLOAT+ DFLOATS FE. FEXPM1 FFIELD: FS. FVALUE F~ PRECISION S>F SET-PRECISION SF! SF@ SFFIELD: SFLOAT+ SFLOATS
 	//
 
 	/// r is the floating-point equivalent of d.
@@ -639,6 +636,15 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		// TODO: An ambiguous condition exists if | r1 | is greater than one.
 	});
 
+	/// r2 is the floating-point value whose hyperbolic cosine is r1.
+	///
+	/// [FACOSH][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FACOSH
+	d.addWord("FACOSH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push(log(x + sqrt(x * x - 1)));
+	});
+
 	d.addWord("FALIGN", false, false, (){});
 	d.addWord("FALIGNED", false, false, (){});
 
@@ -659,6 +665,15 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		// TODO: An ambiguous condition exists if | r1 | is greater than one.
 	});
 
+	/// r2 is the floating-point value whose hyperbolic sine is r1.
+	///
+	/// [FASINH][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FASINH
+	d.addWord("FASINH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push(log(x + sqrt(x * x + 1)));
+	});
+
 	/// r2 is the principal radian angle whose tangent is r1.
 	///
 	/// [FATAN][link] ( F: r1 -- r2 )	
@@ -676,6 +691,16 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.swap();
 		vm.floatStack.push(atan2(vm.floatStack.pop(), vm.floatStack.pop()));
 		// TODO: An ambiguous condition exists r1 and r2 are zero.
+	});
+
+	/// r2 is the floating-point value whose hyperbolic tangent is r1.
+	///
+	/// [FATANH][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FATANH
+	d.addWord("FATANH", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push(log((1+x)/(1-x)) / 2);
+		// TODO: An ambiguous condition exists if r1 is outside the range of -1E0 to 1E0.
 	});
 
 	/// r2 is the cosine of the radian angle r1.
@@ -723,15 +748,22 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(exp(vm.floatStack.pop()));
 	});
 
+	/// Raise e to the power r1 and subtract one, giving r2.
+	///
+	/// [FEXPM1][link] ( F: r1 -- r2 )
+	/// [link]: http://forth-standard.org/standard/float/FEXPM1
+	d.addWord("FEXPM1", false, false, (){
+		vm.floatStack.push(exp(vm.floatStack.pop()) - 1);
+	});
+
 	/// r2 is the base-ten logarithm of r1.
 	///
 	/// [FLOG][link] ( F: r1 -- r2 )	
 	/// [link]: http://forth-standard.org/standard/float/FLOG
 	d.addWord("FLOG", false, false, (){
-		vm.floatStack.push(log(vm.floatStack.pop()));
+		vm.floatStack.push(log(vm.floatStack.pop()) / LN10);
 		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
 	});
-
 
 	/// Round r1 to an integral value using the "round toward negative infinity" rule, giving r2.
 	///
@@ -740,6 +772,25 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("FLOOR", false, false, (){
 		vm.floatStack.push(vm.floatStack.pop().floorToDouble());
 	});
+
+	/// r2 is the natural logarithm of r1. 
+	///
+	/// [FLN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FLN
+	d.addWord("FLN", false, false, (){
+		vm.floatStack.push(log(vm.floatStack.pop()));
+		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+	});
+
+	/// r2 is the natural logarithm of the quantity r1 plus one.
+	///
+	/// [FLN][link] ( F: r1 -- r2 )	
+	/// [link]: http://forth-standard.org/standard/float/FLNP1
+	d.addWord("FLNP1", false, false, (){
+		vm.floatStack.push(log(vm.floatStack.pop() + 1));
+		// TODO: An ambiguous condition exists if r1 is less than or equal to negative one.
+	});
+
 
 	/// r3 is the greater of r1 and r2.
 	///
@@ -791,6 +842,16 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FSIN
 	d.addWord("FSIN", false, false, (){
 		vm.floatStack.push(sin(vm.floatStack.pop()));
+	});
+
+	/// r2 is the sine of the radian angle r1. r3 is the cosine of the radian angle r1.
+	///
+	/// [FSINCOS][link] ( F: r1 -- r2 r3 )	
+	/// [link]: http://forth-standard.org/standard/float/FSINCOS
+	d.addWord("FSINCOS", false, false, (){
+		double x = vm.floatStack.pop();
+		vm.floatStack.push(sin(x));
+		vm.floatStack.push(cos(x));
 	});
 
 	/// r2 is the hyperbolic sine of r1.
