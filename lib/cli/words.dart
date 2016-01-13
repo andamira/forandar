@@ -5,6 +5,7 @@ part of cli;
 void includeWordsCli(VirtualMachine vm, Dictionary d) {
 	includeWordsCliCore(vm, d);
 	includeWordsCliFile(vm, d);
+	includeWordsCliFloat(vm, d);
 	includeWordsCliDebug(vm, d);
 }
 
@@ -18,11 +19,13 @@ void includeWordsCliCore(VirtualMachine vm, Dictionary d) {
 		exit(0);
 	});
 
-	/// 
+	/// Display n in free field format.
 	///
-	/// [][link]
-	/// [link]:
-	// d.addWordOver("", false, false, () {}); // TODO
+	/// [.][link] ( n -- )
+	/// [link]: http://forth-standard.org/standard/core/d
+	d.addWordOver(".", false, false, () {
+		stdout.write("${vm.dataStack.pop()} ");
+	});
 }
 
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
@@ -39,6 +42,18 @@ void includeWordsCliFile(VirtualMachine vm, Dictionary d) {
 	/// [][link]
 	/// [link]:
 	// d.addWordOver("", false, false, () {}); // TODO
+}
+
+/// [The optional Floating-Poing word set][http://forth-standard.org/standard/float]
+void includeWordsCliFloat(VirtualMachine vm, Dictionary d) {
+
+	/// Display, with a trailing space, the top number on the floating-point stack using fixed-point notation.
+	///  
+	/// [Fd][link] ( -- ) ( F: r -- )
+	/// [link]: http://forth-standard.org/standard/float/Fd
+	d.addWord("F.", false, false, (){
+		stdout.write("${vm.floatStack.pop()} ");
+	});
 }
 
 void includeWordsCliDebug(VirtualMachine vm, Dictionary d) {

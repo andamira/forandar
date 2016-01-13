@@ -3,7 +3,11 @@ part of forandar;
 // Global Constants.
 
 // Address for storing the base conversion radix in the data space.
-const addrBASE = 0;
+const int addrBASE = 0;
+
+// Flags.
+const int flagTRUE = -1;
+const int flagFALSE = 0;
 
 
 /// The Forth Virtual Machine.
