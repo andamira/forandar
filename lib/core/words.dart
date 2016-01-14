@@ -366,9 +366,15 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 				/// Tries to convert the word to a number.
 				try {
 
-					num number;
-					bool isInt = true;
-					int base = vm.dataSpace.data.getInt32(addrBASE);
+					num number; // parsed number
+					bool isInt = true; // is it an integer?
+					bool isDouble = false; // is it a double cell number?
+
+					int base = vm.dataSpace.data.getInt32(addrBASE); // (radix)
+
+					// first and last characters of the word
+					String prefix = wordStr.substring(0,1);
+					//String suffix = wordStr.substring(wordStr.length - 1);
 
 					// First tries parsing the word to an integer in the current base.
 					//
@@ -387,25 +393,34 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 					// <bdigit> represents a digit according to the value of BASE
 					//
 					// https://api.dartlang.org/stable/dart-core/int/parse.html
-					number = int.parse(wordStr,
-						radix: base == 10 ? null : base,
-						onError: (wordStr) => null
-					);
+					// http://forth-standard.org/standard/core/toNUMBER
 
-					// Then tries to parse it as any of the specific forms.
+					// Is it a double cell integer?
+					//
+					// FIXME: current double-cell system is temporary. It will need to support
+					// parsing a 64bit number and save it into two separate 32 bit integers
+					if (wordStr.endsWith(".")) {
+						isDouble = true;
+						wordStr = wordStr.substring(0, wordStr.length - 1);
+					}
+
+					// Note: The ternary conditional inside the radix parameter, allows Dart to
+					// automatically interpret any '0x' prefixed integers with hexadecimal base.
+					number = int.parse(wordStr, radix: base == 10 ? null : base, onError: (wordStr) => null);
+
+					//print("\nWORD $wordStr; BASE $base; PREFIX $prefix; DOUBLE: $isDouble; FLOAT: ${!isInt}"); // TEMP
+
+					// If it couldn't be parsed, then tries it again as a prefixed integer.
 					if (number == null) {
 
-						// The prefix of the string.
-						String f = wordStr.substring(0,1);
-
 						// Sets the base as decimal,
-						if (f == '#' ) {
+						if (prefix == '#' ) {
 							base = 10;
 						// or as hexadecimal
-						} else if (f == r'$') {
+						} else if (prefix == r'$') {
 							base = 16;
 						// or as binary.
-						} else if (f == '%') {
+						} else if (prefix == '%') {
 							base = 2;
 						}
 
@@ -413,21 +428,13 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 						number = int.parse(wordStr.substring(1), radix: base, onError: (wordStr) => null);
 
 						// If it fails, then tries to parse it as a character.
-						if (number == null && wordStr.length == 3 && f == "'" && wordStr.endsWith("'")) {
+						if (number == null && wordStr.length == 3 && prefix == "'" && wordStr.endsWith("'")) {
 							number = wordStr.codeUnitAt(1);
 						}
-
-						// print("NUMBER $number; BASE $base; PREFIX $f"); // TEMP
 					}
-
-
-					// If it's not an integer, tries parsing it as a double cell.
-					// TODO
-
 
 					// If it's not an integer, or a double, tries parsing it as floating point.
 					//
-					// TODO
 					// Must recognize floating-point numbers in this form:
 					// Convertible string := <significand><exponent>
 					// <significand> := [<sign>]<digits>[.<digits0>]
@@ -441,12 +448,27 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 					// 1E    1.E    1.E0    +1.23E-1    -1.23E+1
 					//
 					// https://api.dartlang.org/stable/dart-core/double/parse.html
-					if (number == null && base == 10) {
-						number = double.parse(wordStr, (wordStr) => null);
+					// http://forth-standard.org/standard/float
+					// http://forth-standard.org/standard/float/toFLOAT
+					if (number == null && !isDouble && base == 10) {
 
-						// If it's not a double either, throw an error.
+						// Only tries to parse it if the string has the correct scientific notation format.
+						RegExp exp = new RegExp(r"[-+]?[0-9]*.?[0-9]*[deDE][-+]?[0-9]*");
+
+						if (exp.hasMatch(wordStr)) {
+
+							// Fixes the string for the Dart parser
+							//
+							wordStr = wordStr.replaceAll(new RegExp(r'[dD]'), 'e');
+							// Dart double.parser() doesn't recognize floats ending in [e|E]
+							if (wordStr.endsWith('e') || wordStr.endsWith('E')) wordStr+= '+0';
+
+							number = double.parse(wordStr, (wordStr) => null);
+						}
+
+						// If it couldn't be parsed as float either, throw an error.
 						if (number == null) {
-							throwError(e, new ForthError(-2048));
+							throwError(e, new ForthError(-2048, $wordStr));
 						} else {
 							isInt = false;
 						}
@@ -462,6 +484,8 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 						// Integers go to the dataStack.
 						if (isInt) {
 							vm.dataStack.push(number.toInt());
+
+							if (isDouble) vm.dataStack.push(0); // FIXME (this is a temporary workaround for small ints)
 
 						// Floats go to the floatStack.
 						} else {
@@ -519,7 +543,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	// f~abs f~rel
 
 	/// Display an integer binary format.
-	d.addWord("SHOWBITS", false, false, () {
+	d.addWord("BIN.", false, false, () {
 		int norig = vm.dataStack.pop();
 		var str = new StringBuffer();
 		for (var i = 32; i >= 0; i--) {
@@ -527,7 +551,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 			if (norig & pow(2,i) != 0) bit = 1;
 			str.write(bit);
 		}
-		print("BITS of $norig: ${str}");
+		print(str);
 	});
 }
 
@@ -661,6 +685,8 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/Fd
 	d.addWord("F.", false, false, (){
 		print(vm.floatStack.pop());
+		// TODO: An ambiguous condition exists if the value of BASE is not (decimal) ten or if the
+		// character string representation exceeds the size of the pictured numeric output string buffer.
 	});
 
 	/// d is the double-cell signed-integer equivalent of the integer portion of r.
