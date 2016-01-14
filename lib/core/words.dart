@@ -9,27 +9,27 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! . / /MOD - + 2DROP 2DUP ?DUP >R @ ABS AND ALIGN ALIGNED BASE DEPTH DECIMAL DROP DUP IMMEDIATE LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP XOR
+	// ! * + - . / /MOD 0< 0= 2DROP 2DUP ?DUP >R @ ABS AND ALIGN ALIGNED BASE CR DEPTH DECIMAL DROP DUP IMMEDIATE LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< U> XOR
 	//
-	// NIP PICK TUCK
+	// 0<> 0> FALSE NIP PICK TRUE TUCK
 	//
 	//
 	// Not implemented:
 	//
-	// # #> #S ' ( * */ */MOD + +! +LOOP , ." 0< 0= 1+ 1- 2! 2* 2/
+	// # #> #S ' ( */ */MOD +! +LOOP , ." 1+ 1- 2! 2* 2/
 	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER ABORT
 	// ABORT" ACCEPT ALLOT BEGIN BL C! C, C@ CELL+
-	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CR CREATE DO DOES>
+	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE QUIT R> R@ RECURSE REPEAT
-	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE U. U< UM*
+	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
-	// .( .R 0<> 0> 2>R 2R> 2R@ :NONAME <> ?DO ACTION-OF AGAIN BUFFER: C"
-	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE FALSE HEX HOLDS
+	// .( .R 2>R 2R> 2R@ :NONAME <> ?DO ACTION-OF AGAIN BUFFER: C"
+	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HEX HOLDS
 	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
-	// S\" SAVE-INPUT SOURCE-ID TO TRUE U.R U> UNUSED VALUE WITHIN
+	// S\" SAVE-INPUT SOURCE-ID TO U.R U> UNUSED VALUE WITHIN
 	// [COMPILE] \
 
 	/// Store x at a-addr.
@@ -43,6 +43,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// https://en.wikipedia.org/wiki/Two%27s_complement
 	d.addWord("!", false, false, (){
 		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
+	});
+
+	/// Multiply n1 | u1 by n2 | u2 giving the product n3 | u3.
+	///
+	/// [Times][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
+	/// [link]: http://forth-standard.org/standard/core/Times
+	d.addWord("*", false, false, (){
+		vm.dataStack.push((vm.dataStack.pop() * vm.dataStack.pop()));
 	});
 
 	/// Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
@@ -97,6 +105,38 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		// If n1 and n2 differ in sign, the implementation-defined result
 		// returned will be the same as that returned by either the phrase
 		// >R S>D R> FM/MOD or the phrase >R S>D R> SM/REM.
+	});
+
+	/// flag is true if and only if n is less than zero.
+	///
+	/// [Zeroless][link] ( x -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Zeroless
+	d.addWord("0<", false, false, (){
+		vm.dataStack.pop() < 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if x is not equal to zero.
+	///
+	/// [Zerone][link] ( x -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Zerone
+	d.addWord("0<>", false, false, (){
+		vm.dataStack.pop() != 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if x is equal to zero.
+	///
+	/// [ZeroEqual][link] ( x -- flag )
+	/// [link]: http://forth-standard.org/standard/core/ZeroEqual
+	d.addWord("0=", false, false, (){
+		vm.dataStack.pop() == 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if n is greater than zero.
+	///
+	/// [Zeromore][link] ( x -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Zeromore
+	d.addWord("0>", false, false, (){
+		vm.dataStack.pop() > 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 	});
 
 	/// Drop cell pair x1 x2 from the stack.
@@ -154,6 +194,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.dataStack.pop() & vm.dataStack.pop());
 	});
 
+	/// char is the character value for a space.
+	///
+	/// [BL][link] ( -- char )
+	/// [link]: http://forth-standard.org/standard/core/BL
+	d.addWord("BL", false, false, (){
+		vm.dataStack.push(0x20); // SPACE = 0x20
+	});
+
 	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
 	///
 	/// [DEPTH][link] ( -- +n )
@@ -179,6 +227,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(addrBASE);
 	});
 
+	/// Cause subsequent output to appear at the beginning of the next line.
+	///
+	/// [CR][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/CR
+	d.addWord("CR", false, false, (){
+		print("");
+	});
+
 	/// Set the numeric conversion radix to ten (decimal).
 	///
 	/// [DECIMAL][link] ( -- a-addr )
@@ -192,6 +248,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [DROP][link] ( x -- )
 	/// [link]: http://forth-standard.org/standard/core/DROP
 	d.addWord("DROP", false, false, vm.dataStack.drop);
+
+	/// Return a false flag.
+	///
+	/// [FALSE][link] ( -- false )
+	/// [link]: http://forth-standard.org/standard/core/FALSE
+	d.addWord("FALSE", false, false, (){
+		vm.dataStack.push(flagFALSE);
+	});
 
 	/// Make the most recent definition an immediate word.
 	///
@@ -216,6 +280,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("LSHIFT", false, false, (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() << vm.dataStack.pop());
+		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
 	});
 
 	/// n3 is the greater of n1 and n2.
@@ -296,6 +361,15 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("RSHIFT", false, false, (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
+		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
+	});
+
+	/// Return a true flag.
+	///
+	/// [TRUE][link] ( -- true )
+	/// [link]: http://forth-standard.org/standard/core/TRUE
+	d.addWord("TRUE", false, false, (){
+		vm.dataStack.push(flagTRUE);
 	});
 
 	/// Exchange the top two stack items.
@@ -316,6 +390,46 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/XOR
 	d.addWord("XOR", false, false, (){
 		vm.dataStack.push(vm.dataStack.pop() ^ vm.dataStack.pop());
+	});
+
+	/// Display u in free field format.
+	///
+	/// [Ud][link] ( u -- )
+	/// [link]: http://forth-standard.org/standard/core/Ud
+	d.addWord("U.", false, false, (){
+		print(vm.dataStack.pop().toUnsigned(32));
+	});
+
+	/// flag is true if and only if u1 is less than u2.
+	///
+	/// [Uless][link] ( u -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Uless
+	d.addWord("U<", false, false, (){
+		if (vm.dataStack.pop().toUnsigned(32) > vm.dataStack.pop().toUnsigned(32)) {
+			vm.dataStack.push(flagTRUE);
+		} else {
+			vm.dataStack.push(flagFALSE);
+		}
+	});
+
+	/// flag is true if and only if u1 is greater than u2.
+	///
+	/// [Umore][link] ( u -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Umore
+	d.addWord("U>", false, false, (){
+		if (vm.dataStack.pop().toUnsigned(32) < vm.dataStack.pop().toUnsigned(32)) {
+			vm.dataStack.push(flagTRUE);
+		} else {
+			vm.dataStack.push(flagFALSE);
+		}
+	});
+
+	/// Return a true flag.
+	///
+	/// [TRUE][link] ( -- false )
+	/// [link]: http://forth-standard.org/standard/core/TRUE
+	d.addWord("TRUE", false, false, (){
+		vm.dataStack.push(flagTRUE);
 	});
 }
 
