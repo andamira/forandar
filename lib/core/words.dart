@@ -9,27 +9,27 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - . / /MOD 0< 0= 2DROP 2DUP ?DUP >R @ ABS AND ALIGN ALIGNED BASE CR DEPTH DECIMAL DROP DUP IMMEDIATE LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< U> XOR
+	// ! * + - . / /MOD 0< 0= 2DROP 2DUP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE CR DEPTH DECIMAL DROP DUP IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< XOR
 	//
-	// 0<> 0> FALSE NIP PICK TRUE TUCK
+	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
 	//
 	//
 	// Not implemented:
 	//
 	// # #> #S ' ( */ */MOD +! +LOOP , ." 1+ 1- 2! 2* 2/
-	// 2@ 2OVER 2SWAP : ; < <# = > >BODY >IN >NUMBER ABORT
+	// 2@ 2OVER 2SWAP : ; <# >BODY >IN >NUMBER ABORT
 	// ABORT" ACCEPT ALLOT BEGIN BL C! C, C@ CELL+
 	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
-	// HERE HOLD I IF INVERT J KEY LEAVE LITERAL LOOP M*
+	// HERE HOLD I IF J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE QUIT R> R@ RECURSE REPEAT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
-	// .( .R 2>R 2R> 2R@ :NONAME <> ?DO ACTION-OF AGAIN BUFFER: C"
-	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HEX HOLDS
+	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
+	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HOLDS
 	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
-	// S\" SAVE-INPUT SOURCE-ID TO U.R U> UNUSED VALUE WITHIN
+	// S\" SAVE-INPUT SOURCE-ID TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
 
 	/// Store x at a-addr.
@@ -139,6 +139,17 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.pop() > 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 	});
 
+	/// EXEC: Transfer cell pair x1 x2 to the return stack.
+	///
+	/// : [TwotoR][link] ( x1 x2 -- ) ( R: -- x1 x2 )
+	/// SWAP >R >R ;
+	/// [link]: http://forth-standard.org/standard/core/TwotoR
+	d.addWord("2>R", true, false, () {
+		vm.dataStack.swap();
+		vm.returnStack.push(vm.dataStack.pop());
+		vm.returnStack.push(vm.dataStack.pop());
+	});
+
 	/// Drop cell pair x1 x2 from the stack.
 	///
 	/// [2DROP][link] ( x1 x2 -- )
@@ -151,6 +162,60 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///   over over ;
 	/// [link]: http://forth-standard.org/standard/core/TwoDUP
 	d.addWord("2DUP", false, false, vm.dataStack.dup2);
+
+	/// EXEC: Transfer cell pair x1 x2 from the return stack.
+	///
+	/// : [TwoRfrom][link] ( -- x1 x2 ) ( R: x1 x2 -- )
+	/// R> R> SWAP ;
+	/// [link]: http://forth-standard.org/standard/core/TwoRfrom
+	d.addWord("2R>", true, false, () {
+		vm.dataStack.push(vm.returnStack.pop());
+		vm.dataStack.push(vm.returnStack.pop());
+		vm.dataStack.swap();
+	});
+
+	/// EXEC: Copy cell pair x1 x2 from the return stack.
+	///
+	/// : [TwoRFetch][link] ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+	/// R> R> 2DUP >R >R SWAP ;
+	/// [link]: http://forth-standard.org/standard/core/TwoRFetch
+	d.addWord("2R@", true, false, () {
+		vm.dataStack.push(vm.returnStack.peek());
+		vm.dataStack.push(vm.returnStack.peek());
+		vm.dataStack.swap();
+	});
+
+	/// flag is true if and only if n1 is less than n2.
+	///
+	/// [less][link] ( n1 n2 -- flag )
+	/// [link]: http://forth-standard.org/standard/core/less
+	d.addWord("<", false, false, (){
+		vm.dataStack.pop() > vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if x1 is not bit-for-bit the same as x2.
+	///
+	/// [ne][link] ( n1 n2 -- flag )
+	/// [link]: http://forth-standard.org/standard/core/ne
+	d.addWord("<>", false, false, (){
+		vm.dataStack.pop() != vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if x1 is bit-for-bit the same as x2.
+	///
+	/// [Equal][link] ( n1 n2 -- flag )
+	/// [link]: http://forth-standard.org/standard/core/Equal
+	d.addWord("=", false, false, (){
+		vm.dataStack.pop() == vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
+
+	/// flag is true if and only if n1 is more than n2.
+	///
+	/// [more][link] ( n1 n2 -- flag )
+	/// [link]: http://forth-standard.org/standard/core/more
+	d.addWord(">", false, false, (){
+		vm.dataStack.pop() < vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+	});
 
 	/// Moves data FROM [dataStack] TO [returnStack].
 	///
@@ -255,6 +320,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/FALSE
 	d.addWord("FALSE", false, false, (){
 		vm.dataStack.push(flagFALSE);
+	});
+
+	/// Set contents of BASE to sixteen.
+	///
+	/// [HEX][link] ( -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/HEX
+	d.addWord("HEX", false, false, () {
+		vm.dataSpace.data.setInt32(addrBASE, 16);
 	});
 
 	/// Make the most recent definition an immediate word.
@@ -650,6 +723,11 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// Copy and display the values currently on the floating point stack.
 	d.addWord(".FS", false, false, () {
 		print("floatStack: ${vm.floatStack}");
+	});
+
+	/// Copy and display the values currently on the return stack.
+	d.addWord(".RS", false, false, () {
+		print("returnStack: ${vm.returnStack}");
 	});
 
 	// https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Floating-Point-Tutorial.html
