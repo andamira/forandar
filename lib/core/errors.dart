@@ -3,9 +3,8 @@ part of forandar;
 
 /// Manages errors.
 throwError(var dartError, ForthError forthError) {
-	// TEMP
-	print("$forthError");
-	//print("$forthError » $dartError");
+	print("\n$forthError");
+	//print("$dartError"); // TODO: more debug
 }
 
 /// List of Forth Errors
@@ -13,8 +12,9 @@ class ForthError implements Error {
 
 	num err;
 	String errStr;
+	String msg;
 
-	ForthError(this.err) {
+	ForthError(this.err, [this.msg]) {
 		switch (err) {
 
 			// Forth Standard Errors
@@ -262,13 +262,14 @@ class ForthError implements Error {
 			case -2048:
 				errStr = 'not a word, not a number (not understood)';
 				break;
-
 		}
 	}
 
 	@override
 	String toString() {
-		return "Error ${err} ${errStr}";
+		msg != null ? msg = "$msg " : msg = "";
+
+		return "Error ${err}: ${msg}${errStr}";
 	}
 }
 

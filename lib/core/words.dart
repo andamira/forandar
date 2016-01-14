@@ -85,7 +85,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 
 	/// Divide n1 by n2, giving the single-cell remainder n3 and the single-cell quotient n4.
 	///
-	/// [DivMOD][link] ( n1 n2 -- n3 n4 )
+	/// : [DivMOD][link] ( n1 n2 -- n3 n4 )
+	/// 2DUP MOD -ROT / ;
 	/// [link]: http://forth-standard.org/standard/core/DivMOD
 	d.addWord("/MOD", false, false, (){
 		int x = vm.dataStack.pop();
@@ -471,8 +472,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
 				} catch(e) {
-					throwError(e, new ForthError(-2048));
-					print("WORD: $wordStr"); // TEMP
+					throwError(e, new ForthError(-2048, wordStr));
 					break;
 				}
 
