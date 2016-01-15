@@ -35,7 +35,7 @@ class Configuration {
 		option['returnStackSize']  = 32;
 		option['controlStackSize'] = 32;
 
-		option['dataSpaceSize']    = 512;
+		option['dataSpaceSize']    = 64;
 	}
 }
 

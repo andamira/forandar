@@ -9,17 +9,17 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE CELL+ CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< XOR
 	//
 	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
 	//
 	//
 	// Not implemented:
 	//
-	// # #> #S ' ( */ */MOD +! +LOOP , ." 2* 2/
+	// # #> #S ' ( */ */MOD +! +LOOP ." 2* 2/
 	// : ; <# >BODY >IN >NUMBER ABORT
-	// ABORT" ACCEPT ALLOT BEGIN BL C! C, C@
-	// CELLS CHAR CHAR+ CHARS CONSTANT COUNT CREATE DO DOES>
+	// ABORT" ACCEPT ALLOT BEGIN BL
+	// CHAR CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE QUIT R> R@ RECURSE REPEAT
@@ -59,6 +59,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/Plus
 	d.addWord("+", false, false, (){
 		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
+	});
+
+	/// Reserve one cell of data space and store x in the cell.
+	///
+	/// [,][link] ( x -- )
+	/// [link]: http://forth-standard.org/standard/core/Comma
+	d.addWord(",", false, false, (){
+		vm.dataSpace.data.setInt32(vm.dataSpace.pointer += cellSize, vm.dataStack.pop());
 	});
 
 	/// Subtract n2 | u2 from n1 | u1, giving the difference n3 | u3.
@@ -283,16 +291,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
 	});
 
-	/// x is the value stored at a-addr.
-	///
-	/// [@][link] ( a-addr -- x )
-	/// [link]: http://forth-standard.org/standard/core/Fetch
-	//
-	// Fetches an integer number using four bytes at the specified address.
-	d.addWord("@", false, false, (){
-		vm.dataStack.push(vm.dataSpace.data.getInt32(vm.dataStack.pop()));
-	});
-
 	/// u is the absolute value of n.
 	///
 	/// [ABS][link] ( n -- u )
@@ -317,6 +315,31 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(0x20); // SPACE = 0x20
 	});
 
+	/// Store char at c-addr.
+	///
+	/// [C!][link] ( char a-addr -- )
+	/// [link]: http://forth-standard.org/standard/core/CStore
+	d.addWord("C!", false, false, (){
+		vm.dataSpace.data.setInt8(vm.dataStack.pop(), vm.dataStack.pop());
+	});
+
+	/// Reserve space for one character in the data space and store char in the space.
+	///
+	/// [C,][link] ( x -- )
+	/// [link]: http://forth-standard.org/standard/core/CComma
+	d.addWord("C,", false, false, (){
+		vm.dataSpace.data.setInt8(vm.dataSpace.pointer++, vm.dataStack.pop());
+	});
+
+	/// Fetch the character stored at c-addr.
+	///
+	/// [C@][link] ( c-addr -- char )
+	/// [link]: http://forth-standard.org/standard/core/CFetch
+	//
+	d.addWord("C@", false, false, (){
+		vm.dataStack.push(vm.dataSpace.data.getInt8(vm.dataStack.pop()));
+	});
+
 	/// Add the size in address units of a cell to a-addr1, giving a-addr2.
 	///
 	/// [CELL+][link] ( a-addr1 -- a-addr2 )
@@ -324,6 +347,30 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("CELL+", false, false, (){
 		vm.dataStack.push(vm.dataStack.pop() + cellSize);
 	});
+
+	/// n2 is the size in address units of n1 cells.
+	///
+	/// [CELLS][link] ( n1 -- n2 )
+	/// [link]: http://forth-standard.org/standard/core/CELLS
+	d.addWord("CELLS", false, false, (){
+		vm.dataStack.push(vm.dataStack.pop() * cellSize);
+	});
+
+	/// Add the size in address units of a character to c-addr1, giving c-addr2.
+	///
+	/// [CHAR+][link] ( c-addr1 -- c-addr2 )
+	/// [link]: http://forth-standard.org/standard/core/CHAR+
+	// TODO: support extended characters
+	d.addWord("CHAR+", false, false, (){
+		vm.dataStack.push(vm.dataStack.pop() + 1);
+	});
+
+	/// n2 is the size in address units of n1 characters.
+	///
+	/// [CHARS][link] ( n1 -- n2 )
+	/// [link]: http://forth-standard.org/standard/core/CHARS
+	// TODO: support extended characters
+	d.addWord("CHARS", false, false, (){});
 
 	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
 	///
@@ -385,7 +432,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [HERE][link] ( -- addr )
 	/// [link]: http://forth-standard.org/standard/core/HERE
 	d.addWord("HERE", false, false, (){
-		vm.dataStack.push(vm.dataSpaceP);
+		vm.dataStack.push(vm.dataSpace.pointer);
 	});
 
 	/// Set contents of BASE to sixteen.
@@ -579,8 +626,8 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	d.addWord("INTERPRET", false, false, () async {
 
-		/// Creates a list with all the lines from the source code strings, files and URLs.
-		await vm.input.fillSourceCodeLines();
+		/// Concatenates all the source code strings, files and URLs into a single string.
+		await vm.input.loadSourceCode();
 
 		while (true) {
 
