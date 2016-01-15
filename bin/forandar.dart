@@ -43,6 +43,7 @@ void parseArguments(List<String> args, InputQueue i) {
 		/// Argument -e, --evaluate
 		..addOption('evaluate', abbr: 'e',
 			allowMultiple: true,
+			splitCommas: false, // Must be false to preserve the commas (,) in string
 			valueHelp: 'STRING',
 			help: "Interpret STRING (with `EVALUATE')"
 		)

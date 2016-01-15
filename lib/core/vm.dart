@@ -26,13 +26,9 @@ class VirtualMachine {
 	LifoStackInt controlStack;
 	LifoStackFloat floatStack;
 
-	// Data Space.
+	// Data Spaces.
 	DataSpace dataSpace;
 	ObjectSpace objectSpace;
-
-	// Pointers
-	int dataSpaceP = 0;
-	int objectSpaceP = 0;
 
 	// Input Queue.
 	InputQueue input;
@@ -62,6 +58,9 @@ class VirtualMachine {
 
 		/// Sets a default decimal BASE (radix).
 		dict.wordsMap['DECIMAL'].exec();
+
+		// Adjusts the initial data pointer
+		dataSpace.pointer = cellSize * 1;
 	}
 }
 
@@ -72,7 +71,7 @@ class VirtualMachine {
 class DataSpace {
 	ByteData data;
 	final int maxSize;
-	int size = 0;
+	int pointer = 0;
 
 	DataSpace(this.maxSize) {
 		data = new ByteData(maxSize);
@@ -82,6 +81,7 @@ class DataSpace {
 /// 
 class ObjectSpace {
 	List<Object> data = [];
+	int pointer = 0;
 }
 
 /// Supported types of input.
@@ -103,15 +103,14 @@ class InputQueueElement {
 /// either as a string, or as a file / URL to be loaded.
 class InputQueue {
 
-	/// Storage for the source code inputs, in order.
+	/// Storage for the source code inputs references, in order.
 	List<InputQueueElement> queue = [ ];
 
-	/// Storage for the source code lines.
-	List<String> sourceCodeLines = [ ];
+	/// Storage for the actual source code.
+	String sourceCode = "";
 
 	/// Position markers for the current interpretation.
-	int currentLine = 0;
-	int currentLineIndex = 0;
+	int index = 0;
 
 	/// Adds a new input to the [queue].
 	void add(InputType t, String s) {
@@ -121,46 +120,38 @@ class InputQueue {
 	/// Clears the [queue].
 	void clear() {
 		queue = [ ];
-		sourceCodeLines = [ ];
-		currentLine = 0;
-		currentLineIndex = 0;
+		sourceCode = "";
+		index = 0;
 	}
 
 	/// Loads some URL.
 	///
-	/// This function is replaced in the Web library.
+	/// This function is redefined in the Web library.
+	/// TODO: in CLI too.
 	Future<String> loadUrl();
 
 	/// Loads some file.
 	///
-	/// This function is replaced in the CLI library.
+	/// This function is redefined in the CLI library.
 	Future<String> loadFile();
 
 	/// 
-	Future fillSourceCodeLines() async {
+	Future loadSourceCode() async {
 
 		for (var x in queue) {
 
-			String sourceCode = ""; 
-
 			switch (x.type) {
 				case InputType.String:
-					sourceCode = x.str;
+					sourceCode += "\n" + x.str;
 					break;
 				case InputType.File:
-					sourceCode = await loadFile(x.str);
+					sourceCode += "\n" + await loadFile(x.str);
 					break;
 				case InputType.Url:
-					sourceCode = await loadUrl(x.str);
+					sourceCode += "\n" + await loadUrl(x.str);
 					break;
 			}
-
-			sourceCodeLines = new List.from(sourceCodeLines)
-				..addAll(const LineSplitter().convert(sourceCode));
 		}
-
-		//print(sourceCodeLines); // TEMP
-		//print(sourceCodeLines.length); // TEMP
 	}
 
 
@@ -169,18 +160,17 @@ class InputQueue {
 	/// The word is first converted to uppercase.
 	String nextWord() {
 
-		while (currentLine < sourceCodeLines.length) {
+		while (index < sourceCode.length) {
 
 			// Index of the next letter.
-			var letter = nextLetter(currentLine, currentLineIndex);
+			var letter = nextLetter();
 
 			// Index of the next space.
-			currentLineIndex = nextSpace(currentLine, letter);
-			var wordStr = sourceCodeLines[currentLine].substring(letter, currentLineIndex);
+			index = nextSpace();
+			var wordStr = sourceCode.substring(letter, index);
 
 			if (wordStr == "") {
-				currentLine++;
-				currentLineIndex = 0;
+				index = 0;
 			} else {
 				return wordStr;
 			}
@@ -189,11 +179,11 @@ class InputQueue {
 	}
 
 	/// Returns the next letter (not whitespace).
-	int nextLetter(int line, int index) {
+	int nextLetter() {
 
-		while (index < sourceCodeLines[line].length) {
+		while (index < sourceCode.length) {
 
-			int codeUnit = sourceCodeLines[line].codeUnitAt(index);
+			int codeUnit = sourceCode.codeUnitAt(index);
 
 			// SPACE = 0x20;
 			if (codeUnit != 0x20 && !_isWhitespace(codeUnit)) {
@@ -204,11 +194,11 @@ class InputQueue {
 		return index;
 	}
 
-	int nextSpace(int line, int index) {
+	int nextSpace() {
 
-		while (index < sourceCodeLines[line].length) {
+		while (index < sourceCode.length) {
 
-			int codeUnit = sourceCodeLines[line].codeUnitAt(index);
+			int codeUnit = sourceCode.codeUnitAt(index);
 
 			// SPACE = 0x20;
 			if (codeUnit == 0x20 && _isWhitespace(codeUnit)) {

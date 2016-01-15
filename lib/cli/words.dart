@@ -61,7 +61,7 @@ void includeWordsCliDebug(VirtualMachine vm, Dictionary d) {
 	/// Prints the [DataSpace] content as a string of Bytes in hex.
 	d.addWordOver(".DD", false, false, () {
 		for (var x in vm.dataSpace.data.buffer.asUint8List()) {
-			stdout.write(x.toRadixString(16).replaceAll(new RegExp(r'0'),'_'));
+			stdout.write(x.toRadixString(16).replaceAll(new RegExp(r'0'),'_') + " ");
 		}
 		stdout.writeln();
 	});
