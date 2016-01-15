@@ -93,6 +93,16 @@ abstract class LifoStack extends Stack {
 		}
 	}
 
+	/// Exchanges the top two stack number pairs.
+	///
+	/// ( a b c d -- c d a b )
+	void over2() {
+		if (size > 3 && size < (maxSize - 1)) {
+			data[size] = data[size++ - 4];
+			data[size] = data[size++ - 4];
+		}
+	}
+
 	/// Returns the last stack item WITHOUT removing it.
 	///
 	/// ( a -- )
@@ -187,6 +197,19 @@ abstract class LifoStack extends Stack {
 			num t = data[size - 1];
 			data[size - 1] = data[size - 2];
 			data[size - 2] = t;
+		}
+	}
+
+	/// Exchanges the top two stack number pairs.
+	///
+	/// ( a b c d -- c d a b )
+	void swap2() {
+		if (size > 3) {
+			var t = data.sublist(size - 4, size);
+			data[size - 1] = t[1];
+			data[size - 2] = t[0];
+			data[size - 3] = t[3];
+			data[size - 4] = t[2];
 		}
 	}
 

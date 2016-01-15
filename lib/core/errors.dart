@@ -3,7 +3,7 @@ part of forandar;
 
 /// Manages errors.
 throwError(var dartError, ForthError forthError) {
-	print("\n$forthError");
+	print("\n$forthError\n");
 	//print("$dartError"); // TODO: more debug
 }
 

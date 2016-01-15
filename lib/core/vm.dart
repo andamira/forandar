@@ -4,8 +4,10 @@ part of forandar;
 
 // Address for storing the base conversion radix in the data space.
 const int addrBASE = 0;
+// The size of a cell in bytes.
+const int cellSize = 4;
 
-// Flags.
+// Boolean flags.
 const int flagTRUE = -1;
 const int flagFALSE = 0;
 
@@ -27,6 +29,10 @@ class VirtualMachine {
 	// Data Space.
 	DataSpace dataSpace;
 	ObjectSpace objectSpace;
+
+	// Pointers
+	int dataSpaceP = 0;
+	int objectSpaceP = 0;
 
 	// Input Queue.
 	InputQueue input;
