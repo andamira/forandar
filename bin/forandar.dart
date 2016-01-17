@@ -26,8 +26,11 @@ main(List<String> args) async {
 	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);
 
-	/// TODO: Interprets the code in the input queue.
-	forth.dict.wordsMap['INTERPRET'].exec();
+	/// Interprets the code in the input queue.
+	await forth.dict.wordsMap['INTERPRET'].exec();
+
+	/// Starts the interactive interpreter if BYE hasn't been called.
+	// forth.dict.wordsMap['INTERACTIVE-INTERPRETER'].exec();
 }
 
 /// Parses the CLI arguments
@@ -110,10 +113,6 @@ void parseArguments(List<String> args, InputQueue i) {
 				break;
 		}
 	});
-
-	/// Runs the interactive interpreter.
-	tempAccept();
-	//forth.dict.wordsMap['ACCEPT'].exec(); // TODO
 }
 
 /// Displays usage and exits.
@@ -122,8 +121,8 @@ void displayUsage(ArgParser p) {
 	exit(0);
 }
 
-
 /// Returns version from pubspec.yaml. Updates global the first time.
+// TODO: not in use right now
 Future<String> getVersion() async {
 	if (forandarVersion == "FORANDAR_VERSION") {
 		forandarVersion = await new File('pubspec.yaml').readAsString().then((String contents) {
@@ -131,22 +130,5 @@ Future<String> getVersion() async {
 		});
 	}
 	return forandarVersion;
-}
-
-
-// TEMP CLI Interpreter
-tempAccept() async {
-	stdout.writeln("andamira forandar v${await getVersion()}");
-	stdout.writeln("Type `bye' to exit");
-
-	while(true) {
-
-		forth.input.clear();
-		forth.input.add(InputType.String, stdin.readLineSync());
-
-		await forth.dict.wordsMap['INTERPRET'].exec();
-
-		stdout.writeln("ok");
-	}
 }
 

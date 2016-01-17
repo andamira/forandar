@@ -11,6 +11,24 @@ void includeWordsCli(VirtualMachine vm, Dictionary d) {
 
 void includeWordsCliCore(VirtualMachine vm, Dictionary d) {
 
+	/// TODO FIXME
+	///
+	d.addWordOver("INTERACTIVE-INTERPRETER", false, false, () async {
+
+		//stdout.writeln("andamira forandar v${await getVersion()}");
+		stdout.writeln("Type `bye' to exit");
+		
+		while(true) {
+		
+			vm.input.clear();
+			vm.input.add(InputType.String, stdin.readLineSync());
+
+			await d.wordsMap['INTERPRET'].exec();
+
+			stdout.writeln("ok"); // TEMP
+		}
+	});
+
 	/// 
 	///
 	/// [BYE][link]
