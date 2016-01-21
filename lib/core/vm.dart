@@ -175,7 +175,7 @@ class InputQueue {
 			if (letter == null) break;
 
 			index = nextSpace(letter);
-			if (index == null) break;
+			if (index == null) index = sourceCode.length;
 
 			var wordStr = sourceCode.substring(letter, index);
 

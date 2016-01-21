@@ -96,5 +96,17 @@ class Dictionary {
 			addWord(str, isImmediate, isCompileOnly, f);
 		}
 	}
+
+	/// Adds a new word that does nothing at all.
+	///
+	/// Convenience function to create a placeholder to be later overriden
+	/// by calling [addWordOver] from cli/words.dart o web/words.dart.
+	/// It's also useful to define words with no behaviour in the current
+	/// implementation, like ALIGN and ALIGNED.
+	addWordBlank(String str) {
+		str = str.toUpperCase();
+		wordsList.add(new Word(false, false, (){}, str, wordsList.length));
+		wordsMap[str] = wordsList.last;
+	}
 }
 

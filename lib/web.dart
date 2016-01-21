@@ -12,7 +12,7 @@ part 'web/words.dart';
 // - define WEB class, with common methods
 // - sublibraries:: canvas, dom, svg, js-interop
 
-// The input queue for the Web interface.↩
+// The input queue for the Web interface.
 class InputQueueWeb extends InputQueue {
 
 	@override

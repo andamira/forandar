@@ -3,17 +3,27 @@ part of cli;
 /// Forth Primitives that depends on the CLI interface.
 /// 
 void includeWordsCli(VirtualMachine vm, Dictionary d) {
-	includeWordsCliCore(vm, d);
-	includeWordsCliFile(vm, d);
-	includeWordsCliFloat(vm, d);
-	includeWordsCliDebug(vm, d);
+	includeWordsCliStandardCore(vm, d);
+	includeWordsCliStandardOptionalFile(vm, d);
+	includeWordsCliStandardOptionalProgrammingTools(vm, d);
+	includeWordsCliNotStandardExtra(vm, d);
 }
 
-void includeWordsCliCore(VirtualMachine vm, Dictionary d) {
+void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
+
+	// . QUIT U.
+
+	/// Display n in free field format.
+	///	
+	/// [.][link] ( n -- )
+	/// [link]: http://forth-standard.org/standard/core/d
+	d.addWordOver(".", false, false, (){
+		stdout.write("${vm.dataStack.pop()} ");
+	});
 
 	/// TODO FIXME
 	///
-	d.addWordOver("INTERACTIVE-INTERPRETER", false, false, () async {
+	d.addWordOver("QUIT", false, false, () async {
 
 		//stdout.writeln("andamira forandar v${await getVersion()}");
 		stdout.writeln("Type `bye' to exit");
@@ -25,29 +35,21 @@ void includeWordsCliCore(VirtualMachine vm, Dictionary d) {
 
 			await d.wordsMap['INTERPRET'].exec();
 
-			stdout.writeln("ok"); // TEMP
+			stdout.writeln("  ok"); // TEMP
 		}
 	});
 
-	/// 
+	/// Display u in free field format.
 	///
-	/// [BYE][link]
-	/// [link]:
-	d.addWordOver("BYE", false, false, () {
-		exit(0);
-	});
-
-	/// Display n in free field format.
-	///
-	/// [.][link] ( n -- )
-	/// [link]: http://forth-standard.org/standard/core/d
-	d.addWordOver(".", false, false, () {
-		stdout.write("${vm.dataStack.pop()} ");
+	/// [U.][link] ( u -- )
+	/// [link]: http://forth-standard.org/standard/core/Ud
+	d.addWordOver("U.", false, false, (){
+		stdout.write("${vm.dataStack.pop().toUnsigned(32)} ");
 	});
 }
 
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
-void includeWordsCliFile(VirtualMachine vm, Dictionary d) {
+void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 
 	/// Loads a file (URL) and interprets it.
 	///
@@ -62,21 +64,29 @@ void includeWordsCliFile(VirtualMachine vm, Dictionary d) {
 	// d.addWordOver("", false, false, () {}); // TODO
 }
 
-/// [The optional Floating-Poing word set][http://forth-standard.org/standard/float]
-void includeWordsCliFloat(VirtualMachine vm, Dictionary d) {
+void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
 
-	/// Display, with a trailing space, the top number on the floating-point stack using fixed-point notation.
-	///  
-	/// [Fd][link] ( -- ) ( F: r -- )
-	/// [link]: http://forth-standard.org/standard/float/Fd
-	d.addWord("F.", false, false, (){
-		stdout.write("${vm.floatStack.pop()} ");
+	// BYE
+
+	/// Return control to the host operating system, if any.
+	///
+	/// [BYE][link] ( -- )
+	/// [link]: https://forth-standard.org/standard/tools/BYE
+	d.addWordOver("BYE", false, false, () {
+		exit(0);
 	});
 }
 
-void includeWordsCliDebug(VirtualMachine vm, Dictionary d) {
+void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
-	/// Prints the [DataSpace] content as a string of Bytes in hex.
+	// BIN. .DD .OD
+
+	/// Display an integer binary format.
+	d.addWordOver("BIN.", false, false, () {
+		stdout.write("${int32tobin(vm.dataStack.pop())} ");
+	});
+
+	/// Prints the data space content as a string of Bytes in hex. // TEMP
 	d.addWordOver(".DD", false, false, () {
 		for (var x in vm.dataSpace.data.buffer.asUint8List()) {
 			stdout.write(x.toRadixString(16).replaceAll(new RegExp(r'0'),'_') + " ");
@@ -84,10 +94,10 @@ void includeWordsCliDebug(VirtualMachine vm, Dictionary d) {
 		stdout.writeln();
 	});
 
-	/// Prints the [ObjectSpace] content as a string of Bytes in hex.
+	/// Prints the object space content.
 	d.addWordOver(".OD", false, false, () {
-		for (var x in vm.objectSpace.data) {
-			print(x);
+		for (var obj in vm.objectSpace.data) {
+			stdout.write("$obj ");
 		}
 	});
 }

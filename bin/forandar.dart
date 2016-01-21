@@ -30,7 +30,7 @@ main(List<String> args) async {
 	await forth.dict.wordsMap['INTERPRET'].exec();
 
 	/// Starts the interactive interpreter if BYE hasn't been called.
-	// forth.dict.wordsMap['INTERACTIVE-INTERPRETER'].exec();
+	forth.dict.wordsMap['QUIT'].exec();
 }
 
 /// Parses the CLI arguments

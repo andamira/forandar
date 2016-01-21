@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER ROT RSHIFT SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT ROT RSHIFT SWAP U. U< XOR
 	//
 	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
 	//
@@ -22,7 +22,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// CHAR CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
-	// MOVE POSTPONE QUIT R> R@ RECURSE REPEAT
+	// MOVE POSTPONE R> R@ RECURSE REPEAT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
@@ -367,10 +367,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 
 	/// n2 is the size in address units of n1 characters.
 	///
+	/// This word does nothing in this implementation.
+	///
 	/// [CHARS][link] ( n1 -- n2 )
 	/// [link]: http://forth-standard.org/standard/core/CHARS
 	// TODO: support extended characters
-	d.addWord("CHARS", false, false, (){});
+	d.addWordBlank("CHARS");
 
 	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
 	///
@@ -386,8 +388,21 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/DUP
 	d.addWord("DUP", false, false, vm.dataStack.dup);
 
-	d.addWord("ALIGN", false, false, (){});
-	d.addWord("ALIGNED", false, false, (){});
+	/// If the data-space pointer is not aligned, reserve enough space to align it.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [ALIGN][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/ALIGN
+	d.addWordBlank("ALIGN");
+
+	/// a-addr is the first aligned address greater than or equal to addr.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [DUP][link] ( addr -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/ALIGN
+	d.addWordBlank("ALIGNED");
 
 	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
 	///
@@ -534,6 +549,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.pick(vm.dataStack.pop());
 	});
 
+	/// Interprets Forth source code received interactively from a user input device.
+	///
+	/// [QUIT][link] ( -- ) ( R: i * x -- )
+	/// [link]: http://forth-standard.org/standard/core/QUIT
+	d.addWordBlank("QUIT");
+
 	/// Rotate the top three stack entries.
 	///
 	/// [ROT][link] ( x1 x2 x3 -- x2 x3 x1 )
@@ -609,21 +630,13 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			vm.dataStack.push(flagFALSE);
 		}
 	});
-
-	/// Return a true flag.
-	///
-	/// [TRUE][link] ( -- false )
-	/// [link]: http://forth-standard.org/standard/core/TRUE
-	d.addWord("TRUE", false, false, (){
-		vm.dataStack.push(flagTRUE);
-	});
 }
 
 /// Core words that are not part of the standard.
 ///
 void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
-	///
+	// TODO: modularize
 	d.addWord("INTERPRET", false, false, () async {
 
 		/// Concatenates all the source code strings, files and URLs into a single string.
@@ -814,7 +827,6 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 /// [Gforth Word Index][http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Word-Index.html#Word-Index]
 void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
-
 	///
 	d.addWord("-ROT", false, false, vm.dataStack.rotCC);
 
@@ -833,12 +845,12 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 	//d.addWord("NAME>STRING", false, false, () {}); // TODO
 
-	/// Copy and display the values currently on the floating point stack.
+	/// Prints the values currently on the floating point stack.
 	d.addWord(".FS", false, false, () {
 		print("floatStack: ${vm.floatStack}");
 	});
 
-	/// Copy and display the values currently on the return stack.
+	/// Prints the values currently on the return point stack.
 	d.addWord(".RS", false, false, () {
 		print("returnStack: ${vm.returnStack}");
 	});
@@ -849,14 +861,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
 	/// Display an integer binary format.
 	d.addWord("BIN.", false, false, () {
-		int norig = vm.dataStack.pop();
-		var str = new StringBuffer();
-		for (var i = 32; i >= 0; i--) {
-			var bit = 0;
-			if (norig & pow(2,i) != 0) bit = 1;
-			str.write(bit);
-		}
-		print(str);
+		print(int32tobin(vm.dataStack.pop()));
 	});
 }
 
@@ -915,8 +920,21 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(vm.dataStack.pop().toDouble());
 	});
 
-	d.addWord("DFALIGN", false, false, (){});
-	d.addWord("DFALIGNED", false, false, (){});
+	/// If the data-space pointer is not double-float aligned, reserve enough data space to make it so.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [DFALIGN][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/float/DFALIGN
+	d.addWordBlank("DFALIGN");
+
+	/// df-addr is the first double-float-aligned address greater than or equal to addr.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [DFALIGNED][link] ( addr -- df-addr )
+	/// [link]: http://forth-standard.org/standard/float/DFALIGNED
+	d.addWordBlank("DFALIGNED");
 
 	/// Store r at f-addr.
 	///
@@ -1036,8 +1054,21 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 		vm.floatStack.push(log(x + sqrt(x * x - 1)));
 	});
 
-	d.addWord("FALIGN", false, false, (){});
-	d.addWord("FALIGNED", false, false, (){});
+	/// If the data-space pointer is not float aligned, reserve enough data space to make it so.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [FALIGN][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/FALIGN
+	d.addWordBlank("FALIGN");
+
+	/// f-addr is the first float-aligned address greater than or equal to addr.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [FALIGNED][link] ( addr -- f-addr )
+	/// [link]: http://forth-standard.org/standard/core/FALIGNED
+	d.addWordBlank("FALIGNED");
 
 	/// Raise ten to the power r1, giving r2.
 	///
@@ -1270,8 +1301,21 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FSWAP
 	d.addWord("FSWAP", false, false, vm.floatStack.swap);
 
-	d.addWord("SFALIGN", false, false, (){});
-	d.addWord("SFALIGNED", false, false, (){});
+	/// If the data-space pointer is not single-float aligned, reserve enough data space to make it so.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [SFALIGN][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/SFALIGN
+	d.addWordBlank("SFALIGN");
+
+	/// sf-addr is the first single-float-aligned address greater than or equal to addr.
+	///
+	/// This word does nothing in this implementation.
+	///
+	/// [SFALIGNED][link] ( addr -- sf-addr )
+	/// [link]: http://forth-standard.org/standard/core/SFALIGNED
+	d.addWordBlank("SFALIGNED");
 
 	/// r2 is the square root of r1.
 	///
@@ -1372,6 +1416,6 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	///
 	/// [BYE][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/tools/BYE
-	d.addWord("BYE", false, false, (){});
+	d.addWordBlank("BYE");
 }
 

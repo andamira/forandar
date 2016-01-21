@@ -12,7 +12,7 @@ part 'cli/words.dart';
 // - load forandar version from here
 // - define CLI class, and common methods
 
-// The input queue for the CLI interface.↩
+// The input queue for the CLI interface.
 class InputQueueCli extends InputQueue {
 
 	@override
