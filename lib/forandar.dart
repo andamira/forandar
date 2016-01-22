@@ -6,14 +6,14 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'util.dart';
+import 'package:intl/intl.dart';
 
 part 'core/dictionary.dart';
 part 'core/errors.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
-
 part 'core/words.dart';
+part 'util.dart';
 
 /// The version of this library.
 ///
@@ -32,12 +32,12 @@ class Configuration {
 
 	// Initializes with the default values.
 	Configuration () {
-		option['dataStackSize']    = 256;
+		option['dataStackSize']    = 256; // in cells
 		option['floatStackSize']   = 128;
 		option['returnStackSize']  = 32;
 		option['controlStackSize'] = 32;
 
-		option['dataSpaceSize']    = 64;
+		option['dataSpaceSize']    = 1024; // in bytes
 	}
 }
 

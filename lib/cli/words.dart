@@ -66,7 +66,7 @@ void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 
 void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
 
-	// BYE
+	// BYE DUMP
 
 	/// Return control to the host operating system, if any.
 	///
@@ -75,30 +75,31 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	d.addWordOver("BYE", false, false, () {
 		exit(0);
 	});
+
+	/// Display the contents of u consecutive addresses starting at addr.
+	///
+	/// [DUMP][link] ( addr u -- )
+	/// [link]: http://forth-standard.org/standard/tools/DUMP
+	d.addWordOver("DUMP", false, false, () {
+		vm.dataStack.over();
+		stdout.writeln( dumpBytes(vm.dataSpace.data.buffer.asUint8List(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
+	});
 }
 
 void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
-	// BIN. .DD .OD
+	// BIN. ODUMP
 
-	/// Display an integer binary format.
-	d.addWordOver("BIN.", false, false, () {
-		stdout.write("${int32tobin(vm.dataStack.pop())} ");
-	});
-
-	/// Prints the data space content as a string of Bytes in hex. // TEMP
-	d.addWordOver(".DD", false, false, () {
-		for (var x in vm.dataSpace.data.buffer.asUint8List()) {
-			stdout.write(x.toRadixString(16).replaceAll(new RegExp(r'0'),'_') + " ");
-		}
-		stdout.writeln();
-	});
-
-	/// Prints the object space content.
-	d.addWordOver(".OD", false, false, () {
+	/// Prints the object space content. TODO
+	d.addWordOver("ODUMP", false, false, () {
 		for (var obj in vm.objectSpace.data) {
 			stdout.write("$obj ");
 		}
+	});
+
+	/// Display an integer binary format.
+	d.addWordOver("BIN.", false, false, () {
+		stdout.write("${int32ToBin(vm.dataStack.pop())} ");
 	});
 }
 

@@ -845,6 +845,11 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Name-token.html
 	//d.addWord("NAME>STRING", false, false, () {}); // TODO
 
+	/// Display an integer binary format.
+	d.addWord("BIN.", false, false, () {
+		print(int32tobin(vm.dataStack.pop()));
+	});
+
 	/// Prints the values currently on the floating point stack.
 	d.addWord(".FS", false, false, () {
 		print("floatStack: ${vm.floatStack}");
@@ -855,14 +860,16 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 		print("returnStack: ${vm.returnStack}");
 	});
 
+	// Words from gforth
+
+	// Examining
+	// https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Examining.html
+
+	// Floating-Point
 	// https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Floating-Point-Tutorial.html
 	// fnip ftuck fpick
 	// f~abs f~rel
 
-	/// Display an integer binary format.
-	d.addWord("BIN.", false, false, () {
-		print(int32tobin(vm.dataStack.pop()));
-	});
 }
 
 /// The optional Double-Number word set
@@ -1378,13 +1385,13 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//
 	// Implemented:
 	//
-	// .S WORDS
+	// .S DUMP WORDS
 	//
 	// BYE 
 	//
 	// Not implemented:
 	//
-	//   ? DUMP SEE 
+	//   ? SEE
 	//
 	//   AHEAD ASSEMBLER [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
 	//   CS-PICK CS-ROLL EDITOR FORGET NAME>COMPILE NAME>INTERPRET
@@ -1397,6 +1404,14 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	d.addWord(".S", false, false, (){
 		print("dataStack: ${vm.dataStack}");
 	});
+
+	/// Display the contents of u consecutive addresses starting at addr.
+	///
+	/// It's re-implemented in CLI.
+	//
+	/// [DUMP][link] ( addr u -- )
+	/// [link]: http://forth-standard.org/standard/tools/DUMP
+	d.addWordBlank("DUMP");
 
 	/// List the definition names in the first word list of the search order.
 	///
