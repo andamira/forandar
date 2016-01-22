@@ -1385,13 +1385,13 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//
 	// Implemented:
 	//
-	// .S DUMP WORDS
+	//   .S ? DUMP WORDS
 	//
-	// BYE 
+	//   BYE
 	//
 	// Not implemented:
 	//
-	//   ? SEE
+	//   SEE
 	//
 	//   AHEAD ASSEMBLER [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
 	//   CS-PICK CS-ROLL EDITOR FORGET NAME>COMPILE NAME>INTERPRET
@@ -1407,11 +1407,22 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 
 	/// Display the contents of u consecutive addresses starting at addr.
 	///
-	/// It's re-implemented in CLI.
-	//
 	/// [DUMP][link] ( addr u -- )
 	/// [link]: http://forth-standard.org/standard/tools/DUMP
-	d.addWordBlank("DUMP");
+	d.addWord("DUMP", false, false, (){
+		vm.dataStack.over();
+		print( dumpBytes(vm.dataSpace.data.buffer.asUint8List(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
+	});
+
+	/// Display the value stored at a-addr.
+	///
+	/// It's re-implemented in CLI.
+	///
+	/// [?][link] ( a-addr -- )
+	/// [link]: http://forth-standard.org/standard/tools/q
+	d.addWord("?", false, false, (){
+		print(vm.dataSpace.data.getInt32(vm.dataStack.pop()).toRadixString(vm.dataSpace.data.getInt32(addrBASE)));
+	});
 
 	/// List the definition names in the first word list of the search order.
 	///

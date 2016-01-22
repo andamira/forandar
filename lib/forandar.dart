@@ -37,7 +37,7 @@ class Configuration {
 		option['returnStackSize']  = 32;
 		option['controlStackSize'] = 32;
 
-		option['dataSpaceSize']    = 1024; // in bytes
+		option['dataSpaceSize']    = 1024 * 1024; // in bytes (1M)
 	}
 }
 

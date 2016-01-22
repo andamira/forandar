@@ -38,6 +38,9 @@ String int32ToBin(int number) {
 ///
 /// 7F8EA7AC02E0: 80 C0 19 99  99 8C 63 33 - 18 C6 63 31  98 CC 66 33  ......c3..c1..f3
 /// 7F8EA7AC02F0: 33 33 33 33  33 33 33 33 - 19 99 99 99  99 99 99 99  33333333........
+//
+// TODO: redo it in Forth.
+// use the current base to display the memory address.
 String dumpBytes(Uint8List segment, int memOffset) {
 
 	var str = new StringBuffer();
@@ -80,7 +83,6 @@ String dumpBytes(Uint8List segment, int memOffset) {
 				}
 			}
 		}
-
 		str.write(" ");
 
 		//
@@ -94,8 +96,6 @@ String dumpBytes(Uint8List segment, int memOffset) {
 			}
 		}
 	}
-
-	str.writeln("");
 	return str.toString();
 }
 

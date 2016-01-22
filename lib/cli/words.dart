@@ -56,17 +56,19 @@ void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 	/// [INCLUDED][link] ( i * x c-addr u -- j * x )
 	/// [link]: http://forth-standard.org/standard/file/INCLUDED
 	//d.addWordOver("INCLUDED", false, false, () {}); // TODO
-
-	/// 
-	///
-	/// [][link]
-	/// [link]:
-	// d.addWordOver("", false, false, () {}); // TODO
 }
 
 void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
 
-	// BYE DUMP
+	// ? BYE
+
+	/// Display the value stored at a-addr.
+	///
+	/// [?][link] ( a-addr -- )
+	/// [link]: http://forth-standard.org/standard/tools/q
+	d.addWordOver("?", false, false, (){
+		stdout.write("${vm.dataSpace.data.getInt32(vm.dataStack.pop()).toRadixString(vm.dataSpace.data.getInt32(addrBASE))} ");
+	});
 
 	/// Return control to the host operating system, if any.
 	///
@@ -74,15 +76,6 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	/// [link]: https://forth-standard.org/standard/tools/BYE
 	d.addWordOver("BYE", false, false, () {
 		exit(0);
-	});
-
-	/// Display the contents of u consecutive addresses starting at addr.
-	///
-	/// [DUMP][link] ( addr u -- )
-	/// [link]: http://forth-standard.org/standard/tools/DUMP
-	d.addWordOver("DUMP", false, false, () {
-		vm.dataStack.over();
-		stdout.writeln( dumpBytes(vm.dataSpace.data.buffer.asUint8List(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
 	});
 }
 
