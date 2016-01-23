@@ -6,8 +6,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:intl/intl.dart';
-
 part 'core/dictionary.dart';
 part 'core/errors.dart';
 part 'core/stack.dart';
