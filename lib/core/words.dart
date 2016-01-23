@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT ROT RSHIFT SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT ROT RSHIFT STATE SWAP U. U< XOR
 	//
 	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
 	//
@@ -18,12 +18,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// # #> #S ' ( */ */MOD +! +LOOP ." 2* 2/
 	// : ; <# >BODY >IN >NUMBER ABORT
-	// ABORT" ACCEPT ALLOT BEGIN BL
+	// ABORT" ACCEPT ALLOT BEGIN
 	// CHAR CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE R> R@ RECURSE REPEAT
-	// S" S>D SIGN SM/REM SOURCE SPACE SPACES STATE THEN TYPE UM*
+	// S" S>D SIGN SM/REM SOURCE SPACE SPACES THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
@@ -571,12 +571,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
 	});
 
-	/// Return a true flag.
+	/// a-addr is the address of a cell containing the compilation-state flag.
 	///
-	/// [TRUE][link] ( -- true )
-	/// [link]: http://forth-standard.org/standard/core/TRUE
-	d.addWord("TRUE", false, false, (){
-		vm.dataStack.push(flagTRUE);
+	/// [STATE][link] ( -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/STATE
+	d.addWord("STATE", false, false, (){
+		vm.dataStack.push(addrSTATE);
 	});
 
 	/// Exchange the top two stack items.
@@ -584,6 +584,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [SWAP][link] ( x1 x2 -- x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/SWAP
 	d.addWord("SWAP", false, false, vm.dataStack.swap);
+
+	/// Return a true flag.
+	///
+	/// [TRUE][link] ( -- true )
+	/// [link]: http://forth-standard.org/standard/core/TRUE
+	d.addWord("TRUE", false, false, (){
+		vm.dataStack.push(flagTRUE);
+	});
 
 	/// Copy the first (top) stack item below the second stack item.
 	///
@@ -654,6 +662,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			/// Search for this word in the current dictionary.
 			Word word = d.wordsMap[wordStr.toUpperCase()];
 
+			/// If the word is found.
 			if( word != null) {
 
 				/// If this word is compile only and we are not in compile mode, throw err -14.
@@ -673,7 +682,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 				}
 
 
-			/// If the word is not found in the dictionary.
+			/// If the word is not found.
 			} else {
 
 				/// Tries to convert the word to a number.
@@ -772,11 +781,11 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 							// Fixes the string for the Dart parser
 							//
-							wordStr = wordStr.replaceAll(new RegExp(r'[dD]'), 'e');
+							String fixedWordStr = wordStr.replaceAll(new RegExp(r'[dD]'), 'e');
 							// Dart double.parser() doesn't recognize floats ending in [e|E]
-							if (wordStr.endsWith('e') || wordStr.endsWith('E')) wordStr+= '+0';
+							if (fixedWordStr.endsWith('e') || fixedWordStr.endsWith('E')) fixedWordStr+= '+0';
 
-							number = double.parse(wordStr, (wordStr) => null);
+							number = double.parse(fixedWordStr, (fixedWordStr) => null);
 						}
 
 						// If it couldn't be parsed as float either, throw an error.
@@ -816,7 +825,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			}
 		}
 
-		/// Loop ends when there are no more words.
+		// Loop ends when there are no more words.
 
 	});
 
@@ -1387,7 +1396,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//
 	//   .S ? DUMP WORDS
 	//
-	//   BYE
+	//   BYE STATE
 	//
 	// Not implemented:
 	//
@@ -1395,7 +1404,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	//
 	//   AHEAD ASSEMBLER [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
 	//   CS-PICK CS-ROLL EDITOR FORGET NAME>COMPILE NAME>INTERPRET
-	//   NAME>STRING NR> N>R STATE SYNONYM ;CODE TRAVERSE-WORDLIST
+	//   NAME>STRING NR> N>R SYNONYM ;CODE TRAVERSE-WORDLIST
 
 	/// Copy and display the values currently on the data stack.
 	///

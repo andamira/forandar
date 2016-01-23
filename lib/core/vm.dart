@@ -2,12 +2,21 @@ part of forandar;
 
 // Library Constants.
 
-// Address for storing the base conversion radix in the data space.
-const int addrBASE = 0;
-// The size of a cell in bytes.
+/// The size of a cell in bytes.
 const int cellSize = 4;
 
-// Boolean flags.
+// Addresses.
+
+/// Address for storing the base conversion radix in the data space.
+const int addrBASE = 0;
+
+/// Address for storing the compilation-state flag.
+///
+/// It is true (!=flagFALSE) when in compilation state.
+const int addrSTATE = addrBASE + cellSize;
+
+// Flags.
+
 const int flagTRUE = -1;
 const int flagFALSE = 0;
 
@@ -33,9 +42,6 @@ class VirtualMachine {
 	// Input Queue.
 	InputQueue input;
 
-	// Compile Mode
-	bool inCompileMode = false;
-
 	/// Constructs the [VirtualMachine].
 	VirtualMachine (Configuration config, InputQueue input) {
 
@@ -56,14 +62,32 @@ class VirtualMachine {
 		/// Creates the [Dictionary] containing the [Word]s.
 		dict = new Dictionary(this);
 
-		/// Sets a default decimal BASE (radix).
-		dict.wordsMap['DECIMAL'].exec();
+		initDataSpace();
+	}
 
-		// Adjusts the initial data pointer
-		dataSpace.pointer = cellSize * 1;
+	/// Initializes the default data in [dataSpace].
+	void initDataSpace() {
+
+		/// Sets a default decimal BASE (radix).
+		dataSpace.data.setInt32(addrBASE, 10);                       // + 1 cell
+
+		/// Sets the default STATE to interpretation-mode.
+		dataSpace.data.setInt32(addrSTATE, flagFALSE);               // + 1 cell
+
+		// Adjusts the data pointer.
+		dataSpace.pointer = cellSize * 2;                            // = 2 cells
+	}
+
+	/// Returns [true] when in compilation-mode,
+	/// and [false] when in interpretation-mode.
+	bool get inCompileMode {
+		if (dataSpace.data.getInt32(addrSTATE) == flagFALSE ) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
-
 
 /// 
 ///
