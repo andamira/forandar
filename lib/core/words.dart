@@ -372,7 +372,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [CHARS][link] ( n1 -- n2 )
 	/// [link]: http://forth-standard.org/standard/core/CHARS
 	// TODO: support extended characters
-	d.addWordBlank("CHARS");
+	d.addWordNope("CHARS");
 
 	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
 	///
@@ -394,7 +394,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [ALIGN][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/core/ALIGN
-	d.addWordBlank("ALIGN");
+	d.addWordNope("ALIGN");
 
 	/// a-addr is the first aligned address greater than or equal to addr.
 	///
@@ -402,7 +402,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [DUP][link] ( addr -- a-addr )
 	/// [link]: http://forth-standard.org/standard/core/ALIGN
-	d.addWordBlank("ALIGNED");
+	d.addWordNope("ALIGNED");
 
 	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
 	///
@@ -553,7 +553,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [QUIT][link] ( -- ) ( R: i * x -- )
 	/// [link]: http://forth-standard.org/standard/core/QUIT
-	d.addWordBlank("QUIT");
+	d.addWordNope("QUIT");
 
 	/// Rotate the top three stack entries.
 	///
@@ -942,7 +942,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [DFALIGN][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/float/DFALIGN
-	d.addWordBlank("DFALIGN");
+	d.addWordNope("DFALIGN");
 
 	/// df-addr is the first double-float-aligned address greater than or equal to addr.
 	///
@@ -950,7 +950,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [DFALIGNED][link] ( addr -- df-addr )
 	/// [link]: http://forth-standard.org/standard/float/DFALIGNED
-	d.addWordBlank("DFALIGNED");
+	d.addWordNope("DFALIGNED");
 
 	/// Store r at f-addr.
 	///
@@ -1076,7 +1076,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [FALIGN][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/core/FALIGN
-	d.addWordBlank("FALIGN");
+	d.addWordNope("FALIGN");
 
 	/// f-addr is the first float-aligned address greater than or equal to addr.
 	///
@@ -1084,7 +1084,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [FALIGNED][link] ( addr -- f-addr )
 	/// [link]: http://forth-standard.org/standard/core/FALIGNED
-	d.addWordBlank("FALIGNED");
+	d.addWordNope("FALIGNED");
 
 	/// Raise ten to the power r1, giving r2.
 	///
@@ -1323,7 +1323,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [SFALIGN][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/core/SFALIGN
-	d.addWordBlank("SFALIGN");
+	d.addWordNope("SFALIGN");
 
 	/// sf-addr is the first single-float-aligned address greater than or equal to addr.
 	///
@@ -1331,7 +1331,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	///
 	/// [SFALIGNED][link] ( addr -- sf-addr )
 	/// [link]: http://forth-standard.org/standard/core/SFALIGNED
-	d.addWordBlank("SFALIGNED");
+	d.addWordNope("SFALIGNED");
 
 	/// r2 is the square root of r1.
 	///
@@ -1451,6 +1451,6 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	///
 	/// [BYE][link] ( -- )
 	/// [link]: http://forth-standard.org/standard/tools/BYE
-	d.addWordBlank("BYE");
+	d.addWordNope("BYE");
 }
 
