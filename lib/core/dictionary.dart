@@ -82,9 +82,22 @@ class Dictionary {
 		wordsMap[str] = wordsList.last;
 	}
 
+	/// Adds a new word that does nothing at all (no operation).
+	///
+	/// A convenience wrapper for defining words with no behaviour
+	/// in the current implementation, like ALIGN and ALIGNED.
+	///
+	/// Also useful for creating a placeholder that will be overriden
+	/// by calling [addWordOver] from the specific interface libraries.
+	addWordNope(String str, [bool isImmediate = false, bool isCompileOnly = false]) {
+		str = str.toUpperCase();
+		wordsList.add(new Word(isImmediate, isCompileOnly, (){}, str, wordsList.length));
+		wordsMap[str] = wordsList.last;
+	}
+
 	/// Adds a new word, overwriting a pre-existing same-name word.
 	///
-	/// This is used only for 
+	/// This is only used in conjunction with addWordNope.
 	addWordOver(String str, bool isImmediate, bool isCompileOnly, Function f) {
 		str = str.toUpperCase();
 
@@ -97,16 +110,8 @@ class Dictionary {
 		}
 	}
 
-	/// Adds a new word that does nothing at all (no operation).
-	///
-	/// Convenience function to create a placeholder to be later overriden
-	/// by calling [addWordOver] from cli/words.dart o web/words.dart.
-	/// It's also useful to define words with no behaviour in the current
-	/// implementation, like ALIGN and ALIGNED.
-	addWordNope(String str, [bool isImmediate = false, bool isCompileOnly = false]) {
-		str = str.toUpperCase();
-		wordsList.add(new Word(isImmediate, isCompileOnly, (){}, str, wordsList.length));
-		wordsMap[str] = wordsList.last;
-	}
+	void execSt(int wordSt) => wordsList[wordSt].exec();
+
+	void execWord(String wordName) => wordsMap[wordName].exec();
 }
 

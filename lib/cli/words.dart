@@ -33,9 +33,9 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 			vm.input.clear();
 			vm.input.add(InputType.String, stdin.readLineSync());
 
-			await d.wordsMap['INTERPRET'].exec();
+			await d.execWord['INTERPRET'];
 
-			stdout.writeln("  ok"); // TEMP
+			stdout.writeln("  ok"); // TEMP FIXME
 		}
 	});
 

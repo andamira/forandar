@@ -653,10 +653,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 	// TODO: modularize
-	d.addWord("INTERPRET", false, false, () async {
-
-		/// Concatenates all the source code strings, files and URLs into a single string.
-		await vm.input.loadSourceCode();
+	d.addWord("INTERPRET", false, false, () {
 
 		while (true) {
 
@@ -734,7 +731,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 						wordStr = wordStr.substring(0, wordStr.length - 1);
 					}
 
-					// Note: The ternary conditional inside the radix parameter, allows Dart to
+					// NOTE: The ternary conditional inside the radix parameter, allows Dart to
 					// automatically interpret any '0x' prefixed integers with hexadecimal base.
 					number = int.parse(wordStr, radix: base == 10 ? null : base, onError: (wordStr) => null);
 

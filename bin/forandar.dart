@@ -26,11 +26,16 @@ main(List<String> args) async {
 	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);
 
+	/// Loads the source code.
+	//
+	// TEMP: Concatenates all the source code strings, files and URLs into a single string.
+	await forth.input.loadSourceCode();
+
 	/// Interprets the code in the input queue.
-	await forth.dict.wordsMap['INTERPRET'].exec();
+	forth.dict.execWord('INTERPRET');
 
 	/// Starts the interactive interpreter if BYE hasn't been called.
-	forth.dict.wordsMap['QUIT'].exec();
+	forth.dict.execWord('QUIT');
 }
 
 /// Parses the CLI arguments
