@@ -68,20 +68,23 @@ class VirtualMachine {
 	/// Initializes the default data in [dataSpace].
 	void initDataSpace() {
 
+		/// Reserves space: 2 cells.
+		dataSpace.pointer += cellSize * 2;
+
 		/// Sets a default decimal BASE (radix).
-		dataSpace.data.setInt32(addrBASE, 10);                       // + 1 cell
+		dataSpace.storeCell(addrBASE, 10);
 
 		/// Sets the default STATE to interpretation-mode.
-		dataSpace.data.setInt32(addrSTATE, flagFALSE);               // + 1 cell
-
-		// Adjusts the data pointer.
-		dataSpace.pointer = cellSize * 2;                            // = 2 cells
+		dataSpace.storeCell(addrSTATE, flagFALSE);
 	}
 
-	/// Returns [true] when in compilation-mode,
-	/// and [false] when in interpretation-mode.
+	/// Returns [true] when in compilation-mode.
+	///
+	/// And [false] in interpretation-mode.
+	/// The true value in STATE is non-zero.
+	/// http://forth-standard.org/standard/core/STATE
 	bool get inCompileMode {
-		if (dataSpace.data.getInt32(addrSTATE) == flagFALSE ) {
+		if (dataSpace.fetchCell(addrSTATE) == flagFALSE ) {
 			return false;
 		} else {
 			return true;
@@ -89,9 +92,9 @@ class VirtualMachine {
 	}
 }
 
-/// 
-///
 /// TODO http://stackoverflow.com/questions/28026648/how-to-improve-dart-performance-of-data-conversion-to-from-binary
+// https://api.dartlang.org/stable/dart-typed_data/ByteData-class.html
+// https://en.wikipedia.org/wiki/Two%27s_complement
 class DataSpace {
 	ByteData data;
 	final int maxSize;
@@ -100,6 +103,30 @@ class DataSpace {
 	DataSpace(this.maxSize) {
 		data = new ByteData(maxSize);
 	}
+
+	int fetchChar(int address) => data.getInt8(address);
+
+	int fetchCell(int address) => data.getInt32(address);
+
+	double fetchFloat(int address) => data.getFloat64(address);
+
+	/// Stores an integer using 1 byte at the specified address.
+	void storeChar(int address, int value) => data.setInt8(address, value);
+
+	/// Stores an integer using 1 byte at the current pointer position, and increments it.
+	void storeCharHere(int value) => data.setInt8(pointer++, value);
+
+	/// Stores an integer using 4 bytes at the specified address.
+	void storeCell(int address, int value) => data.setInt32(address, value);
+
+	/// Stores an integer using 4 bytes at the current pointer position, and increments it.
+	void storeCellHere(int value) => data.setInt32(pointer += cellSize, value);
+
+	/// Stores a float using 8 bytes at the specified address.
+	void storeFloat(int address, double value) => data.setFloat64(address, value);
+
+	/// Stores a float using 8 bytes at the current pointer position, and increments it.
+	void storeFloatHere(double value) => data.setFloat64(pointer += cellSize * 2, value);
 }
 
 /// 
@@ -186,6 +213,8 @@ class InputQueue {
 					break;
 			}
 		}
+
+		//print("sourceCode: «$sourceCode»"); //TEMP
 	}
 
 	/// Returns the next word as a string.

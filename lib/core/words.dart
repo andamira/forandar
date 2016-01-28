@@ -42,7 +42,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// https://api.dartlang.org/stable/dart-typed_data/ByteData/setInt32.html
 	// https://en.wikipedia.org/wiki/Two%27s_complement
 	d.addWord("!", false, false, (){
-		vm.dataSpace.data.setInt32(vm.dataStack.pop(), vm.dataStack.pop());
+		vm.dataSpace.storeCell(vm.dataStack.pop(), vm.dataStack.pop());
 	});
 
 	/// Multiply n1 | u1 by n2 | u2 giving the product n3 | u3.
@@ -66,7 +66,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [,][link] ( x -- )
 	/// [link]: http://forth-standard.org/standard/core/Comma
 	d.addWord(",", false, false, (){
-		vm.dataSpace.data.setInt32(vm.dataSpace.pointer += cellSize, vm.dataStack.pop());
+		vm.dataSpace.storeCellHere(vm.dataStack.pop());
 	});
 
 	/// Subtract n2 | u2 from n1 | u1, giving the difference n3 | u3.
@@ -170,8 +170,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/TwoStore
 	d.addWord("2!", false, false, (){
 		int addr = vm.dataStack.pop();
-		vm.dataSpace.data.setInt32(addr + cellSize, vm.dataStack.pop() );
-		vm.dataSpace.data.setInt32(addr, vm.dataStack.pop() );
+		vm.dataSpace.storeCell(addr + cellSize, vm.dataStack.pop() );
+		vm.dataSpace.storeCell(addr, vm.dataStack.pop() );
 	});
 
 	/// Fetch the cell pair x1 x2 stored at a-addr. x2 is stored at a-addr and x1 at the next consecutive cell.
@@ -181,8 +181,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/TwoFetch
 	d.addWord("2@", false, false, (){
 		int addr = vm.dataStack.pop();
-		vm.dataStack.push(vm.dataSpace.data.getInt32(addr+cellSize));
-		vm.dataStack.push(vm.dataSpace.data.getInt32(addr));
+		vm.dataStack.push(vm.dataSpace.fetchCell(addr+cellSize));
+		vm.dataStack.push(vm.dataSpace.fetchCell(addr));
 	});
 
 	/// Execution: Transfer cell pair x1 x2 to the return stack.
@@ -291,6 +291,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		if (vm.dataStack.peek() != 0) vm.dataStack.dup();
 	});
 
+	/// x is the value stored at a-addr.
+	///
+	/// [@][link] ( a-addr -- x )
+	/// [link]: http://forth-standard.org/standard/core/Fetch
+	d.addWord("@", false, false, (){
+		vm.dataStack.push(vm.dataSpace.fetchCell(vm.dataStack.pop()));
+	});
+
 	/// u is the absolute value of n.
 	///
 	/// [ABS][link] ( n -- u )
@@ -320,7 +328,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [C!][link] ( char a-addr -- )
 	/// [link]: http://forth-standard.org/standard/core/CStore
 	d.addWord("C!", false, false, (){
-		vm.dataSpace.data.setInt8(vm.dataStack.pop(), vm.dataStack.pop());
+		vm.dataSpace.storeChar(vm.dataStack.pop(), vm.dataStack.pop());
 	});
 
 	/// Reserve space for one character in the data space and store char in the space.
@@ -328,7 +336,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [C,][link] ( x -- )
 	/// [link]: http://forth-standard.org/standard/core/CComma
 	d.addWord("C,", false, false, (){
-		vm.dataSpace.data.setInt8(vm.dataSpace.pointer++, vm.dataStack.pop());
+		vm.dataSpace.storeCharHere(vm.dataStack.pop());
 	});
 
 	/// Fetch the character stored at c-addr.
@@ -337,7 +345,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/CFetch
 	//
 	d.addWord("C@", false, false, (){
-		vm.dataStack.push(vm.dataSpace.data.getInt8(vm.dataStack.pop()));
+		vm.dataStack.push(vm.dataSpace.fetchChar(vm.dataStack.pop()));
 	});
 
 	/// Add the size in address units of a cell to a-addr1, giving a-addr2.
@@ -425,7 +433,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [DECIMAL][link] ( -- a-addr )
 	/// [link]: http://forth-standard.org/standard/core/BASE
 	d.addWord("DECIMAL", false, false, () {
-		vm.dataSpace.data.setInt32(addrBASE, 10);
+		vm.dataSpace.storeCell(addrBASE, 10);
 	});
 
 	/// Remove x from the stack.
@@ -455,7 +463,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [HEX][link] ( -- a-addr )
 	/// [link]: http://forth-standard.org/standard/core/HEX
 	d.addWord("HEX", false, false, () {
-		vm.dataSpace.data.setInt32(addrBASE, 16);
+		vm.dataSpace.storeCell(addrBASE, 16);
 	});
 
 	/// Make the most recent definition an immediate word.
@@ -692,7 +700,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 					bool isInt = true; // is it an integer?
 					bool isDouble = false; // is it a double cell number?
 
-					int base = vm.dataSpace.data.getInt32(addrBASE); // (radix)
+					int base = vm.dataSpace.fetchCell(addrBASE); // (radix)
 
 					// first and last characters of the word
 					String prefix = wordStr.substring(0,1);
@@ -962,7 +970,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	// https://api.dartlang.org/stable/dart-typed_data/ByteData/setFloat64.html
 	// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 	d.addWord("F!", false, false, (){
-		vm.dataSpace.data.setFloat64(vm.dataStack.pop(), vm.floatStack.pop());
+		vm.dataSpace.storeFloat(vm.dataStack.pop(), vm.floatStack.pop());
 	});
 
 	/// r is the value stored at f-addr.
@@ -972,7 +980,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	//
 	// Fetches a floating point number using eight bytes at the specified address.
 	d.addWord("F@", false, false, (){
-		vm.floatStack.push(vm.dataSpace.data.getFloat64(vm.dataStack.pop()));
+		vm.floatStack.push(vm.dataSpace.fetchFloat(vm.dataStack.pop()));
 	});
 
 	/// Multiply r1 by r2 giving r3.
@@ -1430,7 +1438,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [?][link] ( a-addr -- )
 	/// [link]: http://forth-standard.org/standard/tools/q
 	d.addWord("?", false, false, (){
-		print(vm.dataSpace.data.getInt32(vm.dataStack.pop()).toRadixString(vm.dataSpace.data.getInt32(addrBASE)));
+		print(vm.dataSpace.fetchCell(vm.dataStack.pop()).toRadixString(vm.dataSpace.fetchCell(addrBASE)));
 	});
 
 	/// List the definition names in the first word list of the search order.
