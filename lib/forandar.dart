@@ -8,6 +8,8 @@ import 'dart:typed_data';
 
 part 'core/dictionary.dart';
 part 'core/errors.dart';
+part 'core/input.dart';
+part 'core/space.dart';
 part 'core/stack.dart';
 part 'core/vm.dart';
 part 'core/words.dart';
