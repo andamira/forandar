@@ -67,7 +67,7 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	/// [?][link] ( a-addr -- )
 	/// [link]: http://forth-standard.org/standard/tools/q
 	d.addWordOver("?", false, false, (){
-		stdout.write("${vm.dataSpace.data.getInt32(vm.dataStack.pop()).toRadixString(vm.dataSpace.data.getInt32(addrBASE))} ");
+		stdout.write("${vm.dataSpace.fetchCell(vm.dataStack.pop()).toRadixString(vm.dataSpace.fetchCell(addrBASE))} ");
 	});
 
 	/// Return control to the host operating system, if any.

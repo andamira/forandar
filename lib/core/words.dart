@@ -1425,7 +1425,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [link]: http://forth-standard.org/standard/tools/DUMP
 	d.addWord("DUMP", false, false, (){
 		vm.dataStack.over();
-		print( dumpBytes(vm.dataSpace.data.buffer.asUint8List(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
+		print( dumpBytes(vm.dataSpace.getCharList(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
 	});
 
 	/// Display the value stored at a-addr.
