@@ -9,7 +9,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >R @ ABS AND ALIGN ALIGNED BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT ROT RSHIFT STATE SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT STATE SWAP U. U< XOR
 	//
 	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
 	//
@@ -17,12 +17,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// Not implemented:
 	//
 	// # #> #S ' ( */ */MOD +! +LOOP ." 2* 2/
-	// : ; <# >BODY >IN >NUMBER ABORT
-	// ABORT" ACCEPT ALLOT BEGIN
+	// : ; <# >BODY >NUMBER ABORT
+	// ABORT" ACCEPT BEGIN
 	// CHAR CONSTANT COUNT CREATE DO DOES>
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
-	// MOVE POSTPONE R> R@ RECURSE REPEAT
+	// MOVE POSTPONE RECURSE REPEAT
 	// S" S>D SIGN SM/REM SOURCE SPACE SPACES THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
@@ -190,7 +190,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// : [2>R][link] ( x1 x2 -- ) ( R: -- x1 x2 )
 	/// SWAP >R >R ; IMMEDIATE
 	/// [link]: http://forth-standard.org/standard/core/TwotoR
-	d.addWord("2>R", true, false, () {
+	d.addWord("2>R", immediateWord, false, () {
 		vm.dataStack.swap();
 		vm.returnStack.push(vm.dataStack.pop());
 		vm.returnStack.push(vm.dataStack.pop());
@@ -226,7 +226,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// : [2R>][link] ( -- x1 x2 ) ( R: x1 x2 -- )
 	/// R> R> SWAP ; IMMEDIATE
 	/// [link]: http://forth-standard.org/standard/core/TwoRfrom
-	d.addWord("2R>", true, false, () {
+	d.addWord("2R>", immediateWord, false, () {
 		vm.dataStack.push(vm.returnStack.pop());
 		vm.dataStack.push(vm.returnStack.pop());
 		vm.dataStack.swap();
@@ -237,7 +237,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// : [2R@][link] ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
 	/// R> R> 2DUP >R >R SWAP ; IMMEDIATE
 	/// [link]: http://forth-standard.org/standard/core/TwoRFetch
-	d.addWord("2R@", true, false, () {
+	d.addWord("2R@", immediateWord, false, () {
 		vm.dataStack.push(vm.returnStack.peek());
 		vm.dataStack.push(vm.returnStack.peek());
 		vm.dataStack.swap();
@@ -275,11 +275,19 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.pop() < vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 	});
 
-	/// Moves data FROM [dataStack] TO [returnStack].
+	/// a-addr is the address of a cell containing the offset in characters from the start of the input buffer to the start of the parse area.
+	///
+	/// [>IN][link] ( -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/toIN
+	d.addWord(">IN", false, false, () {
+		vm.dataStack.push(addrToIN);
+	});
+
+	/// Moves data FROM the data stack to the return stack.
 	///
 	/// [>R][link] ( x -- ) ( R: -- x )
 	/// [link]: http://forth-standard.org/standard/core/toR
-	d.addWord(">R", false, false, () {
+	d.addWord(">R", immediateWord, false, () {
 		vm.returnStack.push(vm.dataStack.pop());
 	});
 
@@ -408,9 +416,17 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// This word does nothing in this implementation.
 	///
-	/// [DUP][link] ( addr -- a-addr )
-	/// [link]: http://forth-standard.org/standard/core/ALIGN
+	/// [ALIGNED][link] ( addr -- a-addr )
+	/// [link]: http://forth-standard.org/standard/core/ALIGNED
 	d.addWordNope("ALIGNED");
+
+	/// If n > 0, reserve n address units of data space. If n < 0, release | n | address units of data space.
+	///
+	/// [ALLOT][link] ( n -- )
+	/// [link]: http://forth-standard.org/standard/core/ALLOT
+	d.addWord("ALLOT", false, false, () {
+		dataSpace.pointer += vm.dataStack.pop();
+	});
 
 	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
 	///
@@ -562,6 +578,22 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [QUIT][link] ( -- ) ( R: i * x -- )
 	/// [link]: http://forth-standard.org/standard/core/QUIT
 	d.addWordNope("QUIT");
+
+	/// Moves data FROM the return stack to the data stack.
+	///
+	/// [R>][link] ( -- x  ( R: x -- )
+	/// [link]: http://forth-standard.org/standard/core/Rfrom
+	d.addWord("R>", immediateWord, false, () {
+		vm.dataStack.push(vm.returnStack.pop());
+	});
+
+	/// Copy x from the return stack to the data stack.
+	///
+	/// [R@][link] ( -- x ) ( R: x -- x )
+	/// [link]: http://forth-standard.org/standard/core/RFetch
+	d.addWord("R@", immediateWord, false, () {
+		vm.dataStack.push(vm.returnStack.peek());
+	});
 
 	/// Rotate the top three stack entries.
 	///

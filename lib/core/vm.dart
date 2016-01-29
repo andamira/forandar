@@ -2,24 +2,25 @@ part of forandar;
 
 // Library Constants.
 
+// Forth boolean flags
+const int flagTRUE = -1;
+const int flagFALSE = 0;
+
 /// The size of a cell in bytes.
 const int cellSize = 4;
 
 // Addresses.
 
-/// Address for storing the base conversion radix in the data space.
+/// Contains the base conversion radix in the data space.
 const int addrBASE = 0;
 
-/// Address for storing the compilation-state flag.
+/// Contains the compilation-state flag.
 ///
-/// It is true (!=flagFALSE) when in compilation state.
+/// It is true (meaning != flagFALSE) when in compilation state.
 const int addrSTATE = addrBASE + cellSize;
 
-// Flags.
-
-const int flagTRUE = -1;
-const int flagFALSE = 0;
-
+/// Contains the offset from the start of the input buffer to the start of the parse area.
+const int addrToIN = addrSTATE + cellSize;
 
 /// The Forth Virtual Machine.
 ///
@@ -68,14 +69,20 @@ class VirtualMachine {
 	/// Initializes the default data in [dataSpace].
 	void initDataSpace() {
 
-		/// Reserves space: 2 cells.
-		dataSpace.pointer += cellSize * 2;
+		// Reserves space for:
+		//
+		//   BASE STATE >IN 
+		//
+		dataSpace.pointer += cellSize * 3;
 
 		/// Sets a default decimal BASE (radix).
 		dataSpace.storeCell(addrBASE, 10);
 
 		/// Sets the default STATE to interpretation-mode.
 		dataSpace.storeCell(addrSTATE, flagFALSE);
+
+		/// Sets the input buffer offset to 0.
+		dataSpace.storeCell(addrToIN, flagFALSE);
 	}
 
 	/// Returns [true] when in compilation-mode.

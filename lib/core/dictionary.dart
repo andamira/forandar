@@ -1,5 +1,9 @@
 part of forandar;
 
+// Boolean aliases for clearer word definitions.
+const bool immediateWord = true;
+const bool compileOnlyWord = true;
+
 /// A Forth definition.
 class Word {
 
