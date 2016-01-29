@@ -29,7 +29,7 @@ main(List<String> args) async {
 	/// Loads the source code.
 	//
 	// TEMP: Concatenates all the source code strings, files and URLs into a single string.
-	await forth.input.loadSourceCode();
+	await forth.source.loadSourceCode();
 
 	/// Interprets the code in the input queue.
 	forth.dict.execWord('INTERPRET');

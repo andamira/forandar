@@ -30,9 +30,9 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 		
 		while(true) {
 		
-			vm.input.clear();
-			vm.input.add(InputType.String, stdin.readLineSync());
-			await vm.input.loadSourceCode();
+			vm.source.clear();
+			vm.source.add(InputType.String, stdin.readLineSync());
+			await vm.source.loadSourceCode();
 
 			d.execWord('INTERPRET');
 

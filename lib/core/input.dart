@@ -1,24 +1,40 @@
 part of forandar;
 
-/// The global source code inputs queue.
+/// Supported types of input.
+enum InputType { String, File, Url }
+
+class InputQueueElement {
+	InputType type;
+	String str;
+
+	InputQueueElement(InputType t, String s) {
+		type = t;
+		str = s;
+	}
+}
+
+/// The global source code (input) queue.
 ///
 /// Stores in order the series of source codes for interpreting,
 /// either as a string, or as a file / URL to be loaded.
 class InputQueue {
 
-	/// Storage for the source code inputs references, in order.
+	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];
 
-	/// All the source codes concatenated.
+	/// All the source code inputs concatenated.
 	String sourceCode = "";
 
 	/// Position marker in the [sourceCode].
 	int index = 0;
 
-	// Constants
+	// Where SOURCE-ID is stored.
+	int id = 0;
+
+	// Constants.
 	static const int SPACE = 0x20;
 
-	/// Adds a new input to the [queue].
+	/// Adds a new source to the [queue].
 	void add(InputType t, String s) {
 		queue.add(new InputQueueElement(t, s));
 	}
@@ -32,8 +48,7 @@ class InputQueue {
 
 	/// Loads some URL.
 	///
-	/// This function is redefined in the Web library.
-	/// TODO: in CLI too.
+	/// TODO: This function is redefined in the Web & CLI libraries.
 	Future<String> loadUrl();
 
 	/// Loads some file.
@@ -51,12 +66,8 @@ class InputQueue {
 					sourceCode += "\n" + x.str;
 					break;
 				case InputType.File:
-					/*
-					String fileSrc = await loadFile(x.str);
-					sourceCode += fileSrc;
-					*/
-					sourceCode += " " + await loadFile(x.str);
-					//print("fileSrc: $fileSrc sourceCode: $sourceCode");
+					sourceCode += "\n" + await loadFile(x.str);
+					//print("fileSrc: $fileSrc sourceCode: $sourceCode"); //TEMP
 					break;
 				case InputType.Url:
 					sourceCode += "\n" + await loadUrl(x.str);
@@ -65,6 +76,8 @@ class InputQueue {
 		}
 
 		//print("sourceCode: «$sourceCode»"); //TEMP
+
+		/// TODO: save the sourcecode in the data space
 	}
 
 	/// Returns the next word as a string.

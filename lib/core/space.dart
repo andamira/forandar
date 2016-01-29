@@ -3,15 +3,19 @@ part of forandar;
 // http://stackoverflow.com/questions/28026648/how-to-improve-dart-performance-of-data-conversion-to-from-binary
 
 class DataSpace {
+
 	ByteData _data;
-	final int maxSize;
+
 	int pointer = 0;
 
-	DataSpace(this.maxSize) {
-		_data = new ByteData(maxSize);
+	DataSpace(length) {
+		if (length < reservedDataSpace) length = reservedDataSpace;
+		_data = new ByteData(length);
 	}
 
 	Uint8List getCharList(int offset, int length) => _data.buffer.asUint8List(offset, length);
+
+	int get length => _data.lengthInBytes;
 
 	int fetchChar(int address) => _data.getInt8(address);
 

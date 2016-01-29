@@ -11,7 +11,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT STATE SWAP U. U< XOR
 	//
-	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK TRUE TUCK U>
+	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK SOURCE-ID TRUE TUCK U>
 	//
 	//
 	// Not implemented:
@@ -29,7 +29,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
 	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HOLDS
 	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
-	// S\" SAVE-INPUT SOURCE-ID TO U.R UNUSED VALUE WITHIN
+	// S\" SAVE-INPUT TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
 
 	/// Store x at a-addr.
@@ -625,6 +625,17 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/SWAP
 	d.addWord("SWAP", false, false, vm.dataStack.swap);
 
+	/// Identifies the input source as follows:
+	///
+	/// -1 String (via EVALUATE)
+	///  0 User input device
+	///
+	/// [SOURCE-ID][link] ( -- 0 | -1 )
+	/// [link]: http://forth-standard.org/standard/core/SOURCE-ID
+	d.addWord("SOURCE-ID", false, false, (){
+		vm.dataStack.push(vm.source.id);
+	});
+
 	/// Return a true flag.
 	///
 	/// [TRUE][link] ( -- true )
@@ -690,7 +701,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 		while (true) {
 
 			/// Reads the next word.
-			String wordStr = vm.input.nextWord();
+			String wordStr = vm.source.nextWord();
 
 			if (wordStr == null) {
 				break;

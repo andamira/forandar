@@ -10,21 +10,27 @@ const int flagFALSE = 0;
 const int cellSize = 4;
 
 // Addresses.
+//
+// Reserved space at the beginning of [DataSpace] for:
+//   BASE STATE >IN
 
-/// Contains the base conversion radix in the data space.
+// The minimum length [DataSpace] must have.
+const int reservedDataSpace = cellSize * 3;
+
+/// Address for the base conversion radix in the data space.
 const int addrBASE = 0;
 
-/// Contains the compilation-state flag.
+/// Address for the compilation-state flag.
 ///
 /// It is true (meaning != flagFALSE) when in compilation state.
 const int addrSTATE = addrBASE + cellSize;
 
-/// Contains the offset from the start of the input buffer to the start of the parse area.
+/// Address for the offset from the start of the input buffer to the start of the parse area.
 const int addrToIN = addrSTATE + cellSize;
 
 /// The Forth Virtual Machine.
 ///
-/// Contains the dictionary, stacks, data and object spaces, input queued...
+/// Contains the dictionary, stacks, data and object spaces, source queue...
 class VirtualMachine {
 
 	// Dictionary.
@@ -40,11 +46,11 @@ class VirtualMachine {
 	DataSpace dataSpace;
 	ObjectSpace objectSpace;
 
-	// Input Queue.
-	InputQueue input;
+	InputQueue source;
+	Configuration config;
 
 	/// Constructs the [VirtualMachine].
-	VirtualMachine (Configuration config, InputQueue input) {
+	VirtualMachine (this.config, this.source) {
 
 		/// Creates the Stacks.
 		dataStack    = new LifoStackInt(config.option['dataStackSize']);
@@ -57,9 +63,6 @@ class VirtualMachine {
 		/// Creates the code data space for storing the instructions for non-primitive words.
 		objectSpace = new ObjectSpace();
 
-		/// Creates the source code input queue.
-		this.input = input;
-
 		/// Creates the [Dictionary] containing the [Word]s.
 		dict = new Dictionary(this);
 
@@ -69,16 +72,13 @@ class VirtualMachine {
 	/// Initializes the default data in [dataSpace].
 	void initDataSpace() {
 
-		// Reserves space for:
-		//
-		//   BASE STATE >IN 
-		//
-		dataSpace.pointer += cellSize * 3;
+		/// Reserves the needed space;
+		dataSpace.pointer = reservedDataSpace;
 
 		/// Sets a default decimal BASE (radix).
 		dataSpace.storeCell(addrBASE, 10);
 
-		/// Sets the default STATE to interpretation-mode.
+		/// Sets current STATE to interpretation-mode.
 		dataSpace.storeCell(addrSTATE, flagFALSE);
 
 		/// Sets the input buffer offset to 0.
@@ -96,21 +96,6 @@ class VirtualMachine {
 		} else {
 			return true;
 		}
-	}
-}
-
-/// Supported types of input.
-enum InputType { String, File, Url }
-
-class InputQueueElement {
-	InputType type;
-	String str;
-
-	InputQueueElement(InputType t, String s) {
-		type = t;
-		str = s;
-
-		// print("InputQueueElement($t, «$s»)"); // TEMP
 	}
 }
 
