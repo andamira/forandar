@@ -1,9 +1,5 @@
 part of forandar;
 
-// Boolean aliases for clearer word definitions.
-const bool immediateWord = true;
-const bool compileOnlyWord = true;
-
 /// A Forth definition.
 class Word {
 
@@ -41,7 +37,9 @@ class Dictionary {
 	Map<String, Word> wordsMap = new SplayTreeMap();
 
 	/// List of [Word]s retrievable by index.
-	List<Word> wordsList = [ ];
+	///
+	/// Starting size is the number of reserved st.
+	List<Word> wordsList = new List()..length = ST.values.length;
 
 	/// Constants for the flags of the [Word].
 	static const immediate      = true;
@@ -80,10 +78,16 @@ class Dictionary {
 	}
 
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
-	addWord(String str, bool isImmediate, bool isCompileOnly, Function f) {
-		str = str.toUpperCase();
-		wordsList.add(new Word(isImmediate, isCompileOnly, f, str, wordsList.length));
-		wordsMap[str] = wordsList.last;
+	addWord(String name, Function f, {int st: -1, bool immediate: false, bool compileOnly: false}) {
+		name = name.toUpperCase();
+		if ( st >= 0 ) {
+			wordsList[st] = new Word(immediate, compileOnly, f, name, st);
+			wordsMap[name] = wordsList[st];
+		} else {
+			wordsList.add(new Word(immediate, compileOnly, f, name, wordsList.length));
+			wordsMap[name] = wordsList.last;
+		}
+		//print("$name \t\t $st (${wordsList.length - 1}) | ${wordsList.length}"); //TEMP DEBUG
 	}
 
 	/// Adds a new word that does nothing at all (no operation).
@@ -93,24 +97,21 @@ class Dictionary {
 	///
 	/// Also useful for creating a placeholder that will be overriden
 	/// by calling [addWordOver] from the specific interface libraries.
-	addWordNope(String str, [bool isImmediate = false, bool isCompileOnly = false]) {
-		str = str.toUpperCase();
-		wordsList.add(new Word(isImmediate, isCompileOnly, (){}, str, wordsList.length));
-		wordsMap[str] = wordsList.last;
+	addWordNope(String name, {st: -1, bool immediate: false, bool compileOnly: false}) {
+		addWord(name, (){}, st: st, immediate: immediate, compileOnly: compileOnly);
 	}
 
 	/// Adds a new word, overwriting a pre-existing same-name word.
 	///
-	/// This is only used in conjunction with addWordNope.
-	addWordOver(String str, bool isImmediate, bool isCompileOnly, Function f) {
-		str = str.toUpperCase();
-
-		if (wordsMap.containsKey(str)) {
-			int st = wordsMap[str].st;
-			wordsList[st] = new Word(isImmediate, isCompileOnly, f, str, st);
-			wordsMap[str] = wordsList[st];
+	/// This is inteded to be used only in conjunction with [addWordNope].
+	addWordOver(String name, Function f, {bool immediate: false, bool compileOnly: false}) {
+		name = name.toUpperCase();
+		if (wordsMap.containsKey(name)) {
+			int st = wordsMap[name].st;
+			wordsList[st] = new Word(immediate, compileOnly, f, name, st);
+			wordsMap[name] = wordsList[st];
 		} else {
-			addWord(str, isImmediate, isCompileOnly, f);
+			throwError("", new ForthError(-2049, name));
 		}
 	}
 

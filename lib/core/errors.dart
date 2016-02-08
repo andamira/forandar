@@ -262,6 +262,9 @@ class ForthError implements Error {
 			case -2048:
 				errStr = 'not a word, not a number (not understood)';
 				break;
+			case -2049:
+				errStr = 'word doesn\'t exist so it can\'be overwritten';
+				break;
 		}
 	}
 

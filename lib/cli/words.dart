@@ -17,13 +17,13 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	///	
 	/// [.][link] ( n -- )
 	/// [link]: http://forth-standard.org/standard/core/d
-	d.addWordOver(".", false, false, (){
+	d.addWordOver(".", (){
 		stdout.write("${vm.dataStack.pop()} ");
 	});
 
 	/// TODO FIXME
 	///
-	d.addWordOver("QUIT", false, false, () async {
+	d.addWordOver("QUIT", () async {
 
 		//stdout.writeln("andamira forandar v${await getVersion()}");
 		stdout.writeln("Type `bye' to exit");
@@ -44,7 +44,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [U.][link] ( u -- )
 	/// [link]: http://forth-standard.org/standard/core/Ud
-	d.addWordOver("U.", false, false, (){
+	d.addWordOver("U.", (){
 		stdout.write("${vm.dataStack.pop().toUnsigned(32)} ");
 	});
 }
@@ -56,7 +56,7 @@ void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 	///
 	/// [INCLUDED][link] ( i * x c-addr u -- j * x )
 	/// [link]: http://forth-standard.org/standard/file/INCLUDED
-	//d.addWordOver("INCLUDED", false, false, () {}); // TODO
+	//d.addWordOver("INCLUDED", () {}); // TODO
 }
 
 void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
@@ -67,7 +67,7 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	///
 	/// [?][link] ( a-addr -- )
 	/// [link]: http://forth-standard.org/standard/tools/q
-	d.addWordOver("?", false, false, (){
+	d.addWordOver("?", (){
 		stdout.write("${vm.dataSpace.fetchCell(vm.dataStack.pop()).toRadixString(vm.dataSpace.fetchCell(addrBASE))} ");
 	});
 
@@ -75,7 +75,7 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	///
 	/// [BYE][link] ( -- )
 	/// [link]: https://forth-standard.org/standard/tools/BYE
-	d.addWordOver("BYE", false, false, () {
+	d.addWordOver("BYE", () {
 		exit(0);
 	});
 }
@@ -85,14 +85,14 @@ void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	// BIN. ODUMP
 
 	/// Prints the object space content. TODO
-	d.addWordOver("ODUMP", false, false, () {
+	d.addWordOver("ODUMP", () {
 		for (var obj in vm.objectSpace.data) {
 			stdout.write("$obj ");
 		}
 	});
 
 	/// Display an integer binary format.
-	d.addWordOver("BIN.", false, false, () {
+	d.addWordOver("BIN.", () {
 		stdout.write("${int32ToBin(vm.dataStack.pop())} ");
 	});
 }

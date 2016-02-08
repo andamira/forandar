@@ -7,6 +7,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 part 'core/dictionary.dart';
+part 'core/enums.dart';
 part 'core/errors.dart';
 part 'core/input.dart';
 part 'core/space.dart';
