@@ -9,9 +9,9 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT STATE SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE STATE SWAP U. U< XOR
 	//
-	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PICK SOURCE-ID TRUE TUCK U>
+	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PAD PICK SOURCE-ID TRUE TUCK U>
 	//
 	//
 	// Not implemented:
@@ -23,12 +23,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE RECURSE REPEAT
-	// S" S>D SIGN SM/REM SOURCE SPACE SPACES THEN TYPE UM*
+	// S" S>D SIGN SM/REM SPACE SPACES THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
 	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HOLDS
-	// IS MARKER OF PAD PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
+	// IS MARKER OF PARSE PARSE-NAME REFILL RESTORE-INPUT ROLL
 	// S\" SAVE-INPUT TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
 
@@ -181,7 +181,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/TwoFetch
 	d.addWord("2@", (){
 		int addr = vm.dataStack.pop();
-		vm.dataStack.push(vm.dataSpace.fetchCell(addr+cellSize));
+		vm.dataStack.push(vm.dataSpace.fetchCell(addr + cellSize));
 		vm.dataStack.push(vm.dataSpace.fetchCell(addr));
 	}, st: ST.TwoFetch.index);
 
@@ -565,6 +565,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/OVER
 	d.addWord("OVER", vm.dataStack.over, st: ST.OVER.index);
 
+	/// c-addr is the address of a transient region that can be used to hold data for intermediate processing.
+	///
+	/// [PAD][link] ( -- c-addr )
+	/// [link]: http://forth-standard.org/standard/core/PAD
+	d.addWord("PAD", () {
+		vm.dataStack.push(addrPAD);
+	}, st: ST.PAD.index);
+
 	/// Remove u. Copy the xu to the top of the stack.
 	///
 	/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
@@ -610,6 +618,15 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
 		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
 	}, st: ST.RSHIFT.index);
+
+	/// c-addr is the address of, and u is the number of characters in, the input buffer.
+	///
+	/// [SOURCE][link] ( -- c-addr u )
+	/// [link]: http://forth-standard.org/standard/core/SOURCE
+	d.addWord("SOURCE", () {
+		vm.dataStack.push(addrInputBuffer);
+		vm.dataStack.push(inputBufferSize);
+	}, st: ST.SOURCE.index);
 
 	/// a-addr is the address of a cell containing the compilation-state flag.
 	///

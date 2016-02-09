@@ -1,5 +1,13 @@
 part of forandar;
 
+/// The size for the input buffer.
+///
+/// Enough for one line.
+const int inputBufferSize = 255;
+
+/// The size for the PAD region;
+const int padSize = 127;
+
 /// Supported types of input.
 enum InputType { String, File, Url }
 
