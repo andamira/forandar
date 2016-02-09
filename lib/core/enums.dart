@@ -2,14 +2,14 @@ part of forandar;
 
 /// Enumeration of Forth Words st.
 ///
-/// In order to be able to call forth words using the st (= xt)
+/// In order to be able to call forth words using the nt (= xt)
 /// from inside primitives definitions in Dart.
 /// 
 /// E.g. to get the nt/xt: Primitive.Store.index
 ///
 /// Using long names from forth-standard.org with the exception of
 /// the character minus (-), which is converted to underscore (_).
-enum ST {
+enum NT {
 
 	// Standard Core words
 

@@ -9,7 +9,7 @@ class Word {
 	String name;
 
 	/// An index pointer to this word in [wordsList].
-	int st;
+	int nt;
 
 	/// A flag that indicates if the word is immediate.
 	bool isImmediate;
@@ -25,7 +25,7 @@ class Word {
 
 	// TODO: pointer to dataSpace and/or codeSpace.
 
-	Word(this.isImmediate, this.isCompileOnly, this.exec, [this.name, this.st]);
+	Word(this.isImmediate, this.isCompileOnly, this.exec, [this.name, this.nt]);
 }
 
 /// A searchable collection for all defined [Word]s.
@@ -38,8 +38,8 @@ class Dictionary {
 
 	/// List of [Word]s retrievable by index.
 	///
-	/// Starting size is the number of reserved st.
-	List<Word> wordsList = new List()..length = ST.values.length;
+	/// Starting size is the number of reserved nt.
+	List<Word> wordsList = new List()..length = NT.values.length;
 
 	/// Constants for the flags of the [Word].
 	static const immediate      = true;
@@ -78,16 +78,16 @@ class Dictionary {
 	}
 
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
-	addWord(String name, Function f, {int st: -1, bool immediate: false, bool compileOnly: false}) {
+	addWord(String name, Function f, {int nt: -1, bool immediate: false, bool compileOnly: false}) {
 		name = name.toUpperCase();
-		if ( st >= 0 ) {
-			wordsList[st] = new Word(immediate, compileOnly, f, name, st);
-			wordsMap[name] = wordsList[st];
+		if ( nt >= 0 ) {
+			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
+			wordsMap[name] = wordsList[nt];
 		} else {
 			wordsList.add(new Word(immediate, compileOnly, f, name, wordsList.length));
 			wordsMap[name] = wordsList.last;
 		}
-		//print("$name \t\t $st (${wordsList.length - 1}) | ${wordsList.length}"); //TEMP DEBUG
+		//print("$name \t\t $nt (${wordsList.length - 1}) | ${wordsList.length}"); //TEMP DEBUG
 	}
 
 	/// Adds a new word that does nothing at all (no operation).
@@ -97,8 +97,8 @@ class Dictionary {
 	///
 	/// Also useful for creating a placeholder that will be overriden
 	/// by calling [addWordOver] from the specific interface libraries.
-	addWordNope(String name, {st: -1, bool immediate: false, bool compileOnly: false}) {
-		addWord(name, (){}, st: st, immediate: immediate, compileOnly: compileOnly);
+	addWordNope(String name, {nt: -1, bool immediate: false, bool compileOnly: false}) {
+		addWord(name, (){}, nt: nt, immediate: immediate, compileOnly: compileOnly);
 	}
 
 	/// Adds a new word, overwriting a pre-existing same-name word.
@@ -107,9 +107,9 @@ class Dictionary {
 	addWordOver(String name, Function f, {bool immediate: false, bool compileOnly: false}) {
 		name = name.toUpperCase();
 		if (wordsMap.containsKey(name)) {
-			int st = wordsMap[name].st;
-			wordsList[st] = new Word(immediate, compileOnly, f, name, st);
-			wordsMap[name] = wordsList[st];
+			int nt = wordsMap[name].nt;
+			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
+			wordsMap[name] = wordsList[nt];
 		} else {
 			throwError("", new ForthError(-2049, name));
 		}
