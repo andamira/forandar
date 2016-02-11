@@ -73,7 +73,7 @@ class InputQueue {
 	/// This function is redefined in the CLI library.
 	Future<String> loadFile();
 
-	/// Loads a string from terminal input into the input buffer.
+	/// Reads a string from the terminal input and saves it to the input buffer.
 	///
 	/// This function is redefined in the CLI & Web libraries.
 	readLineFromTerminal();

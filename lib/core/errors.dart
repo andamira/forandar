@@ -2,12 +2,15 @@ part of forandar;
 
 
 /// Manages errors.
-throwError(var dartError, ForthError forthError) {
+throwError(int forthErrorNum, {String msg, var dartError}) {
+
+	var forthError = new ForthError(forthErrorNum, msg);
+
 	print("\n$forthError\n");
 	//print("$dartError"); // TODO: more debug
 }
 
-/// List of Forth Errors
+/// List of Forth Errors.
 class ForthError implements Error {
 
 	num err;
@@ -263,7 +266,10 @@ class ForthError implements Error {
 				errStr = 'not a word, not a number (not understood)';
 				break;
 			case -2049:
-				errStr = 'word doesn\'t exist so it can\'be overwritten';
+				errStr = "word doesn't exist so it can't be overwritten";
+				break;
+			case -2050:
+				errStr = 'terminal input line is too long (>$inputBufferSize)';
 				break;
 		}
 	}

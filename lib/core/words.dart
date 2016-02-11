@@ -779,7 +779,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 				/// If this word is compile only and we are not in compile mode, throw err -14.
 				if (word.isCompileOnly && !vm.inCompileMode) {
 
-					throwError(e, new ForthError(-13));
+					throwError(-13, dartError: e);
 
 				/// If this word != [isImmediate] and we are in compile mode, compile it.
 				} else if (!word.isImmediate && vm.inCompileMode) {
@@ -901,7 +901,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 						// If it couldn't be parsed as float either, throw an error.
 						if (number == null) {
-							throwError(e, new ForthError(-2048, $wordStr));
+							throwError(-2048, msg: wordStr, dartError: e);
 						} else {
 							isInt = false;
 						}
@@ -929,7 +929,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
 				} catch(e) {
-					throwError(e, new ForthError(-2048, wordStr));
+					throwError(-2048, msg: wordStr, dartError: e);
 					break;
 				}
 

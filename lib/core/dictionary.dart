@@ -111,7 +111,7 @@ class Dictionary {
 			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
 			wordsMap[name] = wordsList[nt];
 		} else {
-			throwError("", new ForthError(-2049, name));
+			throwError(-2049, msg: name);
 		}
 	}
 
