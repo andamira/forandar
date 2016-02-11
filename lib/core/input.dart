@@ -6,7 +6,7 @@ part of forandar;
 const int inputBufferSize = 255;
 
 /// The size for the PAD region;
-const int padSize = 127;
+const int padSize = 255;
 
 /// Supported types of input.
 enum InputType { String, File, Url }
@@ -27,20 +27,29 @@ class InputQueueElement {
 /// either as a string, or as a file / URL to be loaded.
 class InputQueue {
 
+	/// Reference to the parent forth virtual machine.
+	VirtualMachine vm;
+
 	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];
 
-	/// All the source code inputs concatenated.
+	/// All the source code inputs concatenated. TODO FIXME
 	String sourceCode = "";
 
-	/// Position marker in the [sourceCode].
+	/// Position marker in the [sourceCode]. TODO FIXME
 	int index = 0;
 
-	// Where SOURCE-ID is stored.
+	/// Where SOURCE-ID value is stored.
 	int id = 0;
 
-	// Constants.
-	static const int SPACE = 0x20;
+	/// Returns true if the input source is set to the interactive terminal.
+	bool fromTerm() => id == 0 ? true : false;
+
+	/// Returns true if the input source is set to a string for EVALUATE .
+	bool fromEval() => id == -1 ? true : false;
+
+	/// Returns true if the input source is set to a file id.
+	bool fromFile() => id > 0 ? true : false;
 
 	/// Adds a new source to the [queue].
 	void add(InputType t, String s) {
@@ -56,7 +65,7 @@ class InputQueue {
 
 	/// Loads some URL.
 	///
-	/// TODO: This function is redefined in the Web & CLI libraries.
+	/// TODO: This function is redefined in the CLI & Web libraries.
 	Future<String> loadUrl();
 
 	/// Loads some file.
@@ -64,7 +73,12 @@ class InputQueue {
 	/// This function is redefined in the CLI library.
 	Future<String> loadFile();
 
-	/// 
+	/// Loads a string from terminal input into the input buffer.
+	///
+	/// This function is redefined in the CLI & Web libraries.
+	readLineFromTerminal();
+
+	/// TODO FIXME
 	Future loadSourceCode() async {
 
 		for (var x in queue) {
@@ -82,10 +96,6 @@ class InputQueue {
 					break;
 			}
 		}
-
-		//print("sourceCode: «$sourceCode»"); //TEMP
-
-		/// TODO: save the sourcecode in the data space
 	}
 
 	/// Returns the next word as a string.

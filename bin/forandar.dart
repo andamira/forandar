@@ -29,13 +29,13 @@ main(List<String> args) async {
 	/// Loads the source code.
 	//
 	// TEMP: Concatenates all the source code strings, files and URLs into a single string.
-	await forth.source.loadSourceCode();
+	//await forth.source.loadSourceCode(); // TODO FIXME
 
 	/// Interprets the code in the input queue.
-	forth.dict.execWord('INTERPRET');
+	//forth.dict.execNt(Nt.INTERPRET.index); // TODO FIXME
 
 	/// Starts the interactive interpreter if BYE hasn't been called.
-	forth.dict.execWord('QUIT');
+	forth.dict.execNt(Nt.QUIT.index);
 }
 
 /// Parses the CLI arguments

@@ -39,7 +39,7 @@ class Dictionary {
 	/// List of [Word]s retrievable by index.
 	///
 	/// Starting size is the number of reserved nt.
-	List<Word> wordsList = new List()..length = NT.values.length;
+	List<Word> wordsList = new List()..length = Nt.values.length;
 
 	/// Constants for the flags of the [Word].
 	static const immediate      = true;
@@ -115,7 +115,7 @@ class Dictionary {
 		}
 	}
 
-	void execSt(int wordSt) => wordsList[wordSt].exec();
+	void execNt(int wordNt) => wordsList[wordNt].exec();
 
 	void execWord(String wordName) => wordsMap[wordName].exec();
 }

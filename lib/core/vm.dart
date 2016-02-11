@@ -44,7 +44,10 @@ class VirtualMachine {
 		/// Creates the object space.
 		objectSpace = new ObjectSpace();
 
-		/// Creates the [Dictionary] containing the [Word]s.
+		/// Stores a reference to itself in [InputQueue].
+		source.vm = this;
+
+		/// Creates and initializes the dictionary.
 		dict = new Dictionary(this);
 	}
 

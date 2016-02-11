@@ -11,7 +11,7 @@ void includeWordsCli(VirtualMachine vm, Dictionary d) {
 
 void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 
-	// . QUIT U.
+	// . U.
 
 	/// Display n in free field format.
 	///	
@@ -19,25 +19,6 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/d
 	d.addWordOver(".", (){
 		stdout.write("${vm.dataStack.pop()} ");
-	});
-
-	/// TODO FIXME
-	///
-	d.addWordOver("QUIT", () async {
-
-		//stdout.writeln("andamira forandar v${await getVersion()}");
-		stdout.writeln("Type `bye' to exit");
-		
-		while(true) {
-		
-			vm.source.clear();
-			vm.source.add(InputType.String, stdin.readLineSync());
-			await vm.source.loadSourceCode();
-
-			d.execWord('INTERPRET');
-
-			stdout.writeln("  ok"); // TEMP FIXME
-		}
 	});
 
 	/// Display u in free field format.

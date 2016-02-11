@@ -9,7 +9,7 @@ part of forandar;
 ///
 /// Using long names from forth-standard.org with the exception of
 /// the character minus (-), which is converted to underscore (_).
-enum NT {
+enum Nt {
 
 	// Standard Core words
 
