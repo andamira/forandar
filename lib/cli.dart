@@ -21,5 +21,10 @@ class InputQueueCli extends InputQueue {
 		var contents = await new File(f).readAsString();
 		return contents;
 	}
+
+	@override
+	Future<String> readLineFromTerminal() async {
+		return await stdin.readLineSync();
+	}
 }
 

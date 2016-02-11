@@ -587,19 +587,30 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/QUIT
 	d.addWord("QUIT", () async {
 
-		print("Type `bye' to exit");
+		// Empty the return stack.
+		vm.returnStack.clear();
+
+		// Store 0 in SOURCE-ID .
+		vm.source.id = 0;
+
+		// Enter interpretation state.
+		vm.interpretationState = true;
 
 		while(true) {
 
-			vm.source.clear();
-			//vm.source.add(InputType.String, stdin.readLineSync());
-			//await vm.source.loadSourceCode(); // FIXME
-			d.execNt(Nt.REFILL.index);
+			// Accept a line from the input source into the input buffer.
+			await d.execNt(Nt.REFILL.index);
+
+			// Interpret.
 			d.execNt(Nt.INTERPRET.index);
 
+			// Display the implementation-defined system prompt.
+			//
+			// If:
+			//  - in interpretation state.
+			//  - all processing has been completed.
+			//  - and no ambiguous condition exists.
 			print("  ok"); // TEMP FIXME
-
-			break; // TEMP
 		}
 	}, nt: Nt.QUIT.index);
 
@@ -623,12 +634,30 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [REFILL][link] ( -- flag )
 	/// [link]: http://forth-standard.org/standard/core/REFILL
-	d.addWord("REFILL", () {
+	d.addWord("REFILL", () async {
 
 		// The input source is from the terminal
 		if (vm.source.fromTerm()) {
 
-			vm.source.readLineFromTerminal();
+			// Attempt to receive input into the terminal input buffer.
+			try {
+				String input = await vm.source.readLineFromTerminal();
+
+				// make the result the input buffer.
+				vm.dataSpace.storeString(addrInputBuffer, input);
+
+				// set >IN to zero.
+				vm.dataSpace.storeCell(addrToIN, 0);
+
+				// return true.
+				vm.dataStack.push(flagTRUE);
+
+			// If there is no input available return false.
+			} catch(e) {
+				vm.dataStack.push(flagFALSE);
+
+				print(e); // TEMP
+			}
 
 		} else {
 
@@ -751,7 +780,22 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 ///
 void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
-	// FIXME TODO
+	// Implemented:
+	//
+	// BOOTMESSAGE INTERPRET
+	//
+	// Not Implemented:
+	//
+	// COLD
+
+	/// Displays the boot message.
+	///
+	/// BOOTMESSAGE ( -- )
+	d.addWord("BOOTMESSAGE", () {
+		print("Type `bye' to exit");
+	}, nt: Nt.BOOTMESSAGE.index);
+
+	/// Embodies the text interpreter semantics.
 	d.addWord("INTERPRET", () {
 
 		/*
@@ -776,13 +820,13 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 			/// If the word is found.
 			if( word != null) {
 
-				/// If this word is compile only and we are not in compile mode, throw err -14.
-				if (word.isCompileOnly && !vm.inCompileMode) {
+				/// If this word is compile only and we are in interpretation state, throw err -14.
+				if (word.isCompileOnly && vm.interpretationState) {
 
 					throwError(-13, dartError: e);
 
-				/// If this word != [isImmediate] and we are in compile mode, compile it.
-				} else if (!word.isImmediate && vm.inCompileMode) {
+				/// If this word != [isImmediate] and we are in compile state, compile it.
+				} else if (!word.isImmediate && vm.compilationState) {
 					//print("TODO: compile: $wordStr"); // TEMP
 					// ...
 
@@ -908,7 +952,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 					}
 
 					/// If we are compiling, compile the number in the data space.
-					if (vm.inCompileMode) {
+					if (vm.compilationState) {
 						// TODO
 
 					/// If we are interpreting leave it on the stack.
@@ -946,6 +990,14 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 ///
 /// [Gforth Word Index][http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Word-Index.html#Word-Index]
 void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
+
+	// Implemented:
+	//
+	// -ROT .FS .RS BIN. ODUMP WORDS+NT
+	//
+	// Not Implemented:
+	//
+	// >NAME NAME>STRING FNIP FPICK FTUCK
 
 	///
 	d.addWord("-ROT", vm.dataStack.rotCC);

@@ -540,6 +540,7 @@ enum Nt {
 
 
 	// Not-Standard Core words
+	BOOTMESSAGE,                           // BOOTMESSAGE
 	INTERPRET,                             // INTERPRET
 
 }

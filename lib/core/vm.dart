@@ -51,17 +51,24 @@ class VirtualMachine {
 		dict = new Dictionary(this);
 	}
 
-	/// Returns [true] when in compilation-mode.
-	///
-	/// And [false] in interpretation-mode.
-	/// The true value in STATE is non-zero.
-	/// http://forth-standard.org/standard/core/STATE
-	bool get inCompileMode {
-		if (dataSpace.fetchCell(addrSTATE) == flagFALSE ) {
-			return false;
-		} else {
-			return true;
-		}
+	/// Returns true when in compilation-state, false otherwise.
+	bool get compilationState {
+		dataSpace.fetchCell(addrSTATE) == flagTRUE ? true : false;
 	}
+	/// Enters compilation-state when set to true, otherwise if false.
+	void set compilationState(bool flag) {
+		dataSpace.storeCell(addrSTATE, flag ? flagTRUE : flagFALSE );
+	}
+
+	/// Returns true when in interpretation-state, false otherwise.
+	bool get interpretationState {
+		dataSpace.fetchCell(addrSTATE) == flagTRUE ? false : true;
+	}
+
+	/// Enters interpretation-state when set to true, otherwise if false.
+	void set interpretationState(bool flag) {
+		dataSpace.storeCell(addrSTATE, flag ? flagFALSE : flagTRUE );
+	}
+
 }
 

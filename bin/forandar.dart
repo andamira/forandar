@@ -35,6 +35,7 @@ main(List<String> args) async {
 	//forth.dict.execNt(Nt.INTERPRET.index); // TODO FIXME
 
 	/// Starts the interactive interpreter if BYE hasn't been called.
+	forth.dict.execNt(Nt.BOOTMESSAGE.index);
 	forth.dict.execNt(Nt.QUIT.index);
 }
 

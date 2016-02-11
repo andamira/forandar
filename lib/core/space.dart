@@ -51,7 +51,8 @@ class DataSpace {
 
 	/// Initializes the data space.
 	///
-	/// Updates the pointer (HERE) to the first available space.
+	/// After each store operation, also updates the pointer (HERE)
+	/// to the first available space.
 	DataSpace(length) {
 		if (length < minDataSpaceSize) length = minDataSpaceSize;
 		_data = new ByteData(length);
@@ -59,7 +60,7 @@ class DataSpace {
 		/// Sets a default decimal BASE (radix).
 		storeCellInc(addrBASE, 10);
 
-		/// Sets current STATE to interpretation-mode.
+		/// Sets current STATE to interpretation-state.
 		storeCellInc(addrSTATE, flagFALSE);
 
 		/// Sets the input buffer offset to 0.
@@ -118,6 +119,18 @@ class DataSpace {
 	void storeFloatInc(int address, double value) {
 		_data.setFloat64(address, value);
 		pointer += floatSize;
+	}
+
+	/// Stores a string at the specified address as UTF-8.
+	void storeString(int address, String str) {
+		var strUTF8 = UTF8.encode(str);
+
+		if (strUTF8.length > inputBufferSize) {
+			throwError(-2050);
+		}
+
+		// TODO
+		//getCharList(addrInputBuffer, inputBufferSize);
 	}
 }
 

@@ -73,10 +73,10 @@ class InputQueue {
 	/// This function is redefined in the CLI library.
 	Future<String> loadFile();
 
-	/// Reads a string from the terminal input and saves it to the input buffer.
+	/// Reads one line from the terminal input.
 	///
 	/// This function is redefined in the CLI & Web libraries.
-	readLineFromTerminal();
+	Future<String> readLineFromTerminal();
 
 	/// TODO FIXME
 	Future loadSourceCode() async {
