@@ -11,7 +11,7 @@ void includeWordsCli(VirtualMachine vm, Dictionary d) {
 
 void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 
-	// . U.
+	// . SPACE SPACES U.
 
 	/// Display n in free field format.
 	///	
@@ -19,6 +19,29 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/d
 	d.addWordOver(".", (){
 		stdout.write("${vm.dataStack.pop()} ");
+	});
+
+	/// Display one space.
+	///
+	/// [SPACE][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/SPACE
+	d.addWordOver("SPACE", () {
+		stdout.write(" ");
+	});
+
+	/// If n is greater than zero, display n spaces.
+	///
+	/// [SPACES][link] ( u -- )
+	/// [link]: http://forth-standard.org/standard/core/SPACES
+	d.addWordOver("SPACES", () {
+		var times = vm.dataStack.pop();
+		if (times > 0) {
+			var str = new StringBuffer();
+			for (i = 0; i < times; i++) {
+				str.write(" ");
+			}
+			stdout.write(str.toString());
+		}
 	});
 
 	/// Display u in free field format.

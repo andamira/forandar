@@ -9,9 +9,9 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE STATE SWAP U. U< XOR
+	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
 	//
-	// 0<> 0> 2>R 2R> 2R@ <> FALSE HEX NIP PAD PICK REFILL SOURCE-ID TRUE TUCK U>
+	// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PICK REFILL SOURCE-ID TRUE TUCK U>
 	//
 	//
 	// Not implemented:
@@ -23,11 +23,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
 	// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 	// MOVE POSTPONE RECURSE REPEAT
-	// S" S>D SIGN SM/REM SPACE SPACES THEN TYPE UM*
+	// S" S>D SIGN SM/REM THEN TYPE UM*
 	// UM/MOD UNLOOP UNTIL VARIABLE WHILE WORD [ ['] [CHAR] ]
 	//
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
-	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF ERASE HOLDS
+	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF HOLDS
 	// IS MARKER OF PARSE PARSE-NAME RESTORE-INPUT ROLL
 	// S\" SAVE-INPUT TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
@@ -458,6 +458,18 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/DROP
 	d.addWord("DROP", vm.dataStack.drop, nt: Nt.DROP.index);
 
+	/// If u is greater than zero, clear all bits in each of u consecutive address units of memory beginning at addr.
+	///
+	/// [ERASE][link] ( addr u -- )
+	/// [link]: http://forth-standard.org/standard/core/ERASE
+	d.addWord("ERASE", (){
+		int length = vm.dataStack.pop();
+		int address =  vm.dataStack.pop();
+		if (length > 0) {
+			vm.dataSpace.fillCharRange(address, length, 0);
+		}
+	}, nt: Nt.ERASE.index);
+
 	/// Return a false flag.
 	///
 	/// [FALSE][link] ( -- false )
@@ -601,6 +613,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			// Accept a line from the input source into the input buffer.
 			await d.execNt(Nt.REFILL.index);
 
+			// TEMP
+			vm.dataStack.push(addrInputBuffer);
+			vm.dataStack.push(inputBufferSize);
+			d.execNt(Nt.DUMP.index);
+
 			// Interpret.
 			d.execNt(Nt.INTERPRET.index);
 
@@ -636,31 +653,63 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/REFILL
 	d.addWord("REFILL", () async {
 
-		// The input source is from the terminal
+		// The input source comes from the terminal
 		if (vm.source.fromTerm()) {
 
-			// Attempt to receive input into the terminal input buffer.
+			String input;
+
+			// Attempts to receive input into the terminal input buffer.
 			try {
-				String input = await vm.source.readLineFromTerminal();
+				input = await vm.source.readLineFromTerminal();
 
-				// make the result the input buffer.
-				vm.dataSpace.storeString(addrInputBuffer, input);
-
-				// set >IN to zero.
-				vm.dataSpace.storeCell(addrToIN, 0);
-
-				// return true.
-				vm.dataStack.push(flagTRUE);
-
-			// If there is no input available return false.
+			// If there is no input available returns false.
 			} catch(e) {
+
+				// If the input source is coming from the user, REFILL
+				// could still return a false value if, for instance,
+				// a communication channel closes so that the system
+				// knows that no more input will be available.
+
 				vm.dataStack.push(flagFALSE);
 
-				print(e); // TEMP
+				// TODO: Review this course of action.
+				print(e);
+				return;
 			}
+
+			// Converts the string to UTF8.
+			List<int> inputUTF8 = UTF8.encode(input);
+
+			// Checks the size fits in the buffer.
+			if (inputUTF8.length > inputBufferSize) {
+				throwError(-2050);
+
+				// TODO: Review this course of action.
+			}
+
+			// Cleans the input buffer.
+			vm.dataSpace.fillCharRange(addrInputBuffer, inputBufferSize, 0);
+
+			// Copies the terminal input to the input buffer.
+			vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
+
+			// Sets >IN to zero.
+			vm.dataSpace.storeCell(addrToIN, 0);
+
+			// Returns true.
+			vm.dataStack.push(flagTRUE);
 
 		} else {
 
+			// TODO: fill from --evaluate
+			// When the input source is a string from EVALUATE,
+			// return false and perform no other action.
+
+			// TODO: fill from --include
+			// When the input source is a text file, attempt to read
+			// the next line from the text-input file. If successful,
+			// make the result the current input buffer, set >IN to
+			// zero, and return true. Otherwise return false.
 		}
 
 		//vm.dataStack.push(flagTRUE);
@@ -694,6 +743,18 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(addrInputBuffer);
 		vm.dataStack.push(inputBufferSize);
 	}, nt: Nt.SOURCE.index);
+
+	/// Display one space.
+	///
+	/// [SPACE][link] ( -- )
+	/// [link]: http://forth-standard.org/standard/core/SPACE
+	d.addWordNope("SPACE", nt: Nt.SPACE.index);
+
+	/// If n is greater than zero, display n spaces.
+	///
+	/// [SPACES][link] ( u -- )
+	/// [link]: http://forth-standard.org/standard/core/SPACES
+	d.addWordNope("SPACES", nt: Nt.SPACES.index);
 
 	/// a-addr is the address of a cell containing the compilation-state flag.
 	///
@@ -782,7 +843,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 	// Implemented:
 	//
-	// BOOTMESSAGE INTERPRET
+	// BOOTMESSAGE INTERPRET SCAN SKIP
 	//
 	// Not Implemented:
 	//
@@ -983,6 +1044,27 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 		// Loop ends when there are no more words.
 
 	}, nt: Nt.INTERPRET.index);
+
+	/// Scan the string c-addr1 u1 for the first occurence of char.
+	///
+	/// Leave match address c-addr2 and length remaining u2. If no
+	/// match occurred then u2 is zero and c-addr2 is c-addr1 + u1.
+	///
+	/// ( c-addr1 u1 char -- c-addr2 u2 )
+	d.addWord("SCAN", (){
+
+	}, nt: Nt.SCAN.index);
+
+	/// Skip over leading occurences of char in the string c-addr1 u1.
+	///
+	/// Leave the address of the first non-matching character char2
+	/// length remaining u2. If no characters were skipped leave the
+	/// original string c-addr1 u1.
+	///
+	/// ( c-addr1 u1 char -- c-addr2 u2 | c-addr1 u1 )
+	d.addWord("SKIP", (){
+
+	}, nt: Nt.SKIP.index);
 
 }
 
@@ -1592,7 +1674,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [link]: http://forth-standard.org/standard/tools/DUMP
 	d.addWord("DUMP", (){
 		vm.dataStack.over();
-		print( dumpBytes(vm.dataSpace.getCharList(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
+		print( dumpBytes(vm.dataSpace.getCharRange(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
 	}, nt: Nt.DUMP.index);
 
 	/// Display the value stored at a-addr.

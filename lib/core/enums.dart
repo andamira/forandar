@@ -542,6 +542,8 @@ enum Nt {
 	// Not-Standard Core words
 	BOOTMESSAGE,                           // BOOTMESSAGE
 	INTERPRET,                             // INTERPRET
+	SCAN,                                  // SCAN
+	SKIP,                                  // SKIP
 
 }
 

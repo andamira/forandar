@@ -70,8 +70,6 @@ class DataSpace {
 		pointer += inputBufferSize + padSize;
 	}
 
-	Uint8List getCharList(int offset, int length) => _data.buffer.asUint8List(offset, length);
-
 	int get length => _data.lengthInBytes;
 
 	/// Fetches a char integer from the specified address.
@@ -82,6 +80,10 @@ class DataSpace {
 
 	/// Fetches a float from the specified address.
 	double fetchFloat(int address) => _data.getFloat64(address);
+
+	/// Fetches a string from the specified address, decoded as UTF-8.
+	String fetchString(int address, int length) =>
+		UTF8.decode(getCharRange(address, length), allowMalformed: true);
 
 	/// Stores a char integer at the specified address.
 	void storeChar(int address, int value) => _data.setInt8(address, value);
@@ -121,16 +123,25 @@ class DataSpace {
 		pointer += floatSize;
 	}
 
-	/// Stores a string at the specified address as UTF-8.
-	void storeString(int address, String str) {
-		var strUTF8 = UTF8.encode(str);
+	/// Stores a string at the specified address, encoded as UTF-8.
+	void storeString(int address, String str) =>
+		vm.dataSpace.setCharRange(address, UTF8.encode(str));
 
-		if (strUTF8.length > inputBufferSize) {
-			throwError(-2050);
-		}
+	///  Returns a list of chars from the specified range.
+	Uint8List getCharRange(int offset, int length) => _data.buffer.asUint8List(offset, length);
 
-		// TODO
-		//getCharList(addrInputBuffer, inputBufferSize);
+	/// Fills the specified range with the specified char value.
+	void fillCharRange(int offset, int length, int char) {
+		_data.buffer.asUint8List(offset, length).fillRange(0, length, char);
+	}
+
+	/// Copies a list of chars to the specified address.
+	///
+	/// Optonally [skip] a number of characters from the list,
+	/// and optionally too, a [length] number of chars to copy.
+	void setCharRange(int offset, Iterable<int> chars, {int skip: 0, int length: 0}) {
+		if (length == 0) length = chars.length;
+		_data.buffer.asUint8List(offset, length).setRange(0, length, chars, skip);
 	}
 }
 

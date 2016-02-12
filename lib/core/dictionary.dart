@@ -115,8 +115,8 @@ class Dictionary {
 		}
 	}
 
-	void execNt(int wordNt) => wordsList[wordNt].exec();
+	execNt(int wordNt) => wordsList[wordNt].exec();
 
-	void execWord(String wordName) => wordsMap[wordName].exec();
+	execWord(String wordName) => wordsMap[wordName].exec();
 }
 
