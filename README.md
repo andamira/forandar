@@ -1,9 +1,8 @@
-# forandar
+# <img src="https://raw.githubusercontent.com/andamira/forandar/master/web/img/logo-55x120.png" height="120" valign="bottom">  forandar
 
 A Forth implementation in Dart.
 
 ![Version pre-alpha](https://img.shields.io/badge/version-pre--alpha-C70300.svg)
-[![Join the chat room](https://img.shields.io/badge/open-chat_room-0081C6.svg)](https://gitter.im/andamira/forandar)
 
 ## Information
 
@@ -27,6 +26,7 @@ A Forth implementation in Dart.
 
 * First you need to install [Dart](https://www.dartlang.org/downloads/).
 * Then install the Dart dependencies with `pub get`.
+
 * Optionally, but recommended, install [npm](https://docs.npmjs.com/getting-started/installing-node) & [Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) as the build tool.
 * Then install the Gulp dependencies with `npm install`.
 * To see the build tool help screen, run: `gulp`.
