@@ -99,3 +99,22 @@ String dumpBytes(Uint8List segment, int memOffset) {
 	return str.toString();
 }
 
+/// Returns the number of codeUnits necessary to encode a [codePoint] in UTF-8.
+///
+/// https://en.wikipedia.org/wiki/Comparison_of_Unicode_encodings#Eight-bit_environments
+int UTF8CodeUnitsPerCodePoint(int codePoint) {
+	if (codePoint <= 0x00007F) return 1;
+	if (codePoint <= 0x0007FF) return 2;
+	if (codePoint <= 0x00FFFF) return 3;
+	return 4; // <= 0x10FFFF
+}
+
+/// Returns the number of codeUnits necessary to encode a list of codepoints in UTF-8.
+int UTF8CodeUnitsPerCodePointsList(List<int> codePointsList) {
+	int codeUnits = 0;
+	for (int cp in codePointsList) {
+		codeUnits += UTF8CodeUnitsPerCodePoint(cp);
+	}
+	return codeUnits;
+}
+

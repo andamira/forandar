@@ -613,7 +613,12 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			// Accept a line from the input source into the input buffer.
 			await d.execNt(Nt.REFILL.index);
 
-			// TEMP
+			vm.dataStack.pop(); // TEMP consumes the flag left by REFILL
+
+
+			// TEMP DEBUGGING
+			//
+			// dump input buffer
 			vm.dataStack.push(addrInputBuffer);
 			vm.dataStack.push(inputBufferSize);
 			d.execNt(Nt.DUMP.index);
@@ -628,6 +633,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			//  - all processing has been completed.
 			//  - and no ambiguous condition exists.
 			print("  ok"); // TEMP FIXME
+
+
+			// TEMP DEBUGGING
+			//
+			vm.dataStack.clear();
 		}
 	}, nt: Nt.QUIT.index);
 
@@ -661,9 +671,9 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			// Attempts to receive input into the terminal input buffer.
 			try {
 				input = await vm.source.readLineFromTerminal();
-
+			}
 			// If there is no input available returns false.
-			} catch(e) {
+			catch(e) {
 
 				// If the input source is coming from the user, REFILL
 				// could still return a false value if, for instance,
@@ -687,11 +697,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 				// TODO: Review this course of action.
 			}
 
-			// Cleans the input buffer.
-			vm.dataSpace.fillCharRange(addrInputBuffer, inputBufferSize, 0);
-
 			// Copies the terminal input to the input buffer.
 			vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
+
+			// Sets the length of the input source.
+			vm.source.length = inputUTF8.length;
 
 			// Sets >IN to zero.
 			vm.dataSpace.storeCell(addrToIN, 0);
@@ -741,8 +751,20 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/SOURCE
 	d.addWord("SOURCE", () {
 		vm.dataStack.push(addrInputBuffer);
-		vm.dataStack.push(inputBufferSize);
+		vm.dataStack.push(vm.source.length);
 	}, nt: Nt.SOURCE.index);
+
+	/// Identifies the input source as follows:
+	///
+	/// fileid   Text file "fileid"
+	///     -1   String (via EVALUATE)
+	///      0   User input device
+	///
+	/// [SOURCE-ID][link] ( -- 0 | -1 )
+	/// [link]: http://forth-standard.org/standard/core/SOURCE-ID
+	d.addWord("SOURCE-ID", (){
+		vm.dataStack.push(vm.source.id);
+	}, nt: Nt.SOURCE_ID.index);
 
 	/// Display one space.
 	///
@@ -769,18 +791,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [SWAP][link] ( x1 x2 -- x2 x1 )
 	/// [link]: http://forth-standard.org/standard/core/SWAP
 	d.addWord("SWAP", vm.dataStack.swap, nt: Nt.SWAP.index);
-
-	/// Identifies the input source as follows:
-	///
-	/// fileid   Text file "fileid"
-	///     -1   String (via EVALUATE)
-	///      0   User input device
-	///
-	/// [SOURCE-ID][link] ( -- 0 | -1 )
-	/// [link]: http://forth-standard.org/standard/core/SOURCE-ID
-	d.addWord("SOURCE-ID", (){
-		vm.dataStack.push(vm.source.id);
-	}, nt: Nt.SOURCE_ID.index);
 
 	/// Return a true flag.
 	///
@@ -1052,7 +1062,22 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// ( c-addr1 u1 char -- c-addr2 u2 )
 	d.addWord("SCAN", (){
+		int char    = vm.dataStack.pop();
+		int length  = vm.dataStack.pop();
+		int address = vm.dataStack.pop();
 
+		List codePoints = vm.dataSpace.fetchString(address, length).runes.toList();
+
+		int index = codePoints.indexOf(char);
+
+		if (index >= 0) {
+			int indexUTF8 = UTF8CodeUnitsPerCodePointsList(codePoints.sublist(0, index));
+			vm.dataStack.push(address + indexUTF8);
+			vm.dataStack.push(length - indexUTF8);
+		} else {
+			vm.dataStack.push(address + length);
+			vm.dataStack.push(0);
+		}
 	}, nt: Nt.SCAN.index);
 
 	/// Skip over leading occurences of char in the string c-addr1 u1.
@@ -1063,7 +1088,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// ( c-addr1 u1 char -- c-addr2 u2 | c-addr1 u1 )
 	d.addWord("SKIP", (){
-
+		// TODO
 	}, nt: Nt.SKIP.index);
 
 }

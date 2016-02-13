@@ -39,8 +39,15 @@ class InputQueue {
 	/// Position marker in the [sourceCode]. TODO FIXME
 	int index = 0;
 
-	/// Where SOURCE-ID value is stored.
+	/// The identification of the input source.
+	///
+	/// This is the value returned by SOURCE-ID.
 	int id = 0;
+
+	/// The number of characters in the input buffer.
+	///
+	/// This is the length value returned by SOURCE.
+	int length = 0;
 
 	/// Returns true if the input source is set to the interactive terminal.
 	bool fromTerm() => id == 0 ? true : false;
@@ -172,5 +179,4 @@ class InputQueue {
 				return false;
 		}
 	}
-
 }

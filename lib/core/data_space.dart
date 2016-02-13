@@ -47,11 +47,14 @@ class DataSpace {
 
 	ByteData _data;
 
+	/// Marks the first available free space.
+	///
+	/// This is the value returned by HERE .
 	int pointer = 0;
 
 	/// Initializes the data space.
 	///
-	/// After each store operation, also updates the pointer (HERE)
+	/// After each store operation, also updates the pointer
 	/// to the first available space.
 	DataSpace(length) {
 		if (length < minDataSpaceSize) length = minDataSpaceSize;
@@ -143,11 +146,5 @@ class DataSpace {
 		if (length == 0) length = chars.length;
 		_data.buffer.asUint8List(offset, length).setRange(0, length, chars, skip);
 	}
-}
-
-/// TODO
-class ObjectSpace {
-	List<Object> data = [];
-	int pointer = 0;
 }
 
