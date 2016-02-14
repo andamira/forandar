@@ -114,6 +114,17 @@ abstract class LifoStack extends Stack {
 		}
 	}
 
+	/// Returns the Next Of Stack item WITHOUT removing it.
+	///
+	/// ( a -- )
+	num peekNOS() {
+		if (size > 1) {
+			return data[size - 2];
+		} else {
+			return null;
+		}
+	}
+
 	/// Copies i to the top of the stack.
 	///
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().

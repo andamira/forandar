@@ -545,5 +545,10 @@ enum Nt {
 	SCAN,                                  // SCAN
 	SKIP,                                  // SKIP
 
+	// Not-Standard Extended words
+	DotFS,                                 // .FS
+	DotRS,                                 // .RS
+	qSTRING,                               // ?STRING
+
 }
 

@@ -9,14 +9,14 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// Implemented:
 	//
-	// ! * + - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
+	// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
 	//
-	// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PICK REFILL SOURCE-ID TRUE TUCK U>
+	// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PARSE PARSE-NAME PICK REFILL SOURCE-ID TRUE TUCK U>
 	//
 	//
 	// Not implemented:
 	//
-	// # #> #S ' ( */ */MOD +! +LOOP ." 2* 2/
+	// # #> #S ' ( */ */MOD +LOOP ." 2* 2/
 	// : ; <# >BODY >NUMBER ABORT
 	// ABORT" ACCEPT BEGIN
 	// CHAR CONSTANT COUNT CREATE DO DOES>
@@ -28,7 +28,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
 	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF HOLDS
-	// IS MARKER OF PARSE PARSE-NAME RESTORE-INPUT ROLL
+	// IS MARKER OF RESTORE-INPUT ROLL
 	// S\" SAVE-INPUT TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
 
@@ -60,6 +60,15 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("+", (){
 		vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
 	}, nt: Nt.Plus);
+
+	/// Add n | u to the single-cell number at a-addr.
+	///
+	/// [+!][link] ( n | u a-addr -- )
+	/// [link]: http://forth-standard.org/standard/core/PlusStore
+	d.addWord("+!", (){
+		int addr = vm.dataStack.pop();
+		vm.dataSpace.storeCell(addr, vm.dataSpace.fetchCell(addr) + vm.dataStack.pop());
+	}, nt: Nt.PlusStore);
 
 	/// Reserve one cell of data space and store x in the cell.
 	///
@@ -585,6 +594,55 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		vm.dataStack.push(addrPAD);
 	}, nt: Nt.PAD);
 
+	/// Parse ccc delimited by the delimiter char.
+	///
+	/// c-addr is the address (within the input buffer) and u
+	/// is the length of the parsed string. If the parse area
+	/// was empty, the resulting string has a zero length.
+	///
+	/// [PARSE][link] ( char "ccc<char>" -- c-addr u )
+	/// [link]: http://forth-standard.org/standard/core/PARSE
+	d.addWord("PARSE", () {
+		// TODO
+	}, nt: Nt.PARSE);
+
+	/// Skip leading space delimiters. Parse name delimited by a space.
+	///
+	/// c-addr is the address of the selected string within
+	/// the input buffer and u is its length in characters.
+	/// If the parse area is empty or contains only white space,
+	/// the resulting string has length zero.
+	///
+	/// [PARSE-NAME][link] ( "<spaces>name<space>" -- c-addr u )
+	/// [link]: http://forth-standard.org/standard/core/PARSE-NAME
+	d.addWord("PARSE-NAME", () {
+
+		// Put in the data stack the current position in the input buffer.
+		int pointer = vm.dataSpace.fetchCell(addrToIN);
+		vm.dataStack.push(addrInputBuffer + pointer);
+		vm.dataStack.push(vm.source.length - pointer);
+
+		// Skip the leading delimiter characters (space).
+		d.execNts([Nt.BL, Nt.SKIP]);
+
+		int startWord = vm.dataStack.peekNOS();
+
+		// Get the string until the next delimiter.
+		d.execNts([Nt.BL, Nt.SCAN]);
+
+		int endWord = vm.dataStack.peekNOS();
+
+		d.execNt(Nt.TwoDROP);
+
+		// Put in the data stack the string of the name found.
+		vm.dataStack.push(startWord);
+		vm.dataStack.push(endWord - startWord);
+
+		// Update >IN
+		vm.dataSpace.storeCell(addrToIN, endWord - addrInputBuffer);
+
+	}, nt: Nt.PARSE_NAME);
+
 	/// Remove u. Copy the xu to the top of the stack.
 	///
 	/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
@@ -616,13 +674,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			// If REFILL failed, break the loop (Shouldn't happen).
 			if (vm.dataStack.pop() == flagFALSE) break;
 
-			// TEMP DEBUGGING
-			//
-			// dump input buffer
-			vm.dataStack.push(addrInputBuffer);
-			vm.dataStack.push(inputBufferSize);
-			d.execNt(Nt.DUMP);
-
 			// Interpret.
 			d.execNt(Nt.INTERPRET);
 
@@ -635,8 +686,6 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			if (vm.interpretationState) {
 				print("  ok"); // TODO
 			}
-
-			vm.dataStack.clear(); // TEMP DEBUGGING
 		}
 	}, nt: Nt.QUIT);
 
@@ -868,19 +917,15 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	/// Embodies the text interpreter semantics.
 	d.addWord("INTERPRET", () {
 
-		/*
-		// TEMP
-		print(vm.source.fromTerm());
-		print(vm.source.fromFile());
-		print(vm.source.fromEval());
-		*/
-
 		while (true) {
 
-			/// FIXME Reads the next word.
-			String wordStr = vm.source.nextWord();
+			// Read the next word.
+			d.execNt(Nt.PARSE_NAME);
 
-			if (wordStr == null) {
+			vm.dataStack.swap();
+			String wordStr = vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop());
+
+			if (wordStr.isEmpty) {
 				break;
 			}
 
@@ -1142,12 +1187,18 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 		/// Prints the values currently on the floating point stack.
 	d.addWord(".FS", () {
 		print("floatStack: ${vm.floatStack}");
-	});
+	}, nt: Nt.DotFS);
 
 	/// Prints the values currently on the return point stack.
 	d.addWord(".RS", () {
 		print("returnStack: ${vm.returnStack}");
-	});
+	}, nt: Nt.DotRS);
+
+	/// Display the string stored at ( c-addr u -- )
+	d.addWord("?STRING", (){
+		vm.dataStack.swap();
+		print(vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop()));
+	}, nt: Nt.qSTRING);
 
 	/// Display an integer binary format.
 	d.addWord("BIN.", () {

@@ -86,18 +86,24 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 
 void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
-	// BIN. ODUMP
+	// ?STRING BIN. ODUMP
+
+	/// Display the string stored at ( c-addr u -- )
+	d.addWord("?STRING", (){
+		vm.dataStack.swap();
+		stdout.write(vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop()));
+	});
+
+	/// Display an integer binary format.
+	d.addWordOver("BIN.", () {
+		stdout.write("${int32ToBin(vm.dataStack.pop())} ");
+	});
 
 	/// Prints the object space content. TODO
 	d.addWordOver("ODUMP", () {
 		for (var obj in vm.objectSpace.data) {
 			stdout.write("$obj ");
 		}
-	});
-
-	/// Display an integer binary format.
-	d.addWordOver("BIN.", () {
-		stdout.write("${int32ToBin(vm.dataStack.pop())} ");
 	});
 }
 
