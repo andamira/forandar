@@ -25,7 +25,15 @@ class Word {
 
 	// TODO: pointer to dataSpace and/or codeSpace.
 
-	Word(this.isImmediate, this.isCompileOnly, this.exec, [this.name, this.nt]);
+	/// Word constructor accepts [nt] either as Nt type or int (Nt.index).
+	Word(this.isImmediate, this.isCompileOnly, this.exec, this.name, var nt) {
+		try {
+			this.nt = nt.index;
+		}
+		catch(e) {
+			this.nt = nt;
+		}
+	}
 }
 
 /// A searchable collection for all defined [Word]s.
@@ -78,16 +86,15 @@ class Dictionary {
 	}
 
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
-	addWord(String name, Function f, {int nt: -1, bool immediate: false, bool compileOnly: false}) {
+	addWord(String name, Function f, {Nt nt, bool immediate: false, bool compileOnly: false}) {
 		name = name.toUpperCase();
-		if ( nt >= 0 ) {
-			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
-			wordsMap[name] = wordsList[nt];
-		} else {
+		if (nt == null) {
 			wordsList.add(new Word(immediate, compileOnly, f, name, wordsList.length));
 			wordsMap[name] = wordsList.last;
+		} else {
+			wordsList[nt.index] = new Word(immediate, compileOnly, f, name, nt);
+			wordsMap[name] = wordsList[nt.index];
 		}
-		//print("$name \t\t $nt (${wordsList.length - 1}) | ${wordsList.length}"); //TEMP DEBUG
 	}
 
 	/// Adds a new word that does nothing at all (no operation).
@@ -97,7 +104,7 @@ class Dictionary {
 	///
 	/// Also useful for creating a placeholder that will be overriden
 	/// by calling [addWordOver] from the specific interface libraries.
-	addWordNope(String name, {nt: -1, bool immediate: false, bool compileOnly: false}) {
+	addWordNope(String name, {Nt nt, bool immediate: false, bool compileOnly: false}) {
 		addWord(name, (){}, nt: nt, immediate: immediate, compileOnly: compileOnly);
 	}
 
@@ -115,8 +122,13 @@ class Dictionary {
 		}
 	}
 
-	execNt(int wordNt) => wordsList[wordNt].exec();
+	/// Executes a word referenced by its nt.
+	execNt(Nt nt) => wordsList[nt.index].exec();
 
+	/// Executes a list of words referenced by their nt.
+	execNts(List<Nt> nts) => nts.forEach( (nt) => wordsList[nt.index].exec());
+
+	/// Executes a word referenced by its name.
 	execWord(String wordName) => wordsMap[wordName].exec();
 }
 

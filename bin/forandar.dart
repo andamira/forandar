@@ -32,11 +32,11 @@ main(List<String> args) async {
 	//await forth.source.loadSourceCode(); // TODO FIXME
 
 	/// Interprets the code in the input queue.
-	//forth.dict.execNt(Nt.INTERPRET.index); // TODO FIXME
+	//forth.dict.execNt(Nt.INTERPRET); // TODO FIXME
 
 	/// Starts the interactive interpreter if BYE hasn't been called.
-	forth.dict.execNt(Nt.BOOTMESSAGE.index);
-	forth.dict.execNt(Nt.QUIT.index);
+	forth.dict.execNt(Nt.BOOTMESSAGE);
+	forth.dict.execNt(Nt.QUIT);
 }
 
 /// Parses the CLI arguments
