@@ -52,11 +52,18 @@ class DataSpace {
 	/// This is the value returned by HERE .
 	int pointer = 0;
 
+	// Singleton constructor, allowing only one instance.
+	factory DataSpace(length) {
+		_instance ??= new DataSpace._internal(length);
+		return _instance;
+	}
+	static DataSpace _instance;
+
 	/// Initializes the data space.
 	///
 	/// After each store operation, also updates the pointer
 	/// to the first available space.
-	DataSpace(length) {
+	DataSpace._internal(length) {
 		if (length < minDataSpaceSize) length = minDataSpaceSize;
 		_data = new ByteData(length);
 

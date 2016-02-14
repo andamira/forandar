@@ -29,8 +29,15 @@ class VirtualMachine {
 	InputQueue source;
 	Configuration config;
 
+	// Singleton constructor, allowing only one instance.
+	factory VirtualMachine(config, source) {
+		_instance ??= new VirtualMachine._internal(config, source);
+		return _instance;
+	}
+	static VirtualMachine _instance;
+
 	/// Constructs the [VirtualMachine].
-	VirtualMachine (this.config, this.source) {
+	VirtualMachine._internal(this.config, this.source) {
 
 		/// Creates the Stacks.
 		dataStack    = new LifoStackInt(config.option['dataStackSize']);

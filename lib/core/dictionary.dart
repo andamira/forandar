@@ -23,7 +23,7 @@ class Word {
 	/// The execution code for this word.
 	final Function exec;
 
-	// TODO: pointer to dataSpace and/or codeSpace.
+	// TODO: code space.
 
 	/// Word constructor accepts [nt] either as Nt type or int (Nt.index).
 	Word(this.isImmediate, this.isCompileOnly, this.exec, this.name, var nt) {
@@ -53,6 +53,13 @@ class Dictionary {
 	static const immediate      = true;
 	static const compileOnly    = true;
 
+	// Singleton constructor, allowing only one instance.
+	factory Dictionary(VirtualMachine vm) {
+		_instance ??= new Dictionary._internal(vm);
+		return _instance;
+	}
+	static Dictionary _instance;
+
 	/// Creates the dictionary and adds the primitives.
 	///
 	/// The majority of the words are defined in the file: core/words.dart.
@@ -60,7 +67,7 @@ class Dictionary {
 	/// The words whose implementation depends on the specific Dart interface
 	/// are defined in the files: cli/dictionary.dart and web/dictionary.dart,
 	/// and included from the corresponding implementations in: /bin and /web.
-	Dictionary(VirtualMachine vm) {
+	Dictionary._internal(VirtualMachine vm) {
 
 		// Must receive the Virtual Machine as an argument because its constructor
 		// has not finished yet, and therefore the global variable forth is null.
