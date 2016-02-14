@@ -53,7 +53,7 @@ class VirtualMachine {
 
 	/// Returns true when in compilation-state, false otherwise.
 	bool get compilationState {
-		dataSpace.fetchCell(addrSTATE) == flagTRUE ? true : false;
+		return dataSpace.fetchCell(addrSTATE) == flagTRUE ? true : false;
 	}
 	/// Enters compilation-state when set to true, otherwise if false.
 	void set compilationState(bool flag) {
@@ -62,7 +62,7 @@ class VirtualMachine {
 
 	/// Returns true when in interpretation-state, false otherwise.
 	bool get interpretationState {
-		dataSpace.fetchCell(addrSTATE) == flagTRUE ? false : true;
+		return dataSpace.fetchCell(addrSTATE) == flagTRUE ? false : true;
 	}
 
 	/// Enters interpretation-state when set to true, otherwise if false.

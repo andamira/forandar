@@ -613,8 +613,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			// Accept a line from the input source into the input buffer.
 			await d.execNt(Nt.REFILL.index);
 
-			vm.dataStack.pop(); // TEMP consumes the flag left by REFILL
-
+			// If REFILL failed, break the loop (Shouldn't happen).
+			if (vm.dataStack.pop() == flagFALSE) break;
 
 			// TEMP DEBUGGING
 			//
@@ -632,12 +632,11 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 			//  - in interpretation state.
 			//  - all processing has been completed.
 			//  - and no ambiguous condition exists.
-			print("  ok"); // TEMP FIXME
+			if (vm.interpretationState) {
+				print("  ok"); // TODO
+			}
 
-
-			// TEMP DEBUGGING
-			//
-			vm.dataStack.clear();
+			vm.dataStack.clear(); // TEMP DEBUGGING
 		}
 	}, nt: Nt.QUIT.index);
 
@@ -1083,12 +1082,28 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 	/// Skip over leading occurences of char in the string c-addr1 u1.
 	///
 	/// Leave the address of the first non-matching character char2
-	/// length remaining u2. If no characters were skipped leave the
-	/// original string c-addr1 u1.
+	/// and length remaining u2. If no characters were skipped,
+	/// leave the original string c-addr1 u1.
 	///
 	/// ( c-addr1 u1 char -- c-addr2 u2 | c-addr1 u1 )
 	d.addWord("SKIP", (){
-		// TODO
+		int char    = vm.dataStack.pop();
+		int length  = vm.dataStack.pop();
+		int address = vm.dataStack.pop();
+
+		List codePoints = vm.dataSpace.fetchString(address, length).runes.toList();
+		int skippedBytes = 0;
+
+		for (int i = 0; i < codePoints.length; i++) {
+			if (codePoints[i] != char) {
+				vm.dataStack.push(address + skippedBytes);
+				vm.dataStack.push(length - skippedBytes);
+				return;
+			}
+			skippedBytes += UTF8CodeUnitsPerCodePoint(codePoints[i]);
+		}
+		vm.dataStack.push(address);
+		vm.dataStack.push(length);
 	}, nt: Nt.SKIP.index);
 
 }
