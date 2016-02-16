@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/andamira/forandar/master/web/img/logo-55x120.png" height="120" valign="bottom">  forandar
+# <img src="https://raw.githubusercontent.com/andamira/forandar/master/web/img/logo-55x120.png" valign="bottom">  forandar
 
 A Forth implementation in Dart.
 
@@ -6,41 +6,49 @@ A Forth implementation in Dart.
 
 ## Information
 
-### Features
+### Features and WIP
 
-- Runs both in the terminal and in the browser.
-- Includes one core interface-independent Dart library (`forandar:forandar`), and two libraries depending on the interface (`forandar:cli` & `forandar:web`).
+- :globe_with_meridians: An interface-independant library.
+- :new_moon: Includes a Command Line Interface.
+- :earth_asia: Includes a Web Interface. :soon:
+- :o: [Forth Standard](http://forth-standard.org/) compliant. :soon:
+- :ideograph_advantage: Supports UTF-8.
 
-### Goals
+### Future Goals
 
-- To fully support the [Forth 2012 Standard](http://forth-standard.org/).
-- To interface with the Dart APIs to manipulate the Canvas, the DOM and third party JS libraries.
+- Manipulate the Canvas.
+- Manipulate the DOM.
+- Interface third party JS libraries.
 
-### Status
+### Current Status
 
-- Pre-Alpha. CLI interface is functional. The interpreter works, but still many essential Forth primitives needs to be defined.
+- CLI interface is functional.
+- The text interpreter works.
+- Many essential Forth primitives still needs to be implemented.
 
 ## Instructions
 
 ### Installation
 
-* First you need to install [Dart](https://www.dartlang.org/downloads/).
-* Then install the Dart dependencies with `pub get`.
+1. Install the appropriate version of [Dart](https://www.dartlang.org/downloads/) for your system.
+2. Install the Dart project dependencies with `pub get`.
 
-* Optionally, but recommended, install [npm](https://docs.npmjs.com/getting-started/installing-node) & [Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) as the build tool.
-* Then install the Gulp dependencies with `npm install`.
-* To see the build tool help screen, run: `gulp`.
+**To install the full build-chain:**
 
-### Running from the Terminal (Command Line Interface)
+* Get: [npm](https://docs.npmjs.com/getting-started/installing-node) & [Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) as the build tool.
+* Install the Gulp dependencies with `npm install`.
+* To see the build-chain help screen type: `gulp`.
 
-* To see the help screen: `pub run forandar -h`
-* To run the interactive console: `pub run forandar`
-* To *e*valuate Forth source code from a string: `pub run forandar -e "1 1 + ."`
-* To *i*nclude Forth source code from a file: `pub run forandar -i ./src/code.fs`
+### Command Line Interface
 
-    _Note: You can combine multiple evaluations and inclusions and they'll be interpreted in the specified order._
+* To see the help screen type: `pub run forandar --help`
 
-### Running in the Browser (Web Interface)
+**Examples**
 
-. . .
+* To *e*valuate Forth source code from a string: `pub run forandar -e "2 3 + ."`
+* ...
+
+### Web Interface
+
+... :soon:
 
