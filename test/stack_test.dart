@@ -1,5 +1,6 @@
-import "package:test/test.dart";
+library forandar.core.stack_tests;
 
+import "package:test/test.dart";
 import "package:forandar/forandar.dart";
 
 void main() {
@@ -7,7 +8,9 @@ void main() {
 	/// Tests the [Stack] methods
 	group("Stack", () {
 
-		Stack s;
+		LifoStack s;
+
+		// FIXME: replace the stack on each test.
 
 		test("Constructor LifoStackInt()", () {
 			s = new LifoStackInt(256);
@@ -75,7 +78,9 @@ void main() {
 			expect(s.content(), equals([82,25,3,25,3]));
 		});
 
-		// TODO
+		// TODO: Test the remaining methods.
+		// TODO: Test the errors.
+		// TODO: Test the LifoStackFloat.
 
 	/*
 		test("rot()", () {

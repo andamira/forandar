@@ -3,6 +3,8 @@
 A Forth implementation in Dart.
 
 ![Version pre-alpha](https://img.shields.io/badge/version-pre--alpha-C70300.svg)
+[![Build Status](https://travis-ci.org/andamira/forandar.svg?branch=master)](https://travis-ci.org/andamira/forandar)
+[![Coverage Status](https://coveralls.io/repos/github/andamira/forandar/badge.svg?branch=master)](https://coveralls.io/github/andamira/forandar?branch=master)
 
 ## Information
 
@@ -18,7 +20,7 @@ A Forth implementation in Dart.
 
 - Manipulate the Canvas.
 - Manipulate the DOM.
-- Interface third party JS libraries.
+- Interface with JavaScript.
 
 ### Current Status
 
@@ -43,10 +45,9 @@ A Forth implementation in Dart.
 
 * To see the help screen type: `pub run forandar --help`
 
-**Examples**
+**Example**
 
 * To *e*valuate Forth source code from a string: `pub run forandar -e "2 3 + ."`
-* ...
 
 ### Web Interface
 
