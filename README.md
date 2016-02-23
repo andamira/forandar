@@ -35,21 +35,21 @@ A Forth implementation in Dart.
 1. Install the appropriate version of [Dart](https://www.dartlang.org/downloads/) for your system.
 2. Install the Dart project dependencies with `pub get`.
 
-**To install the full build-chain:**
-
-* Get: [npm](https://docs.npmjs.com/getting-started/installing-node) & [Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) as the build tool.
-* Install the Gulp dependencies with `npm install`.
-* To see the build-chain help screen type: `gulp`.
-
 ### Command Line Interface
 
 * To see the help screen type: `pub run forandar --help`
 
-**Example**
+**Usage Examples**
 
 * To *e*valuate Forth source code from a string: `pub run forandar -e "2 3 + ."`
 
 ### Web Interface
 
-... :soon:
+There are several ways to run the web interface. For example:
 
+1. Run `pub serve` and visit `http://localhost:8080` either with Dartium or with a normal browser.
+2. Build the web interface with `pub build` and deploy the `build/web/` directory to a production server.
+
+**Usage Examples**
+
+* ... :soon:

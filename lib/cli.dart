@@ -17,7 +17,6 @@ class InputQueueCli extends InputQueue {
 
 	@override
 	Future<String> loadFile(String f) async {
-
 		var contents = await new File(f).readAsString();
 		return contents;
 	}

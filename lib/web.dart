@@ -16,8 +16,9 @@ part 'web/words.dart';
 class InputQueueWeb extends InputQueue {
 
 	@override
-	void loadUrl() {
-		print("TODO loading URL."); // TEMP
+	String loadUrl(String u) {
+		// TODO
+		return "";
 	}
 }
 
