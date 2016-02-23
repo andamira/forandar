@@ -1,6 +1,6 @@
 part of forandar;
 
-abstract class Stack {
+abstract class Stack<T extends num> {
 	TypedData data;
 	final int maxSize;
 	int size = 0;
@@ -13,12 +13,10 @@ abstract class Stack {
 	}
 
 	/// Returns the representation of the stack.
-	List<num> content() {
-		return data.sublist(0, size);
-	}
+	List<T> content() => return data.sublist(0, size);
 
 	/// Replaces the content of the [Stack] with the elements of the list
-	void replace(List<num> l) {
+	void replace(List<T> l) {
 		size = 0;
 		l.forEach( (v){
 			data[size++] = v;
@@ -32,7 +30,7 @@ abstract class Stack {
 }
 
 /// Last In First Out Stack Implementation.
-abstract class LifoStack extends Stack {
+abstract class LifoStack<T> extends Stack<T> {
 
 	LifoStack(maxSize) : super(maxSize);
 
@@ -106,7 +104,7 @@ abstract class LifoStack extends Stack {
 	/// Returns the last stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	num peek() {
+	T peek() {
 		if (size > 0) {
 			return data[size - 1];
 		} else {
@@ -117,7 +115,7 @@ abstract class LifoStack extends Stack {
 	/// Returns the Next Of Stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	num peekNOS() {
+	T peekNOS() {
 		if (size > 1) {
 			return data[size - 2];
 		} else {
@@ -129,7 +127,7 @@ abstract class LifoStack extends Stack {
 	///
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
-	void pick(num i) {
+	void pick(T i) {
 		if (size > i) {
 			data[size] = data[size++ - 1 - i];
 		}
@@ -138,7 +136,7 @@ abstract class LifoStack extends Stack {
 	/// Returns the last stack item.
 	///
 	/// ( a -- )
-	num pop() {
+	T pop() {
 		if (size > 0) {
 			return data[--size];
 		} else {
@@ -149,7 +147,7 @@ abstract class LifoStack extends Stack {
 	/// Adds an additional stack item.
 	///
 	/// ( -- a )
-	void push(num i) {
+	void push(T i) {
 		if (size < maxSize) {
 			data[size++] = i;
 		}
@@ -159,7 +157,7 @@ abstract class LifoStack extends Stack {
 	///
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
-	void roll(num i) {
+	void roll(T i) {
 		if (size > 0 && i > 0) {
 			// var t = data.sublist(size - 1 - i, size);
 
@@ -205,7 +203,7 @@ abstract class LifoStack extends Stack {
 	/// ( a b -- b a )
 	void swap() {
 		if (size > 1) {
-			num t = data[size - 1];
+			T t = data[size - 1];
 			data[size - 1] = data[size - 2];
 			data[size - 2] = t;
 		}
@@ -236,7 +234,7 @@ abstract class LifoStack extends Stack {
 	}
 }
 
-class LifoStackInt extends LifoStack {
+class LifoStackInt<int> extends LifoStack<T> {
 
 	LifoStackInt(int maxSize) : super(maxSize) {
 		// NOTE: dart2js does not support 64-bit integers and thus does not support Int64List or Uint64List
@@ -245,7 +243,7 @@ class LifoStackInt extends LifoStack {
 	}
 }
 
-class LifoStackFloat extends LifoStack {
+class LifoStackFloat<double> extends LifoStack<T> {
 
 	LifoStackFloat(int maxSize) : super(maxSize) {
 		data = new Float64List(maxSize);
