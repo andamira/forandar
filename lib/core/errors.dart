@@ -17,6 +17,9 @@ class ForthError implements Error {
 	String errStr;
 	String msg;
 
+	// TEMP
+	StackTrace get stackTrace => null;
+
 	ForthError(this.err, [this.msg]) {
 		switch (err) {
 

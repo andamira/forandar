@@ -434,7 +434,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [ALLOT][link] ( n -- )
 	/// [link]: http://forth-standard.org/standard/core/ALLOT
 	d.addWord("ALLOT", () {
-		dataSpace.pointer += vm.dataStack.pop();
+		vm.dataSpace.pointer += vm.dataStack.pop();
 	}, nt: Nt.ALLOT);
 
 	/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
@@ -938,7 +938,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 				/// If this word is compile only and we are in interpretation state, throw err -14.
 				if (word.isCompileOnly && vm.interpretationState) {
 
-					throwError(-13, dartError: e);
+					throwError(-13);
 
 				/// If this word != [isImmediate] and we are in compile state, compile it.
 				} else if (!word.isImmediate && vm.compilationState) {
@@ -1060,7 +1060,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 						// If it couldn't be parsed as float either, throw an error.
 						if (number == null) {
-							throwError(-2048, msg: wordStr, dartError: e);
+							throwError(-2048, msg: wordStr);
 						} else {
 							isInt = false;
 						}
@@ -1202,7 +1202,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
 	/// Display an integer binary format.
 	d.addWord("BIN.", () {
-		print(int32tobin(vm.dataStack.pop()));
+		print(int32ToBin(vm.dataStack.pop()));
 	});
 
 	/// Prints the object space content. // TODO

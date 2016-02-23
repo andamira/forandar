@@ -37,7 +37,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 		var times = vm.dataStack.pop();
 		if (times > 0) {
 			var str = new StringBuffer();
-			for (i = 0; i < times; i++) {
+			for (int i = 0; i < times; i++) {
 				str.write(" ");
 			}
 			stdout.write(str.toString());

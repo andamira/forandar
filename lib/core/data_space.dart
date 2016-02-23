@@ -134,8 +134,7 @@ class DataSpace {
 	}
 
 	/// Stores a string at the specified address, encoded as UTF-8.
-	void storeString(int address, String str) =>
-		vm.dataSpace.setCharRange(address, UTF8.encode(str));
+	void storeString(int address, String str) => setCharRange(address, UTF8.encode(str));
 
 	///  Returns a list of chars from the specified range.
 	Uint8List getCharRange(int offset, int length) => _data.buffer.asUint8List(offset, length);
