@@ -79,6 +79,38 @@ void main() {
 			expect(d.fetchFloat(d.pointer - floatSize), equals(-35000.075));
 		});
 
+		test("storeCharInc()", () {
+			d.storeCharInc(100, 7);
+			expect(d.fetchChar(100), equals(7));
+		});
+
+		test("storeCharInc() (inc. pointer)", () {
+			int p = d.pointer;
+			d.storeCharInc(100, 7);
+			expect(d.pointer, equals(p + 1));
+		});
+
+		test("storeCellInc()", () {
+			d.storeCellInc(100, 7777);
+			expect(d.fetchCell(100), equals(7777));
+		});
+
+		test("storeCellInc() (inc. pointer)", () {
+			int p = d.pointer;
+			d.storeCellInc(100, 7777);
+			expect(d.pointer, equals(p + cellSize));
+		});
+
+		test("storeFloatInc()", () {
+			d.storeFloatInc(100, -7654321.98);
+			expect(d.fetchFloat(100), equals(-7654321.98));
+		});
+
+		test("storeFloatInc() (inc. pointer)", () {
+			int p = d.pointer;
+			d.storeFloatInc(100, -7654321.98);
+			expect(d.pointer, equals(p + floatSize));
+		});
 
 		test("storeString() & fetchString() (ASCII)", () {
 			String s = "hello world";

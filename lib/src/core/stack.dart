@@ -66,12 +66,11 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- a b a b )
 	void dup2() {
-		try {
+		if (_size > 1) {
 			_data[_size] = _data[_size++ - 2];
 			_data[_size] = _data[_size++ - 2];
-		} catch(e) {
-			print(e);
 		}
+		// CHECK try|catch _size > 1 && _size < (_maxSize - 1)
 	}
 
 	/// Drops the first item below the top of stack.

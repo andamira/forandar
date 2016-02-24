@@ -14,6 +14,10 @@ void main() {
 
 		test("Constructor", () {
 			s = new LifoStackInt(32);
+			expect(s, isNotNull);
+		});
+
+		test("content()", () {
 			expect(s.content(), equals([ ]));
 		});
 
