@@ -1,7 +1,7 @@
 import 'dart:html';
 import 'dart:js';
 
-import 'package:forandar/web.dart';
+import 'package:forandar/forandar_web.dart';
 
 // TEMP
 var codeOutput;

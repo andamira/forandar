@@ -1,8 +1,5 @@
 library web;
 
-import 'dart:html';
-import 'dart:js';
-
 import 'package:forandar/forandar.dart';
 export 'package:forandar/forandar.dart';
 

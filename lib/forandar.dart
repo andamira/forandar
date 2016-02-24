@@ -1,3 +1,4 @@
+/// Core functionality of the Forth Virtual Machine.
 library forandar;
 
 import 'dart:collection';
@@ -12,9 +13,9 @@ part 'core/errors.dart';
 part 'core/input.dart';
 part 'core/object_space.dart';
 part 'core/stack.dart';
+part 'core/util.dart';
 part 'core/vm.dart';
 part 'core/words.dart';
-part 'util.dart';
 
 /// The version of this library.
 ///
