@@ -111,7 +111,10 @@ class DataSpace {
 	void storeCell(int address, int value) => _data.setInt32(address, value);
 
 	/// Stores a cell integer at the current pointer position, and increments it.
-	void storeCellHere(int value) => _data.setInt32(pointer += cellSize, value);
+	void storeCellHere(int value) {
+		_data.setInt32(pointer, value);
+		pointer += cellSize;
+	}
 
 	/// Stores a cell integer at the specified address, and increments the current pointer position.
 	///
@@ -125,7 +128,10 @@ class DataSpace {
 	void storeFloat(int address, double value) => _data.setFloat64(address, value);
 
 	/// Stores a float at the current pointer position, and increments it.
-	void storeFloatHere(double value) => _data.setFloat64(pointer += floatSize, value);
+	void storeFloatHere(double value) {
+		_data.setFloat64(pointer, value);
+		pointer += floatSize;
+	}
 
 	/// Stores a float at the specified address, and increments the current pointer position.
 	void storeFloatInc(int address, double value) {

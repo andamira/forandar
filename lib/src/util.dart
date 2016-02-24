@@ -122,3 +122,6 @@ int UTF8CodeUnitsPerCodePointsList(List<int> codePointsList) {
 	return codeUnits;
 }
 
+/// Returns the number of bytes necessary to store a string in UTF-8. 
+int UTF8StringSizeInBytes(String s) => UTF8.encode(s).length;
+

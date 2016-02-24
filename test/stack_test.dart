@@ -1,4 +1,4 @@
-library forandar.core.stack_tests;
+library forandar.core.stack_test;
 
 import "package:test/test.dart";
 import "package:forandar/forandar.dart";
@@ -21,6 +21,15 @@ void main() {
 			s.replace([10, -23, 4]);
 			expect(s.content(), equals([10, -23, 4]));
 		});
+
+		test("size", () {
+			expect(s.size, equals(3));
+		});
+
+		test("toString()", () {
+			expect(s.toString(), equals("<3> [10, -23, 4]"));
+		});
+
 
 		test("clear()", () {
 			s.clear();
@@ -163,6 +172,14 @@ void main() {
 		test("replace()", () {
 			s.replace([10.2, -23.0, 4.0]);
 			expect(s.content(), equals([10.2, -23.0, 4.0]));
+		});
+
+		test("size", () {
+			expect(s.size, equals(3));
+		});
+
+		test("toString()", () {
+			expect(s.toString(), equals("<3> [10.2, -23.0, 4.0]"));
 		});
 
 		test("clear()", () {

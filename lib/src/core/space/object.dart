@@ -13,5 +13,7 @@ class ObjectSpace {
 	static ObjectSpace _instance;
 
 	ObjectSpace._internal();
+
+	int get length => data.length;
 }
 
