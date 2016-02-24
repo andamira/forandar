@@ -1,12 +1,14 @@
-library cli;
+library forandar_cli;
 
 import 'dart:async';
 import 'dart:io';
 
-import 'package:forandar/forandar.dart';
-export 'package:forandar/forandar.dart';
+import 'forandar.dart';
+import 'src/util.dart' as util;
 
-part 'cli/words.dart';
+export 'forandar.dart';
+
+part 'src/cli/primitives.dart';
 
 // TODO:
 // - load forandar version from here

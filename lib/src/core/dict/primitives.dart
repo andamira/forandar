@@ -1115,7 +1115,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 		int index = codePoints.indexOf(char);
 
 		if (index >= 0) {
-			int indexUTF8 = UTF8CodeUnitsPerCodePointsList(codePoints.sublist(0, index));
+			int indexUTF8 = util.UTF8CodeUnitsPerCodePointsList(codePoints.sublist(0, index));
 			vm.dataStack.push(address + indexUTF8);
 			vm.dataStack.push(length - indexUTF8);
 		} else {
@@ -1145,7 +1145,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 				vm.dataStack.push(length - skippedBytes);
 				return;
 			}
-			skippedBytes += UTF8CodeUnitsPerCodePoint(codePoints[i]);
+			skippedBytes += util.UTF8CodeUnitsPerCodePoint(codePoints[i]);
 		}
 		vm.dataStack.push(address);
 		vm.dataStack.push(length);
@@ -1202,7 +1202,7 @@ void includeWordsNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
 	/// Display an integer binary format.
 	d.addWord("BIN.", () {
-		print(int32ToBin(vm.dataStack.pop()));
+		print(util.int32ToBin(vm.dataStack.pop()));
 	});
 
 	/// Prints the object space content. // TODO
@@ -1765,7 +1765,7 @@ void includeWordsStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary 
 	/// [link]: http://forth-standard.org/standard/tools/DUMP
 	d.addWord("DUMP", (){
 		vm.dataStack.over();
-		print( dumpBytes(vm.dataSpace.getCharRange(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
+		print( util.dumpBytes(vm.dataSpace.getCharRange(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
 	}, nt: Nt.DUMP);
 
 	/// Display the value stored at a-addr.

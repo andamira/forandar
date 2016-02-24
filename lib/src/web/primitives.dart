@@ -1,4 +1,4 @@
-part of web;
+part of forandar_web;
 
 /// Forth Primitives that depends on the web interface.
 /// 

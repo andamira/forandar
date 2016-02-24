@@ -1,4 +1,4 @@
-part of cli;
+part of forandar_cli;
 
 /// Forth Primitives that depends on the CLI interface.
 /// 
@@ -96,7 +96,7 @@ void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 
 	/// Display an integer binary format.
 	d.addWordOver("BIN.", () {
-		stdout.write("${int32ToBin(vm.dataStack.pop())} ");
+		stdout.write("${util.int32ToBin(vm.dataStack.pop())} ");
 	});
 
 	/// Prints the object space content. TODO

@@ -5,7 +5,7 @@ set -e
 
 # Verify that the libraries are error and warning-free.
 echo "Running dartanalyzer..."
-dartanalyzer $DARTANALYZER_FLAGS lib/cli.dart test/all_tests.dart
+dartanalyzer $DARTANALYZER_FLAGS lib/forandar_cli.dart lib/forandar_web.dart test/all_tests.dart
 
 # Run the tests.
 echo "Running tests..."

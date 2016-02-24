@@ -6,16 +6,17 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-part 'core/data_space.dart';
-part 'core/dictionary.dart';
-part 'core/enums.dart';
-part 'core/errors.dart';
-part 'core/input.dart';
-part 'core/object_space.dart';
-part 'core/stack.dart';
-part 'core/util.dart';
-part 'core/vm.dart';
-part 'core/words.dart';
+import 'src/util.dart' as util;
+
+part 'src/core/errors.dart';
+part 'src/core/dict/dictionary.dart';
+part 'src/core/dict/nt_enum.dart';
+part 'src/core/dict/primitives.dart';
+part 'src/core/input.dart';
+part 'src/core/space/data.dart';
+part 'src/core/space/object.dart';
+part 'src/core/stack.dart';
+part 'src/core/vm.dart';
 
 /// The version of this library.
 ///
