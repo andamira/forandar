@@ -8,7 +8,7 @@ void main() {
 
 	ObjectSpace o;
 
-	/// Tests the [ObjectSpace] methods
+	/// Tests the [ObjectSpace] class.
 	group("ObjectSpace", () {
 
 		test("Constructor", () {

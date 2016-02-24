@@ -8,7 +8,7 @@ void main() {
 
 	Configuration c;
 
-	/// Tests the [ObjectSpace] methods
+	/// Tests the [Configuration] class.
 	group("Configuration", () {
 
 		test("Constructor", () {

@@ -9,9 +9,7 @@ void main() {
 
 	DataSpace d;
 
-	// TODO: Test the errors.
-
-	/// Tests the [DataSpace] methods
+	/// Tests the [DataSpace] class.
 	group("DataSpace", () {
 
 		test("Constructor", () {

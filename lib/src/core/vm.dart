@@ -76,6 +76,5 @@ class VirtualMachine {
 	void set interpretationState(bool flag) {
 		dataSpace.storeCell(addrSTATE, flag ? flagFALSE : flagTRUE );
 	}
-
 }
 

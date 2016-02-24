@@ -9,7 +9,7 @@ void main() {
 
 	// TODO: Test the errors.
 
-	/// Tests the [Stack] methods
+	/// Tests the [Stack] class.
 	group("LifoStackInt", () {
 
 		test("Constructor", () {
