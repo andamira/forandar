@@ -3,28 +3,31 @@ part of forandar;
 abstract class Stack<T extends num> {
 	final List _data;
 	final int _maxSize;
-	int size = 0;
+	int _size = 0;
 
 	Stack(this._maxSize, this._data);
 
-	/// Clears all the contents of the stack.
+	/// Returns the size of the stack.
+	int get size => _size;
+
+	/// Clears the contents of the stack.
 	void clear() {
-		size = 0;
+		_size = 0;
 	}
 
 	/// Returns the representation of the stack.
-	List<T> content() => _data.sublist(0, size);
+	List<T> content() => _data.sublist(0, _size);
 
-	/// Replaces the content of the [Stack] with the elements of the list
+	/// Replaces the content of the [Stack] with the elements of the list.
 	void replace(List<T> l) {
-		size = 0;
+		_size = 0;
 		l.forEach( (v){
-			_data[size++] = v;
+			_data[_size++] = v;
 		});
 	}
 
 	@override
-	String toString() => "<${size}> ${content()}";
+	String toString() => "<${_size}> ${content()}";
 }
 
 /// Last In First Out Stack Implementation.
@@ -36,8 +39,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- a )
 	void drop() {
-		if (size > 0) {
-			size--;
+		if (_size > 0) {
+			_size--;
 		}
 	}
 
@@ -45,8 +48,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- a )
 	void drop2() {
-		if (size > 1) {
-			size -= 2;
+		if (_size > 1) {
+			_size -= 2;
 		}
 	}
 
@@ -54,8 +57,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- a a )
 	void dup() {
-		if (size > 0 && size < _maxSize) {
-			_data[size] = _data[size++ - 1];
+		if (_size > 0 && _size < _maxSize) {
+			_data[_size] = _data[_size++ - 1];
 		}
 	}
 
@@ -64,8 +67,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	/// ( a b -- a b a b )
 	void dup2() {
 		try {
-			_data[size] = _data[size++ - 2];
-			_data[size] = _data[size++ - 2];
+			_data[_size] = _data[_size++ - 2];
+			_data[_size] = _data[_size++ - 2];
 		} catch(e) {
 			print(e);
 		}
@@ -75,8 +78,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- b )
 	void nip() {
-		if (size > 1) {
-			_data[size - 2] = _data[--size];
+		if (_size > 1) {
+			_data[_size - 2] = _data[--_size];
 		}
 	}
 
@@ -84,18 +87,18 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- a b a )
 	void over() {
-		if (size > 1 && size < _maxSize) {
-			_data[size] = _data[size++ - 2];
+		if (_size > 1 && _size < _maxSize) {
+			_data[_size] = _data[_size++ - 2];
 		}
 	}
 
-	/// Exchanges the top two stack number pairs.
+	/// Places a copy of a b par on top of the stack.
 	///
 	/// ( a b c d -- c d a b )
 	void over2() {
-		if (size > 3 && size < (_maxSize - 1)) {
-			_data[size] = _data[size++ - 4];
-			_data[size] = _data[size++ - 4];
+		if (_size > 3 && _size < (_maxSize - 1)) {
+			_data[_size] = _data[_size++ - 4];
+			_data[_size] = _data[_size++ - 4];
 		}
 	}
 
@@ -103,8 +106,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T peek() {
-		if (size > 0) {
-			return _data[size - 1];
+		if (_size > 0) {
+			return _data[_size - 1];
 		} else {
 			return null;
 		}
@@ -114,8 +117,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T peekNOS() {
-		if (size > 1) {
-			return _data[size - 2];
+		if (_size > 1) {
+			return _data[_size - 2];
 		} else {
 			return null;
 		}
@@ -125,9 +128,9 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
-	void pick(T i) {
-		if (size > i) {
-			_data[size] = _data[size++ - 1 - i];
+	void pick(int i) {
+		if (_size > i) {
+			_data[_size] = _data[_size++ - 1 - i];
 		}
 	}
 
@@ -135,8 +138,8 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T pop() {
-		if (size > 0) {
-			return _data[--size];
+		if (_size > 0) {
+			return _data[--_size];
 		} else {
 			return null;
 		}
@@ -146,29 +149,25 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( -- a )
 	void push(T i) {
-		if (size < _maxSize) {
-			_data[size++] = i;
+		if (_size < _maxSize) {
+			_data[_size++] = i;
 		}
 	}
 
-	/// TODO: Rotates i+1 items on the top of the stack.
+	/// Rotates i+1 items on the top of the stack.
 	///
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
-	void roll(T i) {
-		if (size > 0 && i > 0) {
-			// var t = _data.sublist(size - 1 - i, size);
+	void roll(int i) {
+		if (_size > 0 && _size > i) {
 
-			/*
-			// convert to loop
-			_data[size - 1] = t[0];
-			_data[size - 2] = t[2];
+			var t = _data.sublist(_size - i - 1, _size);
 
-			_data[size - 3] = t[1]; Last
-			*/
+			for (int c = 1; c <= i; c++) {
+				_data[_size - 2 - i + c] = t[c];
+			}
 
-			// Do the last one first
-			// _data[size -1 -i] = t[1];
+			_data[_size - 1] = t[0];
 		}
 	}
 
@@ -176,11 +175,11 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- b c a )
 	void rot() {
-		if (size > 2) {
-			var t = _data.sublist(size - 3, size);
-			_data[size - 1] = t[0];
-			_data[size - 2] = t[2];
-			_data[size - 3] = t[1];
+		if (_size > 2) {
+			var t = _data.sublist(_size - 3, _size);
+			_data[_size - 1] = t[0];
+			_data[_size - 2] = t[2];
+			_data[_size - 3] = t[1];
 		}
 	}
 
@@ -188,11 +187,11 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- c a b )
 	void rotCC() {
-		if (size > 2) {
-			var t = _data.sublist(size - 3, size);
-			_data[size - 1] = t[1];
-			_data[size - 2] = t[0];
-			_data[size - 3] = t[2];
+		if (_size > 2) {
+			var t = _data.sublist(_size - 3, _size);
+			_data[_size - 1] = t[1];
+			_data[_size - 2] = t[0];
+			_data[_size - 3] = t[2];
 		}
 	}
 
@@ -200,10 +199,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- b a )
 	void swap() {
-		if (size > 1) {
-			T t = _data[size - 1];
-			_data[size - 1] = _data[size - 2];
-			_data[size - 2] = t;
+		if (_size > 1) {
+			T t = _data[_size - 1];
+			_data[_size - 1] = _data[_size - 2];
+			_data[_size - 2] = t;
 		}
 	}
 
@@ -211,12 +210,12 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c d -- c d a b )
 	void swap2() {
-		if (size > 3) {
-			var t = _data.sublist(size - 4, size);
-			_data[size - 1] = t[1];
-			_data[size - 2] = t[0];
-			_data[size - 3] = t[3];
-			_data[size - 4] = t[2];
+		if (_size > 3) {
+			var t = _data.sublist(_size - 4, _size);
+			_data[_size - 1] = t[1];
+			_data[_size - 2] = t[0];
+			_data[_size - 3] = t[3];
+			_data[_size - 4] = t[2];
 		}
 	}
 
@@ -224,10 +223,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- b a b )
 	void tuck() {
-		if (size > 1) {
-			_data[size]     = _data[size - 1];
-			_data[size - 1] = _data[size - 2];
-			_data[size - 2] = _data[size++];
+		if (_size > 1) {
+			_data[_size]     = _data[_size - 1];
+			_data[_size - 1] = _data[_size - 2];
+			_data[_size - 2] = _data[_size++];
 		}
 	}
 }

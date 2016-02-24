@@ -11,7 +11,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
 	//
-	// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PARSE PARSE-NAME PICK REFILL SOURCE-ID TRUE TUCK U>
+	// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PARSE PARSE-NAME PICK REFILL ROLL SOURCE-ID TRUE TUCK U>
 	//
 	//
 	// Not implemented:
@@ -28,7 +28,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	//
 	// .( .R :NONAME ?DO ACTION-OF AGAIN BUFFER: C"
 	// CASE COMPILE, DEFER DEFER! DEFER@ ENDCASE ENDOF HOLDS
-	// IS MARKER OF RESTORE-INPUT ROLL
+	// IS MARKER OF RESTORE-INPUT
 	// S\" SAVE-INPUT TO U.R UNUSED VALUE WITHIN
 	// [COMPILE] \
 
@@ -102,7 +102,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("/", (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() ~/ vm.dataStack.pop());
-		// TODO: An ambiguous condition exists if n2 is zero.
+		// CHECK: An ambiguous condition exists if n2 is zero.
 		// If n1 and n2 differ in sign, the implementation-defined result
 		// returned will be the same as that returned by either the phrase
 		// >R S>D R> FM/MOD SWAP DROP or the phrase >R S>D R> SM/REM SWAP DROP.
@@ -118,7 +118,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 		int y = vm.dataStack.pop();
 		vm.dataStack.push( y % x);
 		vm.dataStack.push( y ~/ x);
-		// TODO: An ambiguous condition exists if n2 is zero.
+		// CHECK: An ambiguous condition exists if n2 is zero.
 		// If n1 and n2 differ in sign, the implementation-defined result
 		// returned will be the same as that returned by either the phrase
 		// >R S>D R> FM/MOD or the phrase >R S>D R> SM/REM.
@@ -526,7 +526,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("LSHIFT", (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() << vm.dataStack.pop());
-		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
+		// CHECK: An ambiguous condition exists if u is greater thans
+		// or equal to the number of bits in a cell.
 	}, nt: Nt.LSHIFT);
 
 	/// n3 is the greater of n1 and n2.
@@ -552,7 +553,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("MOD", (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() % vm.dataStack.pop());
-		// TODO: An ambiguous condition exists if n2 is zero.
+		// CHECK: An ambiguous condition exists if n2 is zero.
 		// If n1 and n2 differ in sign, the implementation-defined result
 	    // returned will be the same as that returned by either the phrase
 		// >R S>D R> FM/MOD DROP or the phrase >R S>D R> SM/REM DROP.
@@ -650,6 +651,16 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("PICK", () {
 		vm.dataStack.pick(vm.dataStack.pop());
 	}, nt: Nt.PICK);
+
+	/// Remove u. Rotate u+1 items on the top of the stack.
+	///
+	/// [ROLL][link] ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )
+	/// [link]: http://forth-standard.org/standard/core/ROLL
+	d.addWord("ROLL", () {
+		vm.dataStack.roll(vm.dataStack.pop());
+		// CHECK: An ambiguous condition exists if there are less
+		// than u+2 items on the stack before ROLL is executed.
+	}, nt: Nt.ROLL);
 
 	/// Interprets Forth source code received interactively from a user input device.
 	///
@@ -790,7 +801,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	d.addWord("RSHIFT", (){
 		vm.dataStack.swap();
 		vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
-		// TODO: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
+		// CHECK: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
 	}, nt: Nt.RSHIFT);
 
 	/// c-addr is the address of, and u is the number of characters in, the input buffer.
@@ -1374,7 +1385,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/Fd
 	d.addWord("F.", (){
 		print(vm.floatStack.pop());
-		// TODO: An ambiguous condition exists if the value of BASE is not (decimal) ten or if the
+		// CHECK: An ambiguous condition exists if the value of BASE is not (decimal) ten or if the
 		// character string representation exceeds the size of the pictured numeric output string buffer.
 	}, nt: Nt.Fd);
 
@@ -1408,7 +1419,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FACOS
 	d.addWord("FACOS", (){
 		vm.floatStack.push(acos(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if | r1 | is greater than one.
+		// CHECK: An ambiguous condition exists if | r1 | is greater than one.
 	}, nt: Nt.FACOS);
 
 	/// r2 is the floating-point value whose hyperbolic cosine is r1.
@@ -1450,7 +1461,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FASIN
 	d.addWord("FASIN", (){
 		vm.floatStack.push(asin(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if | r1 | is greater than one.
+		// CHECK: An ambiguous condition exists if | r1 | is greater than one.
 	}, nt: Nt.FASIN);
 
 	/// r2 is the floating-point value whose hyperbolic sine is r1.
@@ -1468,7 +1479,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FATAN
 	d.addWord("FATAN", (){
 		vm.floatStack.push(atan(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+		// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 	}, nt: Nt.FATAN);
 
 	/// r3 is the principal radian angle (between -π and π) whose tangent is r1/r2.
@@ -1478,7 +1489,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("FATAN2", (){
 		vm.floatStack.swap();
 		vm.floatStack.push(atan2(vm.floatStack.pop(), vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists r1 and r2 are zero.
+		// CHECK: An ambiguous condition exists r1 and r2 are zero.
 	}, nt: Nt.FATANTwo);
 
 	/// r2 is the floating-point value whose hyperbolic tangent is r1.
@@ -1488,7 +1499,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	d.addWord("FATANH", (){
 		double x = vm.floatStack.pop();
 		vm.floatStack.push(log((1+x)/(1-x)) / 2);
-		// TODO: An ambiguous condition exists if r1 is outside the range of -1E0 to 1E0.
+		// CHECK: An ambiguous condition exists if r1 is outside the range of -1E0 to 1E0.
 	}, nt: Nt.FATANH);
 
 	/// r2 is the cosine of the radian angle r1.
@@ -1550,7 +1561,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FLOG
 	d.addWord("FLOG", (){
 		vm.floatStack.push(log(vm.floatStack.pop()) / LN10);
-		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+		// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 	}, nt: Nt.FLOG);
 
 	/// Round r1 to an integral value using the "round toward negative infinity" rule, giving r2.
@@ -1567,7 +1578,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FLN
 	d.addWord("FLN", (){
 		vm.floatStack.push(log(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if r1 is less than or equal to zero.
+		// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 	}, nt: Nt.FLN);
 
 	/// r2 is the natural logarithm of the quantity r1 plus one.
@@ -1576,7 +1587,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FLNPOne
 	d.addWord("FLNP1", (){
 		vm.floatStack.push(log(vm.floatStack.pop() + 1));
-		// TODO: An ambiguous condition exists if r1 is less than or equal to negative one.
+		// CHECK: An ambiguous condition exists if r1 is less than or equal to negative one.
 	}, nt: Nt.FLNPOne);
 
 	/// r3 is the greater of r1 and r2.
@@ -1689,7 +1700,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FSQRT
 	d.addWord("FSQRT", (){
 		vm.floatStack.push(sqrt(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if r1 is less than zero.
+		// CHECK: An ambiguous condition exists if r1 is less than zero.
 	}, nt: Nt.FSQRT);
 
 	/// r2 is the tangent of the radian angle r1.
@@ -1698,7 +1709,7 @@ includeWordsStandardOptionalFloat(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/float/FTAN
 	d.addWord("FTAN", (){
 		vm.floatStack.push(tan(vm.floatStack.pop()));
-		// TODO: An ambiguous condition exists if (r1) is zero.
+		// CHECK: An ambiguous condition exists if (r1) is zero.
 	}, nt: Nt.FTAN);
 
 	/// Round r1 to an integral value using the "round towards zero" rule, giving r2.
