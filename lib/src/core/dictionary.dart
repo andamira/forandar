@@ -41,28 +41,34 @@ class Dictionary {
 	/// and included from the corresponding implementations in: /bin and /web.
 	Dictionary._internal(VirtualMachine vm) {
 
-		// Must receive the Virtual Machine as an argument because its constructor
-		// has not finished yet, and therefore the global variable forth is null.
-		// The same things happens with this dictionary, and the following words:
+		if (vm != null) {
 
-		// Core.
-		includeWordsStandardCore(vm, this);
+			// Must receive the Virtual Machine as an argument because its constructor
+			// has not finished yet, and therefore the global variable forth is null.
+			// The same things happens with this dictionary, and the following words:
 
-		includeWordsNotStandardCore(vm, this);
-		includeWordsNotStandardExtra(vm, this);
+			// Core.
+			includeWordsStandardCore(vm, this);
 
-		// Optional Standard Sets.
-		// -----------------------
+			includeWordsNotStandardCore(vm, this);
+			includeWordsNotStandardExtra(vm, this);
 
-		// Floats.
-		includeWordsStandardOptionalFloat(vm, this);
+			// Optional Standard Sets.
+			// -----------------------
 
-		// Block.
-		includeWordsStandardOptionalBlock(vm, this);
+			// Floats.
+			includeWordsStandardOptionalFloat(vm, this);
 
-		// Tools.
-		includeWordsStandardOptionalProgrammingTools(vm, this);
+			// Block.
+			includeWordsStandardOptionalBlock(vm, this);
+
+			// Tools.
+			includeWordsStandardOptionalProgrammingTools(vm, this);
+		}
 	}
+
+	/// Returns the number of [Word]s definitions.
+	int get length => wordsMap.length;
 
 	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
 	addWord(String name, Function f, {Nt nt, bool immediate: false, bool compileOnly: false}) {
