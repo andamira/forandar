@@ -47,11 +47,10 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 	pub run forandar
 	```
 
-	You can activate the forandar command for global execution:
+	You can activate the `forandar` command for global execution from anywhere in your system:
 
 	```
 	pub global activate --source path ./
-	forandar
 	```
 
 2. **Activate the package.**
@@ -60,7 +59,6 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 
 	```
 	pub global activate --source git path https://github.com/andamira/forandar.git
-	foranda
 	```
 
 *Read more about [pub global](https://www.dartlang.org/tools/pub/cmd/pub-global.html).*

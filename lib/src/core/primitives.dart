@@ -1082,7 +1082,8 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 						// If it couldn't be parsed as float either, throw an error.
 						if (number == null) {
-							throwError(-2048, msg: wordStr);
+							throwError(-2048, preMsg: wordStr);
+							break;
 						} else {
 							isInt = false;
 						}
@@ -1110,7 +1111,7 @@ void includeWordsNotStandardCore(VirtualMachine vm, Dictionary d) {
 
 				/// If can't be converted, throw not-standard sys err "not a word not a number" (not understood).
 				} catch(e) {
-					throwError(-2048, msg: wordStr, dartError: e);
+					throwError(-2048, preMsg: wordStr, dartError: e);
 					break;
 				}
 

@@ -5,10 +5,13 @@ class Word {
 
 	/// The word name as it is used by Forth.
 	///
-	/// All uppercase. This is its key in [wordsMap].
+	/// All words names are stored in uppercase.
+	/// This is its key in the inner map of words.
 	String name;
 
-	/// An index pointer to this word in [wordsList].
+	/// The "name token" index to this word.
+	///
+	/// This is an index in the inner list of words.
 	int nt;
 
 	/// A flag that indicates if the word is immediate.
@@ -18,7 +21,7 @@ class Word {
 	bool isCompileOnly;
 
 	/// A flag that indicates if the compilation has completed.
-	bool hasCompleted;
+	bool hasCompleted; // TODO
 
 	/// The execution code for this word.
 	final Function exec;

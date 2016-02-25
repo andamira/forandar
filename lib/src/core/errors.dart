@@ -3,12 +3,16 @@ library forandar.core.errors;
 import 'globals.dart';
 
 /// Manages errors.
-throwError(int forthErrorNum, {String msg, var dartError}) {
+throwError(int forthErrorNum, {String preMsg, String postMsg, var dartError}) {
 
-	var forthError = new ForthError(forthErrorNum, msg);
+	var forthError = new ForthError(forthErrorNum, preMsg, postMsg);
 
-	print("\n$forthError\n");
-	//print("$dartError"); // TODO: more debug
+	if (forthError.toString() != '') {
+		print("\n$forthError\n");
+
+		// TODO improve debugging, stack trace
+		if (dartError != null) print("$dartError");
+	}
 }
 
 /// List of Forth Errors.
@@ -16,12 +20,12 @@ class ForthError implements Error {
 
 	num err;
 	String errStr;
-	String msg;
+	String preMsg;
+	String postMsg;
 
-	// TEMP
-	StackTrace get stackTrace => null;
+	StackTrace get stackTrace => null; //TEMP FIXME
 
-	ForthError(this.err, [this.msg]) {
+	ForthError(this.err, [this.preMsg, this.postMsg]) {
 		switch (err) {
 
 			// Forth Standard Errors
@@ -264,8 +268,8 @@ class ForthError implements Error {
 				errStr = 'REPLACES';
 				break;
 				
+			// Custom forandar Errors
 
-			// forandar Errors
 			case -2048:
 				errStr = 'not a word, not a number (not understood)';
 				break;
@@ -275,14 +279,22 @@ class ForthError implements Error {
 			case -2050:
 				errStr = 'terminal input line is too long (>$inputBufferSize)';
 				break;
+
+			// For testing.
+			case -4095:
+				errStr = '';
+				break;
 		}
 	}
 
 	@override
 	String toString() {
-		msg != null ? msg = "$msg " : msg = "";
+		preMsg == null ? preMsg = '' : preMsg =  "$preMsg ";
+		postMsg == null ? postMsg = '' : postMsg = " $postMsg";
 
-		return "Error ${err}: ${msg}${errStr}";
+		if (errStr == '' && preMsg == '' && postMsg == '') return '';
+
+		return "Error ${err}: ${preMsg}${errStr}${postMsg}";
 	}
 }
 
