@@ -11,7 +11,7 @@ void main() {
 	DataSpace d;
 
 	/// Tests the [DataSpace] class.
-	group("DataSpace", () {
+	group("[DataSpace]", () {
 
 		test("Constructor", () {
 			d = new DataSpace(512);

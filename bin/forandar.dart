@@ -11,17 +11,8 @@ VirtualMachine forth;
 
 main(List<String> args) async {
 
-	var c = new Configuration();
-	var i = new InputQueueCli();
-
-	/// Parses the arguments from the command line.
-	///
-	/// Updates the default configuration in [c].
-	/// fills the source code input queue in [i].
-	parseArguments(args, i);
-
 	/// Creates the Forth [VirtualMachine].
-	forth = new VirtualMachine(c, i);
+	forth = new VirtualMachine(input: new InputQueueCli(), args: args, argParser: argParser);
 
 	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);
@@ -39,13 +30,16 @@ main(List<String> args) async {
 	forth.dict.execNt(Nt.QUIT);
 }
 
-/// Parses the CLI arguments
-void parseArguments(List<String> args, InputQueue i) {
+/// Parses the arguments from the command line.
+///
+/// Updates the default configuration in [c]. (TODO)
+/// Fills the source code input queue in [i].
+void argParser(List<String> args, Configuration c, InputQueue i) {
 
 	ArgResults results;
-	ArgParser parser = new ArgParser(allowTrailingOptions: false);
+	ArgParser p = new ArgParser(allowTrailingOptions: false);
 
-	parser
+	p
 		..addSeparator('Usage: pub run forandar [options]')
 	    ..addSeparator('Options:')
 
@@ -70,7 +64,7 @@ void parseArguments(List<String> args, InputQueue i) {
 			negatable: false,
 			// help: "This help",
 			callback: (help) {
-				if (help) displayUsage(parser);
+				if (help) displayUsage(p);
 			}
 		)
 
@@ -87,10 +81,10 @@ void parseArguments(List<String> args, InputQueue i) {
 		);
 
 	try {
-		results = parser.parse(args);
+		results = p.parse(args);
 	} catch (e) {
 		print(e);
-		displayUsage(parser);
+		displayUsage(p);
 	}
 
 	int eCounter = 0;

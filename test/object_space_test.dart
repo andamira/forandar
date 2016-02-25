@@ -9,7 +9,7 @@ void main() {
 	ObjectSpace o;
 
 	/// Tests the [ObjectSpace] class.
-	group("ObjectSpace", () {
+	group("[ObjectSpace]", () {
 
 		test("Constructor", () {
 			o = new ObjectSpace();

@@ -10,7 +10,7 @@ void main() {
 	Configuration c;
 
 	/// Tests the [Configuration] class.
-	group("Configuration", () {
+	group("[Configuration]", () {
 
 		test("Constructor", () {
 			c = new Configuration();

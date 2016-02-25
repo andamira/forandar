@@ -31,14 +31,27 @@ class VirtualMachine {
 	Configuration config;
 
 	// Singleton constructor, allowing only one instance.
-	factory VirtualMachine(config, source) {
-		_instance ??= new VirtualMachine._internal(config, source);
+	factory VirtualMachine({args, argParser, config, input}) {
+
+		if (_instance == null) {
+			config ??= new Configuration();
+			input ??= new InputQueue();
+
+			_instance = new VirtualMachine._internal(args, argParser, config, input);
+		}
 		return _instance;
 	}
 	static VirtualMachine _instance;
 
 	/// Constructs the [VirtualMachine].
-	VirtualMachine._internal(this.config, this.source) {
+	VirtualMachine._internal(List<String> args, Function argParser, this.config, this.source) {
+
+		/// Parses the arguments.
+		///
+		/// Updates the [config]uration and fills the [source]code input queue.
+		if (args != null && argParser != null) {
+			argParser(args, config, source);
+		}
 
 		/// Creates the Stacks.
 		dataStack    = new LifoStackInt(config.option['dataStackSize']);

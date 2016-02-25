@@ -14,13 +14,13 @@ void main() async {
 
 	// TODO https://stackoverflow.com/questions/26848783/wait-for-future-to-complete/26962630#26962630
 
-    /// Initializes the configuration.
+    /// Loads the configuration.
     ///   
-    /// Overrides any defaults when specified in the JavaScript context.
+    /// Options specified in the JavaScript context will override the defaults.
     await loadConfiguration(c);
 
     /// Creates the Forth [VirtualMachine].
-	var forth = new VirtualMachine(c, i);
+	var forth = new VirtualMachine(config: c, input: i);
 
 	/// Includes the primitives dependent on the web interface.
 	includeWordsWeb(forth, forth.dict);
