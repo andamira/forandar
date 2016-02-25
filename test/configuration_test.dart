@@ -2,7 +2,8 @@ library forandar.core.configuration_test;
 
 import "package:test/test.dart";
 
-import "package:forandar/forandar.dart";
+import "package:forandar/src/core/configuration.dart";
+import "package:forandar/src/core/globals.dart";
 
 void main() {
 

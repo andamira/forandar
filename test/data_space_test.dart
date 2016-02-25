@@ -2,8 +2,9 @@ library forandar.core.data_space_test;
 
 import "package:test/test.dart";
 
-import "package:forandar/forandar.dart";
-import "package:forandar/src/util.dart" as util;
+import "package:forandar/src/core/data_space.dart";
+import "package:forandar/src/core/globals.dart";
+import "package:forandar/src/core/utility.dart" as util;
 
 void main() {
 

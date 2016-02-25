@@ -1,4 +1,4 @@
-part of forandar;
+library forandar.core.nt_primitives;
 
 /// Enumeration of Forth Words indexed by their `nt`.
 ///
@@ -549,4 +549,3 @@ enum Nt {
 	qSTRING,                               // ?STRING
 
 }
-

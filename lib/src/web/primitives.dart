@@ -1,4 +1,7 @@
-part of forandar_web;
+library forandar_web;
+
+import 'package:forandar/src/core/dictionary.dart';
+import 'package:forandar/src/core/virtual_machine.dart';
 
 /// Forth Primitives that depends on the web interface.
 /// 

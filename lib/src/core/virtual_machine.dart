@@ -1,12 +1,13 @@
-part of forandar;
+library forandar.core.virtual_machine;
 
-// Forth boolean flags
-const int flagTRUE = -1;
-const int flagFALSE = 0;
+import 'globals.dart';
 
-/// The size of a cell in bytes.
-const int cellSize = 4;
-const int floatSize = cellSize * 2;
+import 'configuration.dart';
+import 'dictionary.dart';
+import 'data_space.dart';
+import 'input.dart';
+import 'object_space.dart';
+import 'stack.dart';
 
 /// The Forth Virtual Machine.
 ///

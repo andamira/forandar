@@ -1,4 +1,4 @@
-library forandar.util;
+library forandar.core.utility;
 
 import 'dart:convert';
 import 'dart:math';

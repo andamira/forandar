@@ -1,12 +1,6 @@
-part of forandar;
+library forandar.core.input;
 
-/// The size for the input buffer.
-///
-/// Enough for one line.
-const int inputBufferSize = 512;
-
-/// The size for the PAD region.
-const int padSize = inputBufferSize;
+import 'virtual_machine.dart'; // XXX recursive
 
 /// Supported types of input.
 enum InputType { String, File, Url }
@@ -28,7 +22,7 @@ class InputQueueElement {
 class InputQueue {
 
 	/// Reference to the parent forth virtual machine.
-	VirtualMachine vm;
+	VirtualMachine vm; // XXX is this necessary?
 
 	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];

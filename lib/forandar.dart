@@ -1,25 +1,10 @@
 /// Core functionality of the Forth Virtual Machine.
 library forandar;
 
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
-
-import 'src/core/configuration.dart';
-import 'src/util.dart' as util;
-
+export 'src/core/virtual_machine.dart';
 export 'src/core/configuration.dart';
-
-part 'src/core/errors.dart';
-part 'src/core/dict/dictionary.dart';
-part 'src/core/dict/nt_enum.dart';
-part 'src/core/dict/primitives.dart';
-part 'src/core/input.dart';
-part 'src/core/space/data.dart';
-part 'src/core/space/object.dart';
-part 'src/core/stack.dart';
-part 'src/core/vm.dart';
+export 'src/core/dictionary.dart';
+export 'src/core/input.dart';
 
 /// The version of this library.
 ///
@@ -27,4 +12,3 @@ part 'src/core/vm.dart';
 String forandarVersion = 'FORANDAR_VERSION';
 
 void main() {}
-

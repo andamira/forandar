@@ -1,4 +1,15 @@
-part of forandar;
+library forandar.core.primitives;
+
+import 'dart:convert';
+import 'dart:math';
+
+import 'dictionary.dart';
+import 'errors.dart';
+import 'globals.dart';
+import 'nt_primitives.dart';
+import 'utility.dart' as util;
+import 'virtual_machine.dart';
+import 'word.dart';
 
 /// Defines the [Forth standard CORE primitives][link].
 ///
@@ -214,7 +225,7 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	/// Duplicate cell pair x1 x2.
 	///
 	/// : [2DUP][link] ( x1 x2 -- x1 x2 x1 x2 )
-	///   over over ;
+	/// OVER OVER ;
 	/// [link]: http://forth-standard.org/standard/core/TwoDUP
 	d.addWord("2DUP", vm.dataStack.dup2, nt: Nt.TwoDUP);
 
@@ -385,8 +396,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [CHAR+][link] ( c-addr1 -- c-addr2 )
 	/// [link]: http://forth-standard.org/standard/core/CHARPlus
-	// TODO: support extended characters
 	d.addWord("CHAR+", (){
+		// TODO: support extended characters
 		vm.dataStack.push(vm.dataStack.pop() + 1);
 	}, nt: Nt.CHARPlus);
 
@@ -396,8 +407,8 @@ void includeWordsStandardCore(VirtualMachine vm, Dictionary d) {
 	///
 	/// [CHARS][link] ( n1 -- n2 )
 	/// [link]: http://forth-standard.org/standard/core/CHARS
-	// TODO: support extended characters
 	d.addWordNope("CHARS", nt: Nt.CHARS);
+	// TODO: support extended characters
 
 	/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
 	///

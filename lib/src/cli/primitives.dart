@@ -1,4 +1,11 @@
-part of forandar_cli;
+library forandar.cli.primitives;
+
+import 'dart:io';
+
+import 'package:forandar/src/core/dictionary.dart';
+import 'package:forandar/src/core/globals.dart';
+import 'package:forandar/src/core/utility.dart' as util;
+import 'package:forandar/src/core/virtual_machine.dart';
 
 /// Forth Primitives that depends on the CLI interface.
 /// 

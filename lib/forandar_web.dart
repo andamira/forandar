@@ -1,11 +1,9 @@
 library forandar_web;
 
-import 'forandar.dart';
-//import 'src/util.dart' as util;
+import 'src/core/input.dart';
 
 export 'forandar.dart';
-
-part 'src/web/primitives.dart';
+export 'src/web/primitives.dart';
 
 // TODO:
 // - define WEB class, with common methods

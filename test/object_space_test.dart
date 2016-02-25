@@ -2,7 +2,7 @@ library forandar.core.object_space_test;
 
 import "package:test/test.dart";
 
-import "package:forandar/forandar.dart";
+import "package:forandar/src/core/object_space.dart";
 
 void main() {
 

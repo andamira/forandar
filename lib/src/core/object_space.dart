@@ -1,4 +1,4 @@
-part of forandar;
+library forandar.core.object_space;
 
 class ObjectSpace {
 

@@ -3,12 +3,10 @@ library forandar_cli;
 import 'dart:async';
 import 'dart:io';
 
-import 'forandar.dart';
-import 'src/util.dart' as util;
+import 'src/core/input.dart';
 
 export 'forandar.dart';
-
-part 'src/cli/primitives.dart';
+export 'src/cli/primitives.dart';
 
 // TODO:
 // - load forandar version from here

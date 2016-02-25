@@ -1,4 +1,6 @@
-part of forandar;
+library forandar.core.stack;
+
+import 'dart:typed_data';
 
 abstract class Stack<T extends num> {
 	final List _data;

@@ -1,7 +1,8 @@
 library forandar.core.stack_test;
 
 import "package:test/test.dart";
-import "package:forandar/forandar.dart";
+
+import "package:forandar/src/core/stack.dart";
 
 void main() {
 

@@ -1,5 +1,6 @@
-part of forandar;
+library forandar.core.errors;
 
+import 'globals.dart';
 
 /// Manages errors.
 throwError(int forthErrorNum, {String msg, var dartError}) {
