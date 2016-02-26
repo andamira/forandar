@@ -55,6 +55,17 @@ void main() {
 			expect(d.length, equals(3));
 		});
 
+		test("addWordOver() fail", () {
+			bool errored = false;
+			try {
+				// Should fail because the word hasn't been created yet.
+				d.addWordOver("W8", () {});
+			} catch(e) {
+				errored = true;
+			}
+			expect(errored, isTrue);
+		});
+
 		test("addWordOver() & execWord()", () {
 			d.addWordOver("W2", () => 22 );
 			expect(d.execWord("W2"), equals(22));

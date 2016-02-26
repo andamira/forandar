@@ -12,7 +12,7 @@ void main() {
 	group("[ForthError]", () {
 
 		test("Constructor", () {
-			e = new ForthError(-1, "");
+			e = new ForthError(-1);
 			expect(e, isNotNull);
 		});
 
@@ -23,12 +23,24 @@ void main() {
 		test("preMsg & postMsg parameters", () {
 			expect(
 				new ForthError(-2, "XY", "ZW").toString(),
-				equals('Error -2: XY ABORT" ZW'));
+				allOf(
+					startsWith('Error -2: XY'),
+					endsWith('ZW'))
+				);
 		});
 
-		test("throwError()", () {
-			// Just verify that the function doesn't fail.
-			expect(throwError(-4095), isNull);
+		test("ForthError.forth()", () {
+			bool errored;
+			try { ForthError.forth(-1); }
+			catch (e) { errored = true; }
+			expect(errored, isTrue);
+		});
+
+		test("ForthError.dart()", () {
+			bool errored;
+			try { ForthError.dart( throw "err" ); }
+			catch (e) { errored = true; }
+			expect(errored, isTrue);
 		});
 
 		group("Standard:", () {
@@ -44,7 +56,7 @@ void main() {
 
 		group("Custom:", () {
 
-			for (int i = -2048; i>=-2050; i--) {
+			for (int i = -256; i>=-257; i--) {
 
 				test("$i", () {
 					expect(new ForthError(i).toString(), startsWith("Error $i: "));	

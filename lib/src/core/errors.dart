@@ -1,31 +1,29 @@
 library forandar.core.errors;
 
+import 'package:stack_trace/stack_trace.dart';
+
 import 'globals.dart';
 
-/// Manages errors.
-throwError(int forthErrorNum, {String preMsg, String postMsg, var dartError}) {
-
-	var forthError = new ForthError(forthErrorNum, preMsg, postMsg);
-
-	if (forthError.toString() != '') {
-		print("\n$forthError\n");
-
-		// TODO improve debugging, stack trace
-		if (dartError != null) print("$dartError");
-	}
-}
-
-/// List of Forth Errors.
+/// An instance of a specific Forth Error.
 class ForthError implements Error {
 
 	num err;
 	String errStr;
 	String preMsg;
 	String postMsg;
+	final stackTrace;
 
-	StackTrace get stackTrace => null; //TEMP FIXME
+	/// Handles Forth errors.
+	static forth(int forthErrorNumber, {String preMsg, String postMsg}) {
+		throw new ForthError(forthErrorNumber, preMsg, postMsg, new Trace.current().terse);
+	}
 
-	ForthError(this.err, [this.preMsg, this.postMsg]) {
+	/// Handles Dart Errors.
+	static dart(dynamic error) => print("Dart Error: $error\n${new Trace.current().terse}");
+
+	/// Constructor.
+	ForthError(this.err, [this.preMsg, this.postMsg, this.stackTrace]) {
+
 		switch (err) {
 
 			// Forth Standard Errors
@@ -269,20 +267,11 @@ class ForthError implements Error {
 				break;
 				
 			// Custom forandar Errors
-
-			case -2048:
-				errStr = 'not a word, not a number (not understood)';
-				break;
-			case -2049:
-				errStr = "word doesn't exist so it can't be overwritten";
-				break;
-			case -2050:
+			case -256:
 				errStr = 'terminal input line is too long (>$inputBufferSize)';
 				break;
-
-			// For testing.
-			case -4095:
-				errStr = '';
+			case -257:
+				errStr = "word doesn't exist so it can't be overwritten";
 				break;
 		}
 	}

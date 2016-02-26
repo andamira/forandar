@@ -53,13 +53,15 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 	pub global activate --source path ./
 	```
 
-2. **Activate the package.**
+2. **Just activate the package.**
 
-	*This is the quickest way of installing the command line interface.*
+	*This is the quickest way of installing the command line interface command.*
 
 	```
 	pub global activate --source git path https://github.com/andamira/forandar.git
 	```
+
+	To update the package, just run the same command again.
 
 *Read more about [pub global](https://www.dartlang.org/tools/pub/cmd/pub-global.html).*
 
@@ -71,11 +73,11 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 
 * To enter the interpretation console: `forandar`
 * To see the help screen: `forandar --help`
-* To **E**valuate Forth source code from a string, and exit: `forandar -e "2 3 + . bye"`
-* To **I**nclude Forth source code from a file: `forandar -i "path/to/forth-source.fs"`
-* To evaluate and include, in any combination: `forandar -e "1 2 swap .s" -i forth-source.fs -e "1e 2.7e 3e / .fs"` 
+* To `e`valuate Forth source code from a string, and exit: `forandar -e "2 3 + . bye"`
+* To `i`nclude Forth source code from a file: `forandar -i "path/to/forth-source.fs"`
+* You can evaluate strings and include files in any number and combination:
 
-More examples in the wiki. :soon:
+	`forandar -e "1 2 swap .s" -i forth-source.fs -e "1e 2.7e 3e / .fs"` 
 
 ---
 
@@ -83,14 +85,10 @@ More examples in the wiki. :soon:
 
 Once you have cloned this project, there are several ways to try the web interface. For example:
 
-1. Run `pub serve` from the project directory and then visit `http://localhost:8080`. You can use for that either the [Dartium](https://www.dartlang.org/tools/dartium/) browser (useful for developers) or a normal web browser (in which case you'll have to wait for the javascript transpilation to finish).
+1. Run `pub serve` from the project directory and then visit `http://localhost:8080`. You can either use the [Dartium](https://www.dartlang.org/tools/dartium/) browser (useful while developing) or a normal web browser (in which case you'll have to wait for the javascript transpilation to finish).
 2. Build the web interface with `pub build` and open the file `./build/web/index.html` with any browser. You could also deploy the `build/web/` directory to a production server.
 
 **Usage Examples**
 
 * ... :soon:
 
-
-**Live Demo**
-
-* ... :soon:
