@@ -24,9 +24,9 @@ A Forth implementation in Dart.
 
 ### Current Status
 
-- CLI interface is functional.
-- The text interpreter works.
-- Many essential Forth primitives still needs to be implemented.
+- The interactive interpreter from the CLI interface is pretty functional.
+- Already implemented are almost all the words for: text interpreting, manipulating the stacks, mathematical operations (floats included), storing and fetching to the data space, and programming tools.
+- Still many essential Forth primitives are not implemented yet, like for: defining words, saving and manipulating strings and control structures.
 
 ---
 
@@ -72,12 +72,14 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 **Usage Examples**
 
 * To enter the interpretation console: `forandar`
-* To see the help screen: `forandar --help`
-* To `e`valuate Forth source code from a string, and exit: `forandar -e "2 3 + . bye"`
-* To `i`nclude Forth source code from a file: `forandar -i "path/to/forth-source.fs"`
+* To see the help screen: `forandar -h`
+* To evaluate Forth source code from a string, and exit: `forandar -e "2 3 + . bye"`
+* To include Forth source code from a file: `forandar -i "path/to/forth-source.fs"`
 * You can evaluate strings and include files in any number and combination:
 
-	`forandar -e "1 2 swap .s" -i forth-source.fs -e "1e 2.7e 3e / .fs"` 
+	```
+	forandar -e "1 2 swap .s" -i forth-source.fs -e "1e 2.7e 3e / .fs"`
+	```
 
 ---
 
@@ -90,5 +92,5 @@ Once you have cloned this project, there are several ways to try the web interfa
 
 **Usage Examples**
 
-* ... :soon:
+*This interface is not functional yet.*
 

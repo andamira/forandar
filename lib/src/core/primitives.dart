@@ -732,19 +732,17 @@ class Primitives {
 				// Interpret.
 				try {
 					vm.dict.execNt(Nt.INTERPRET);
+
 				} catch(error) {
 					if (error is ForthError) {
 						print(error);
-						// print(error.stackTrace); // DEBUG
 
-						// Clear the stacks.
 						vm.dataStack.clear();
 						vm.floatStack.clear();
 						vm.returnStack.clear();
 						vm.controlStack.clear();
-
 					} else {
-						ForthError.dart(error);
+						print(ForthError.unmanaged(error));
 					}
 				}
 
@@ -811,7 +809,7 @@ class Primitives {
 
 				// Checks the size fits in the buffer.
 				if (inputUTF8.length > inputBufferSize) {
-					ForthError.forth(-256);
+					throw new ForthError(-256);
 
 					// TODO: Review this course of action.
 				}
@@ -1011,7 +1009,7 @@ class Primitives {
 					/// If this word is compile only and we are in interpretation state, throw err -14.
 					if (word.isCompileOnly && vm.interpretationState) {
 
-						ForthError.forth(-14);
+						throw new ForthError(-14);
 
 					/// If this word != [isImmediate] and we are in compile state, compile it.
 					} else if (!word.isImmediate && vm.compilationState) {
@@ -1133,7 +1131,7 @@ class Primitives {
 
 							// If it couldn't be parsed as float either, throw an error.
 							if (number == null) {
-								ForthError.forth(-13, preMsg: wordStr);
+								throw new ForthError(-13, postMsg: wordStr);
 							} else {
 								isInt = false;
 							}
@@ -1161,7 +1159,7 @@ class Primitives {
 
 					/// If can't be converted, err -13 "undefined word".
 					} catch(e) {
-						ForthError.forth(-13, postMsg: wordStr);
+						throw new ForthError(-13, postMsg: wordStr);
 					}
 
 				}

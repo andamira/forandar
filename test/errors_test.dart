@@ -22,25 +22,20 @@ void main() {
 
 		test("preMsg & postMsg parameters", () {
 			expect(
-				new ForthError(-2, "XY", "ZW").toString(),
+				new ForthError(-2, preMsg: "XY", postMsg: "ZW").toString(),
 				allOf(
 					startsWith('Error -2: XY'),
 					endsWith('ZW'))
 				);
 		});
 
-		test("ForthError.forth()", () {
-			bool errored;
-			try { ForthError.forth(-1); }
-			catch (e) { errored = true; }
-			expect(errored, isTrue);
-		});
-
-		test("ForthError.dart()", () {
-			bool errored;
-			try { ForthError.dart( throw "err" ); }
-			catch (e) { errored = true; }
-			expect(errored, isTrue);
+		test("ForthError.unmanaged()", () {
+			String s = "XYZ25";
+			expect(ForthError.unmanaged(s), allOf(
+				startsWith("UNMANAGED ERROR"),
+				contains(s),
+				contains("package:")
+			));
 		});
 
 		group("Standard:", () {

@@ -7,24 +7,26 @@ import 'globals.dart';
 /// An instance of a specific Forth Error.
 class ForthError implements Error {
 
-	num err;
+	StackTrace stackTrace;
+
+	final int number;
 	String errStr;
 	String preMsg;
 	String postMsg;
-	final stackTrace;
 
-	/// Handles Forth errors.
-	static forth(int forthErrorNumber, {String preMsg, String postMsg}) {
-		throw new ForthError(forthErrorNumber, preMsg, postMsg, new Trace.current().terse);
+	/// Returns the error message and a terse stack trace.
+	///
+	/// This is a beautifier for errors not managed by this class.
+	/// Ideally all errors that pop up should be instances of ForthError.
+	static String unmanaged(String error) {
+		return "UNMANAGED ERROR: $error\n${new Trace.current().terse}";
 	}
 
-	/// Handles Dart Errors.
-	static dart(dynamic error) => print("Dart Error: $error\n${new Trace.current().terse}");
+	ForthError(this.number, {this.preMsg, this.postMsg}) {
 
-	/// Constructor.
-	ForthError(this.err, [this.preMsg, this.postMsg, this.stackTrace]) {
+		this.stackTrace = new Trace.current().terse;
 
-		switch (err) {
+		switch (number) {
 
 			// Forth Standard Errors
 
@@ -283,7 +285,7 @@ class ForthError implements Error {
 
 		if (errStr == '' && preMsg == '' && postMsg == '') return '';
 
-		return "Error ${err}: ${preMsg}${errStr}${postMsg}";
+		return "Error ${number}: ${preMsg}${errStr}${postMsg}";
 	}
 }
 

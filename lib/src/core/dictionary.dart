@@ -75,7 +75,7 @@ class Dictionary {
 			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
 			wordsMap[name] = wordsList[nt];
 		} else {
-			ForthError.forth(-257, postMsg: name);
+			throw new ForthError(-257, postMsg: name);
 		}
 	}
 

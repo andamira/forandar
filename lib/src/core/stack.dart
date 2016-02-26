@@ -2,6 +2,8 @@ library forandar.core.stack;
 
 import 'dart:typed_data';
 
+import 'errors.dart';
+
 abstract class Stack<T extends num> {
 	final List _data;
 	final int _maxSize;
@@ -139,10 +141,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T pop() {
-		if (_size > 0) {
+		try {
 			return _data[--_size];
-		} else {
-			return null;
+		} catch(e) {
+			throw new ForthError(-4);
 		}
 	}
 
