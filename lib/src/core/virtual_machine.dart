@@ -7,6 +7,7 @@ import 'dictionary.dart';
 import 'data_space.dart';
 import 'input.dart';
 import 'object_space.dart';
+import 'primitives.dart';
 import 'stack.dart';
 
 /// The Forth Virtual Machine.
@@ -31,20 +32,30 @@ class VirtualMachine {
 	Configuration config;
 
 	// Singleton constructor, allowing only one instance.
-	factory VirtualMachine({args, argParser, config, input}) {
+	factory VirtualMachine({
+			args,
+			Function argParser,
+			Configuration config,
+			InputQueue input,
+			bool loadPrimitives: true}) {
 
 		if (_instance == null) {
 			config ??= new Configuration();
 			input ??= new InputQueue();
 
-			_instance = new VirtualMachine._internal(args, argParser, config, input);
+			_instance = new VirtualMachine._internal(args, argParser, config, input, loadPrimitives);
 		}
 		return _instance;
 	}
 	static VirtualMachine _instance;
 
 	/// Constructs the [VirtualMachine].
-	VirtualMachine._internal(List<String> args, Function argParser, this.config, this.source) {
+	VirtualMachine._internal(
+			List<String> args,
+			Function argParser,
+			this.config,
+			this.source,
+			bool loadPrimitives) {
 
 		/// Parses the arguments.
 		///
@@ -66,10 +77,13 @@ class VirtualMachine {
 		objectSpace = new ObjectSpace();
 
 		/// Stores a reference to itself in [InputQueue].
-		source.vm = this;
+		source.vm = this; // FIXME
 
-		/// Creates and initializes the dictionary.
-		dict = new Dictionary(this);
+		/// Creates the dictionary.
+		dict = new Dictionary();
+
+		/// Loads the primitives in the dictionary.
+		if (loadPrimitives) new Primitives(this).load();
 	}
 
 	/// Returns true when in compilation-state, false otherwise.

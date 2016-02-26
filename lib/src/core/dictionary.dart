@@ -4,8 +4,6 @@ import 'dart:collection';
 
 import 'errors.dart';
 import 'nt_primitives.dart';
-import 'primitives.dart';
-import 'virtual_machine.dart';
 import 'word.dart';
 
 /// A searchable collection for all defined [Word]s.
@@ -26,8 +24,8 @@ class Dictionary {
 	static const compileOnly    = true;
 
 	// Singleton constructor, allowing only one instance.
-	factory Dictionary(VirtualMachine vm) {
-		_instance ??= new Dictionary._internal(vm);
+	factory Dictionary() {
+		_instance ??= new Dictionary._internal();
 		return _instance;
 	}
 	static Dictionary _instance;
@@ -39,33 +37,7 @@ class Dictionary {
 	/// The words whose implementation depends on the specific Dart interface
 	/// are defined in the files: cli/dictionary.dart and web/dictionary.dart,
 	/// and included from the corresponding implementations in: /bin and /web.
-	Dictionary._internal(VirtualMachine vm) {
-
-		if (vm != null) {
-
-			// Must receive the Virtual Machine as an argument because its constructor
-			// has not finished yet, and therefore the global variable forth is null.
-			// The same things happens with this dictionary, and the following words:
-
-			// Core.
-			includeWordsStandardCore(vm, this);
-
-			includeWordsNotStandardCore(vm, this);
-			includeWordsNotStandardExtra(vm, this);
-
-			// Optional Standard Sets.
-			// -----------------------
-
-			// Floats.
-			includeWordsStandardOptionalFloat(vm, this);
-
-			// Block.
-			includeWordsStandardOptionalBlock(vm, this);
-
-			// Tools.
-			includeWordsStandardOptionalProgrammingTools(vm, this);
-		}
-	}
+	Dictionary._internal();
 
 	/// Returns the number of [Word]s definitions.
 	int get length => wordsMap.length;

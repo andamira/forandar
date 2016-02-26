@@ -31,5 +31,26 @@ void main() {
 			expect(throwError(-4095), isNull);
 		});
 
+		group("Standard:", () {
+
+			for (int i = -1; i>=-79; i--) {
+
+				test("$i", () {
+					expect(new ForthError(i).toString(), startsWith("Error $i: "));	
+				});
+			}
+
+		});
+
+		group("Custom:", () {
+
+			for (int i = -2048; i>=-2050; i--) {
+
+				test("$i", () {
+					expect(new ForthError(i).toString(), startsWith("Error $i: "));	
+				});
+			}
+
+		});
 	});
 }

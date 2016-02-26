@@ -13,12 +13,12 @@ void main() {
 	group("[Dictionary]", () {
 
 		test("Constructor", () {
-			d = new Dictionary(null);
+			d = new Dictionary();
 			expect(d, isNotNull);
 		});
 
 		test("Constructor (singleton test)", () {
-			expect(d.hashCode, equals(new Dictionary(null).hashCode));
+			expect(d.hashCode, equals(new Dictionary().hashCode));
 		});
 
 		test("length", () {
