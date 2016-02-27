@@ -27,7 +27,7 @@ void main() {
 			});
 
 			test("floatStackSize", () {
-				expect(c.option['dataStackSize'], greaterThan(5));
+				expect(c.option['floatStackSize'], greaterThan(5));
 			});
 
 			test("returnStackSize", () {

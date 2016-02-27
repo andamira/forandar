@@ -733,17 +733,16 @@ class Primitives {
 				try {
 					vm.dict.execNt(Nt.INTERPRET);
 
-				} catch(error) {
-					if (error is ForthError) {
-						print(error);
+				} on ForthError catch(error) {
+					print(error);
 
-						vm.dataStack.clear();
-						vm.floatStack.clear();
-						vm.returnStack.clear();
-						vm.controlStack.clear();
-					} else {
-						print(ForthError.unmanaged(error));
-					}
+					vm.dataStack.clear();
+					vm.floatStack.clear();
+					vm.returnStack.clear();
+					vm.controlStack.clear();
+
+				} catch(error) {
+					print(ForthError.unmanaged(error));
 				}
 
 				// Display the implementation-defined system prompt.
@@ -792,15 +791,14 @@ class Primitives {
 				// If there is no input available returns false.
 				catch(e) {
 
-					// If the input source is coming from the user, REFILL
-					// could still return a false value if, for instance,
-					// a communication channel closes so that the system
-					// knows that no more input will be available.
+					// NOTE: This shouldn't fail, but, e.g. in case,
+					// the input source is coming from a remote system
+					// REFILL could return a false value if a channel
+					// closes and the system can't receive more input.
 
 					vm.dataStack.push(flagFALSE);
 
-					// TODO: Review this course of action.
-					print(e);
+					print(ForthError.unmanaged(e));
 					return;
 				}
 
@@ -1023,143 +1021,136 @@ class Primitives {
 					}
 
 
-				/// If the word is not found.
+				/// If the word could not be found then
+				/// tries converting the word to a number.
 				} else {
 
-					/// Tries to convert the word to a number.
-					try {
+					num number; // parsed number
+					bool isInt = true; // is it an integer?
+					bool isDouble = false; // is it a double cell number?
 
-						num number; // parsed number
-						bool isInt = true; // is it an integer?
-						bool isDouble = false; // is it a double cell number?
+					int base = vm.dataSpace.fetchCell(addrBASE); // (radix)
 
-						int base = vm.dataSpace.fetchCell(addrBASE); // (radix)
+					// first and last characters of the word
+					String prefix = wordStr.substring(0,1);
+					//String suffix = wordStr.substring(wordStr.length - 1);
 
-						// first and last characters of the word
-						String prefix = wordStr.substring(0,1);
-						//String suffix = wordStr.substring(wordStr.length - 1);
+					// First tries parsing the word to an integer in the current base.
+					//
+					// The interpreter shall recognize integer numbers in the form <anynum>.
+					//
+					//   <anynum> := { <BASEnum> | <decnum> | <hexnum> | <binnum> | <cnum> }
+					//  <BASEnum> := [-]<bdigit><bdigit>*
+					//   <decnum> := #[-]<decdigit><decdigit>*
+					//   <hexnum> := $[-]<hexdigit><hexdigit>*
+					//   <binnum> := %[-]<bindigit><bindigit>*
+					//     <cnum> := '<char>'
+					// <bindigit> := { 0 | 1 }
+					// <decdigit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
+					// <hexdigit> := { <decdigit> | a | b | c | d | e | f | A | B | C | D | E | F }
+					//
+					// <bdigit> represents a digit according to the value of BASE
+					//
+					// https://api.dartlang.org/stable/dart-core/int/parse.html
+					// http://forth-standard.org/standard/core/toNUMBER
 
-						// First tries parsing the word to an integer in the current base.
-						//
-						// The interpreter shall recognize integer numbers in the form <anynum>.
-						//
-						//   <anynum> := { <BASEnum> | <decnum> | <hexnum> | <binnum> | <cnum> }
-						//  <BASEnum> := [-]<bdigit><bdigit>*
-						//   <decnum> := #[-]<decdigit><decdigit>*
-						//   <hexnum> := $[-]<hexdigit><hexdigit>*
-						//   <binnum> := %[-]<bindigit><bindigit>*
-						//     <cnum> := '<char>'
-						// <bindigit> := { 0 | 1 }
-						// <decdigit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
-						// <hexdigit> := { <decdigit> | a | b | c | d | e | f | A | B | C | D | E | F }
-						//
-						// <bdigit> represents a digit according to the value of BASE
-						//
-						// https://api.dartlang.org/stable/dart-core/int/parse.html
-						// http://forth-standard.org/standard/core/toNUMBER
+					// Is it a double cell integer?
+					//
+					// FIXME: current double-cell system is temporary. It will need to support
+					// parsing a 64bit number and save it into two separate 32 bit integers
+					if (wordStr.endsWith(".")) {
+						isDouble = true;
+						wordStr = wordStr.substring(0, wordStr.length - 1);
+					}
 
-						// Is it a double cell integer?
-						//
-						// FIXME: current double-cell system is temporary. It will need to support
-						// parsing a 64bit number and save it into two separate 32 bit integers
-						if (wordStr.endsWith(".")) {
-							isDouble = true;
-							wordStr = wordStr.substring(0, wordStr.length - 1);
+					// NOTE: The ternary conditional inside the radix parameter, allows Dart to
+					// automatically interpret any '0x' prefixed integers with hexadecimal base.
+					number = int.parse(wordStr, radix: base == 10 ? null : base, onError: (wordStr) => null);
+
+					//print("\nWORD $wordStr; BASE $base; PREFIX $prefix; DOUBLE: $isDouble; FLOAT: ${!isInt}"); // TEMP
+
+					// If it couldn't be parsed, then tries it again as a prefixed integer.
+					if (number == null) {
+
+						// Sets the base as decimal,
+						if (prefix == '#' ) {
+							base = 10;
+						// or as hexadecimal
+						} else if (prefix == r'$') {
+							base = 16;
+						// or as binary.
+						} else if (prefix == '%') {
+							base = 2;
 						}
 
-						// NOTE: The ternary conditional inside the radix parameter, allows Dart to
-						// automatically interpret any '0x' prefixed integers with hexadecimal base.
-						number = int.parse(wordStr, radix: base == 10 ? null : base, onError: (wordStr) => null);
+						// Tries to parse the rest of the string.
+						number = int.parse(wordStr.substring(1), radix: base, onError: (wordStr) => null);
 
-						//print("\nWORD $wordStr; BASE $base; PREFIX $prefix; DOUBLE: $isDouble; FLOAT: ${!isInt}"); // TEMP
+						// If it fails, then tries to parse it as a character.
+						if (number == null && wordStr.length == 3 && prefix == "'" && wordStr.endsWith("'")) {
+							number = wordStr.codeUnitAt(1);
+						}
+					}
 
-						// If it couldn't be parsed, then tries it again as a prefixed integer.
+					// If it's not an integer, or a double, tries parsing it as floating point.
+					//
+					// Must recognize floating-point numbers in this form:
+					// Convertible string := <significand><exponent>
+					// <significand> := [<sign>]<digits>[.<digits0>]
+					// <exponent> := E[<sign>]<digits0>
+					// <sign> := { + | - }
+					// <digits> := <digit><digits0>
+					// <digits0> := <digit>*
+					// <digit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
+					//
+					// These are examples of valid representations of floating-point numbers in program source:
+					// 1E    1.E    1.E0    +1.23E-1    -1.23E+1
+					//
+					// https://api.dartlang.org/stable/dart-core/double/parse.html
+					// http://forth-standard.org/standard/float
+					// http://forth-standard.org/standard/float/toFLOAT
+					if (number == null && !isDouble && base == 10) {
+
+						// Only tries to parse it if the string has the correct scientific notation format.
+						RegExp exp = new RegExp(r"[-+]?[0-9]*.?[0-9]*[deDE][-+]?[0-9]*");
+
+						if (exp.hasMatch(wordStr)) {
+
+							// Fixes the string for the Dart parser
+							//
+							String fixedWordStr = wordStr.replaceAll(new RegExp(r'[dD]'), 'e');
+							// Dart double.parser() doesn't recognize floats ending in [e|E]
+							if (fixedWordStr.endsWith('e') || fixedWordStr.endsWith('E')) fixedWordStr+= '+0';
+
+							number = double.parse(fixedWordStr, (fixedWordStr) => null);
+						}
+
+						// If it couldn't be parsed as float either, throw an error.
 						if (number == null) {
-
-							// Sets the base as decimal,
-							if (prefix == '#' ) {
-								base = 10;
-							// or as hexadecimal
-							} else if (prefix == r'$') {
-								base = 16;
-							// or as binary.
-							} else if (prefix == '%') {
-								base = 2;
-							}
-
-							// Tries to parse the rest of the string.
-							number = int.parse(wordStr.substring(1), radix: base, onError: (wordStr) => null);
-
-							// If it fails, then tries to parse it as a character.
-							if (number == null && wordStr.length == 3 && prefix == "'" && wordStr.endsWith("'")) {
-								number = wordStr.codeUnitAt(1);
-							}
-						}
-
-						// If it's not an integer, or a double, tries parsing it as floating point.
-						//
-						// Must recognize floating-point numbers in this form:
-						// Convertible string := <significand><exponent>
-						// <significand> := [<sign>]<digits>[.<digits0>]
-						// <exponent> := E[<sign>]<digits0>
-						// <sign> := { + | - }
-						// <digits> := <digit><digits0>
-						// <digits0> := <digit>*
-						// <digit> := { 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }
-						//
-						// These are examples of valid representations of floating-point numbers in program source:
-						// 1E    1.E    1.E0    +1.23E-1    -1.23E+1
-						//
-						// https://api.dartlang.org/stable/dart-core/double/parse.html
-						// http://forth-standard.org/standard/float
-						// http://forth-standard.org/standard/float/toFLOAT
-						if (number == null && !isDouble && base == 10) {
-
-							// Only tries to parse it if the string has the correct scientific notation format.
-							RegExp exp = new RegExp(r"[-+]?[0-9]*.?[0-9]*[deDE][-+]?[0-9]*");
-
-							if (exp.hasMatch(wordStr)) {
-
-								// Fixes the string for the Dart parser
-								//
-								String fixedWordStr = wordStr.replaceAll(new RegExp(r'[dD]'), 'e');
-								// Dart double.parser() doesn't recognize floats ending in [e|E]
-								if (fixedWordStr.endsWith('e') || fixedWordStr.endsWith('E')) fixedWordStr+= '+0';
-
-								number = double.parse(fixedWordStr, (fixedWordStr) => null);
-							}
-
-							// If it couldn't be parsed as float either, throw an error.
-							if (number == null) {
-								throw new ForthError(-13, postMsg: wordStr);
-							} else {
-								isInt = false;
-							}
-						}
-
-						/// If we are compiling, compile the number in the data space.
-						if (vm.compilationState) {
-							// TODO
-
-						/// If we are interpreting leave it on the stack.
+							throw new ForthError(-13, postMsg: wordStr);
 						} else {
+							isInt = false;
+						}
+					}
 
-							// Integers go to the dataStack.
-							if (isInt) {
-								vm.dataStack.push(number.toInt());
+					/// If we are compiling, compile the number in the data space.
+					if (vm.compilationState) {
+						// TODO
 
-								if (isDouble) vm.dataStack.push(0); // FIXME (this is a temporary workaround for small ints)
+					/// If we are interpreting leave it on the stack.
+					} else {
 
-							// Floats go to the floatStack.
-							} else {
-								vm.floatStack.push(number);
-							}
+						// Integers go to the dataStack.
+						if (isInt) {
+							vm.dataStack.push(number.toInt());
+
+							if (isDouble) vm.dataStack.push(0); // FIXME (this is a temporary workaround for small ints)
+
+						// Floats go to the floatStack.
+						} else {
+							vm.floatStack.push(number);
 						}
 
-
-					/// If can't be converted, err -13 "undefined word".
-					} catch(e) {
-						throw new ForthError(-13, postMsg: wordStr);
 					}
 
 				}
@@ -1275,14 +1266,14 @@ class Primitives {
 			print(util.int32ToBin(vm.dataStack.pop()));
 		});
 
-		/// Prints the object space content. // TODO
-		vm.dict.addWordNope("ODUMP");
+		/// Prints the object space content.
+		vm.dict.addWordNope("ODUMP"); // TODO
 
 		/// List the definition names and its st.
 		///
 		vm.dict.addWord("WORDS+NT", (){
+			// TODO FIXME: Move this to the Dictionary class
 			var str = new StringBuffer();
-
 			for (Word w in vm.dict.wordsList.reversed) {
 				try {
 					str.write("${w.name} ${w.nt} ");
@@ -1854,6 +1845,7 @@ class Primitives {
 		/// [WORDS][link] ( -- )
 		/// [link]: http://forth-standard.org/standard/tools/WORDS
 		vm.dict.addWord("WORDS", (){
+			// TODO FIXME: Move this to the Dictionary class
 			var str = new StringBuffer();
 			for (Word w in vm.dict.wordsList.reversed) {
 				try {

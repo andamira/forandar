@@ -3,13 +3,14 @@ library forandar.core.errors;
 import 'package:stack_trace/stack_trace.dart';
 
 import 'globals.dart';
+import 'stack.dart';
 
 /// An instance of a specific Forth Error.
 class ForthError implements Error {
 
 	StackTrace stackTrace;
 
-	final int number;
+	int number;
 	String errStr;
 	String preMsg;
 	String postMsg;
@@ -36,16 +37,16 @@ class ForthError implements Error {
 			case -2:
 				errStr = 'ABORT"';
 				break;
-			case -3:
+			case -3:   // used
 				errStr = 'stack overflow';
 				break;
-			case -4:
+			case -4:   // used
 				errStr = 'stack underflow';
 				break;
-			case -5:
+			case -5:   // used
 				errStr = 'return stack overflow';
 				break;
-			case -6:
+			case -6:   // used
 				errStr = 'return stack underflow';
 				break;
 			case -7:
@@ -66,10 +67,10 @@ class ForthError implements Error {
 			case -12:
 				errStr = 'argument type mismatch';
 				break;
-			case -13:
+			case -13:  // used
 				errStr = 'undefined word';
 				break;
-			case -14:
+			case -14:  // used
 				errStr = 'interpreting a compile-only word';
 				break;
 			case -15:
@@ -159,10 +160,10 @@ class ForthError implements Error {
 			case -43:
 				errStr = 'floating-point result out of range';
 				break;
-			case -44:
+			case -44:  // used
 				errStr = 'floating-point stack overflow';
 				break;
-			case -45:
+			case -45:  // used
 				errStr = 'floating-point stack underflow';
 				break;
 			case -46:
@@ -183,10 +184,10 @@ class ForthError implements Error {
 			case -51:
 				errStr = 'compilation word list changed';
 				break;
-			case -52:
+			case -52:  // used
 				errStr = 'control-flow stack overflow';
 				break;
-			case -53:
+			case -53:  // used
 				errStr = 'exception stack overflow';
 				break;
 			case -54:
@@ -277,6 +278,64 @@ class ForthError implements Error {
 				break;
 		}
 	}
+
+
+	/// Constructor wrapper for stack overflow errors.
+	ForthError.stackOverflow(StackType t, [dynamic error, String postMsg]) {
+
+		// postMsg = "→ $postMsg"; // DEBUG
+		postMsg = null;
+
+		switch(t) {
+			case StackType.dataStack:
+				throw new ForthError(-3, postMsg: postMsg);
+
+			case StackType.floatStack:
+				throw new ForthError(-44, postMsg: postMsg);
+
+			case StackType.returnStack:
+				throw new ForthError(-5, postMsg: postMsg);
+
+			case StackType.controlStack:
+				throw new ForthError(-52, postMsg: postMsg);
+
+			case StackType.exceptionStack:
+				throw new ForthError(-53, postMsg: postMsg);
+
+			case StackType.unknown:
+				throw new ForthError(-3, preMsg: "unknown", postMsg: postMsg);
+
+			default:
+				print(ForthError.unmanaged(error));
+		}
+	}
+
+	/// Constructor wrapper for stack underflow errors.
+	ForthError.stackUnderflow(StackType t, [dynamic error, String postMsg]) {
+
+		// postMsg = "→ $postMsg"; // DEBUG
+		postMsg = null;
+
+		switch(t) {
+			case StackType.dataStack:
+				throw new ForthError(-4, postMsg: postMsg);
+
+			case StackType.floatStack:
+				throw new ForthError(-45, postMsg: postMsg);
+
+			case StackType.returnStack:
+				throw new ForthError(-6, postMsg: postMsg);
+
+			// NOTE: no standard errors for control & exception stacks underflow
+
+			case StackType.unknown:
+				throw new ForthError(-4, preMsg: "unknown", postMsg: postMsg);
+
+			default:
+				print(ForthError.unmanaged(error));
+		}
+	}
+
 
 	@override
 	String toString() {

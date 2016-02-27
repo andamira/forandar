@@ -4,15 +4,32 @@ import 'dart:typed_data';
 
 import 'errors.dart';
 
+/// All the different stack types.
+enum StackType {
+	unknown,
+	dataStack,
+	floatStack,
+	returnStack,
+	controlStack,
+	exceptionStack
+}
+
 abstract class Stack<T extends num> {
 	final List _data;
 	final int _maxSize;
 	int _size = 0;
+	final StackType _type;
 
-	Stack(this._maxSize, this._data);
+	Stack(this._maxSize, this._data, this._type);
+
+	/// Returns the type of the stack.
+	StackType get type => _type;
 
 	/// Returns the size of the stack.
 	int get size => _size;
+
+	/// Returns the maximum size of the stack.
+	int get maxSize => _maxSize;
 
 	/// Clears the contents of the stack.
 	void clear() {
@@ -37,14 +54,16 @@ abstract class Stack<T extends num> {
 /// Last In First Out Stack Implementation.
 abstract class LifoStack<T extends num> extends Stack<T> {
 
-	LifoStack(maxSize, data) : super(maxSize, data);
+	LifoStack(maxSize, data, type) : super(maxSize, data, type);
 
 	/// Removes the top stack item and discards it.
 	///
 	/// ( a b -- a )
 	void drop() {
-		if (_size > 0) {
+		try {
 			_size--;
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'drop');
 		}
 	}
 
@@ -52,8 +71,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- a )
 	void drop2() {
-		if (_size > 1) {
+		try {
 			_size -= 2;
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'drop2');
 		}
 	}
 
@@ -61,8 +82,14 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- a a )
 	void dup() {
-		if (_size > 0 && _size < _maxSize) {
-			_data[_size] = _data[_size++ - 1];
+		try {
+			_data[_size] = _data[_size - 1]; _size++;
+		} catch(e) {
+			if (_size < 1) {
+				throw new ForthError.stackUnderflow(_type, e, 'dup');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'dup');
+			}
 		}
 	}
 
@@ -70,19 +97,26 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- a b a b )
 	void dup2() {
-		if (_size > 1) {
-			_data[_size] = _data[_size++ - 2];
-			_data[_size] = _data[_size++ - 2];
+		try {
+			_data[_size] = _data[_size - 2]; _size++;
+			_data[_size] = _data[_size - 2]; _size++;
+		} catch(e) {
+			if (_size < 2) {
+				throw new ForthError.stackUnderflow(_type, e, 'dup2');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'dup2');
+			}
 		}
-		// CHECK try|catch _size > 1 && _size < (_maxSize - 1)
 	}
 
 	/// Drops the first item below the top of stack.
 	///
 	/// ( a b -- b )
 	void nip() {
-		if (_size > 1) {
+		try {
 			_data[_size - 2] = _data[--_size];
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'nip');
 		}
 	}
 
@@ -90,8 +124,14 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- a b a )
 	void over() {
-		if (_size > 1 && _size < _maxSize) {
-			_data[_size] = _data[_size++ - 2];
+		try {
+			_data[_size] = _data[_size - 2]; _size++;
+		} catch(e) {
+			if (_size < 2) {
+				throw new ForthError.stackUnderflow(_type, e, 'over');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'over');
+			}
 		}
 	}
 
@@ -99,9 +139,15 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c d -- c d a b )
 	void over2() {
-		if (_size > 3 && _size < (_maxSize - 1)) {
-			_data[_size] = _data[_size++ - 4];
-			_data[_size] = _data[_size++ - 4];
+		try {
+			_data[_size] = _data[_size - 4]; _size++;
+			_data[_size] = _data[_size - 4]; _size++;
+		} catch(e) {
+			if (_size < 4) {
+				throw new ForthError.stackUnderflow(_type, e, 'over2');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'over2');
+			}
 		}
 	}
 
@@ -109,10 +155,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T peek() {
-		if (_size > 0) {
+		try {
 			return _data[_size - 1];
-		} else {
-			return null;
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'peek');
 		}
 	}
 
@@ -120,10 +166,10 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a -- )
 	T peekNOS() {
-		if (_size > 1) {
+		try {
 			return _data[_size - 2];
-		} else {
-			return null;
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'peekNOS');
 		}
 	}
 
@@ -132,8 +178,14 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	/// Pick(0) is equivalent to Dup() and Pick(1) is equivalent to Over().
 	/// ( a b c ... i -- i a b c ... i )
 	void pick(int i) {
-		if (_size > i) {
-			_data[_size] = _data[_size++ - 1 - i];
+		try {
+			_data[_size] = _data[_size - i - 1]; _size++;
+		} catch(e) {
+			if (_size < i + 1) {
+				throw new ForthError.stackUnderflow(_type, e, 'pick($i)');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'pick($i)');
+			}
 		}
 	}
 
@@ -144,7 +196,7 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 		try {
 			return _data[--_size];
 		} catch(e) {
-			throw new ForthError(-4);
+			throw new ForthError.stackUnderflow(_type, e, 'pop');
 		}
 	}
 
@@ -152,8 +204,27 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( -- a )
 	void push(T i) {
-		if (_size < _maxSize) {
+		// TODO FIXME: Find a more performant way of catching errors,
+		// without try/catch, when compiling to javascript.
+		// https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
+		// https://news.ycombinator.com/item?id=3797822
+		try {
 			_data[_size++] = i;
+		} catch(e) {
+			throw new ForthError.stackOverflow(_type, e, 'push($i)');
+		}
+	}
+
+	/// Adds all the items from a List to the top of the stack.
+	///
+	/// ( -- a ... i )
+	void pushList(List L) {
+		try {
+			L.forEach( (T i) {
+				_data[_size] = i; _size++;
+			});
+		} catch(e) {
+			throw new ForthError.stackOverflow(_type, e, 'pushList($L)');
 		}
 	}
 
@@ -162,15 +233,14 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	/// Roll(2) is equivalent to Rot() and Roll(1) is equivalent to Swap().
 	/// ( a b c ... i --  )
 	void roll(int i) {
-		if (_size > 0 && _size > i) {
-
+		try {
 			var t = _data.sublist(_size - i - 1, _size);
-
 			for (int c = 1; c <= i; c++) {
 				_data[_size - 2 - i + c] = t[c];
 			}
-
 			_data[_size - 1] = t[0];
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'roll($i)');
 		}
 	}
 
@@ -178,11 +248,13 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- b c a )
 	void rot() {
-		if (_size > 2) {
+		try {
 			var t = _data.sublist(_size - 3, _size);
 			_data[_size - 1] = t[0];
 			_data[_size - 2] = t[2];
 			_data[_size - 3] = t[1];
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'rot()');
 		}
 	}
 
@@ -190,11 +262,13 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c -- c a b )
 	void rotCC() {
-		if (_size > 2) {
+		try {
 			var t = _data.sublist(_size - 3, _size);
 			_data[_size - 1] = t[1];
 			_data[_size - 2] = t[0];
 			_data[_size - 3] = t[2];
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'rotcc()');
 		}
 	}
 
@@ -202,10 +276,12 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- b a )
 	void swap() {
-		if (_size > 1) {
+		try {
 			T t = _data[_size - 1];
 			_data[_size - 1] = _data[_size - 2];
 			_data[_size - 2] = t;
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'swap()');
 		}
 	}
 
@@ -213,12 +289,14 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b c d -- c d a b )
 	void swap2() {
-		if (_size > 3) {
+		try {
 			var t = _data.sublist(_size - 4, _size);
 			_data[_size - 1] = t[1];
 			_data[_size - 2] = t[0];
 			_data[_size - 3] = t[3];
 			_data[_size - 4] = t[2];
+		} catch(e) {
+			throw new ForthError.stackUnderflow(_type, e, 'swap2()');
 		}
 	}
 
@@ -226,19 +304,27 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 	///
 	/// ( a b -- b a b )
 	void tuck() {
-		if (_size > 1) {
+		try {
 			_data[_size]     = _data[_size - 1];
 			_data[_size - 1] = _data[_size - 2];
-			_data[_size - 2] = _data[_size++];
+			_data[_size - 2] = _data[_size]; _size++;
+		} catch(e) {
+			if (_size < 2) {
+				throw new ForthError.stackUnderflow(_type, e, 'tuck()');
+			} else {
+				throw new ForthError.stackOverflow(_type, e, 'tuck()');
+			}
 		}
 	}
 }
 
 class LifoStackInt<int> extends LifoStack {
-	LifoStackInt(maxSize) : super(maxSize, new Int32List(maxSize));
+	LifoStackInt(maxSize, [StackType type = StackType.unknown]) :
+		super(maxSize, new Int32List(maxSize), type);
 }
 
 class LifoStackFloat<double> extends LifoStack {
-	LifoStackFloat(maxSize) : super(maxSize, new Float64List(maxSize));
+	LifoStackFloat(maxSize, [StackType type = StackType.unknown]) :
+		super(maxSize, new Float64List(maxSize), type);
 }
 
