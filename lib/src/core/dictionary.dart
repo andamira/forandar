@@ -2,9 +2,10 @@ library forandar.core.dictionary;
 
 import 'dart:collection';
 
-import 'errors.dart';
-import 'nt_primitives.dart';
-import 'word.dart';
+// Core
+import 'package:forandar/src/core/errors.dart';
+import 'package:forandar/src/core/nt_primitives.dart';
+import 'package:forandar/src/core/word.dart';
 
 /// A searchable collection for all defined [Word]s.
 ///

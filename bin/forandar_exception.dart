@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:forandar/forandar_cli.dart';
+import 'package:forandar/exception/forandar_cli.dart';
 
 VirtualMachine forth;
 

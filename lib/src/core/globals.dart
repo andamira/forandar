@@ -1,7 +1,29 @@
 library forandar.core.globals;
 
-// Forth boolean flags
-const int flagTRUE = -1; 
+// Global Types
+// ------------
+
+/// All the different stack types.
+enum StackType {
+    unknown,
+    dataStack,
+    floatStack,
+    returnStack,
+    controlStack,
+    exceptionStack
+}
+
+/// Supported types of input.
+enum InputType { String, File, Url }
+
+/// All the interface types.
+enum InterfaceType { undefined, cli, web }
+
+// Global Constants
+// ----------------
+
+// Forth boolean flags.
+const int flagTRUE = -1;
 const int flagFALSE = 0;
 
 /// The size of a cell in bytes.
@@ -56,4 +78,4 @@ const int addrInputBuffer = addrToIN + cellSize;
 /// A transient region for the programmer's convenience.
 const int addrPAD = addrInputBuffer + inputBufferSize;
 
-// const int ... = addrPAD + padSize; 
+// const int ... = addrPAD + padSize;

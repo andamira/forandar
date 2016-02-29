@@ -7,7 +7,7 @@ import 'package:forandar/forandar_web.dart';
 var codeOutput;
 var consoleOutput;
 
-void main() async {
+main() async {
 
 	var c = new Configuration();
 	var i = new InputQueueWeb();
@@ -29,7 +29,7 @@ void main() async {
 /// Defines and loads the global options.
 ///
 /// Overrides the default values with the fetched data.
-void loadConfiguration(Configuration c) async {
+loadConfiguration(Configuration c) async {
 
     if (context.hasProperty('forandar')) {
 

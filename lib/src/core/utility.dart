@@ -1,11 +1,9 @@
+/// Various utility functions.
 library forandar.core.utility;
 
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-
-// Various utility functions.
-
 
 /// Prefixes a string with leading zeros until a maximum [length].
 ///

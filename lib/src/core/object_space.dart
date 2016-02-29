@@ -16,4 +16,3 @@ class ObjectSpace {
 
 	int get length => data.length;
 }
-

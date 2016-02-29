@@ -1,0 +1,94 @@
+part of forandar.core.virtual_machine;
+
+/// The Forth Virtual Machine.
+///
+/// Contains the dictionary, stacks, data and object spaces, source queue...
+class VirtualMachine {
+
+	// Dictionary.
+	Dictionary dict;
+
+	// Stacks.
+	LifoStackInt dataStack;
+	LifoStackInt returnStack;
+	LifoStackInt controlStack;
+	LifoStackFloat floatStack;
+
+	// Data Spaces.
+	DataSpace dataSpace;
+	ObjectSpace objectSpace;
+
+	InputQueue source;
+	Configuration config;
+
+	// Singleton constructor, allowing only one instance.
+	factory VirtualMachine({
+			List<String> args,
+			Function argParser,
+			Configuration config,
+			InputQueue input,
+			bool loadPrimitives: true}) {
+
+		if (_instance == null) {
+			config ??= new Configuration();
+			input ??= new InputQueue();
+
+			_instance = new VirtualMachine._internal(args, argParser, config, input, loadPrimitives);
+		}
+		return _instance;
+	}
+	static VirtualMachine _instance;
+
+	/// Constructs the [VirtualMachine].
+	VirtualMachine._internal(
+			List<String> args,
+			Function argParser,
+			this.config,
+			this.source,
+			bool loadPrimitives) {
+
+		/// Parses the arguments.
+		///
+		/// Updates the [config]uration and fills the [source]code input queue.
+		if (args != null && argParser != null) {
+			argParser(args, config, source);
+		}
+
+		/// Creates the Stacks.
+		dataStack    = new LifoStackInt(config.option['dataStackSize'], StackType.dataStack);
+		returnStack  = new LifoStackInt(config.option['returnStackSize'], StackType.returnStack);
+		controlStack = new LifoStackInt(config.option['controlStackSize'], StackType.controlStack);
+		floatStack   = new LifoStackFloat(config.option['floatStackSize'], StackType.floatStack);
+
+		/// Creates and initializes the main data space.
+		dataSpace = new DataSpace(config.option['dataSpaceSize']);
+
+		/// Creates the object space.
+		objectSpace = new ObjectSpace();
+
+		/// Creates the dictionary.
+		dict = new Dictionary();
+
+		/// Loads the primitives in the dictionary.
+		if (loadPrimitives) new Primitives(this).load();
+	}
+
+	/// Returns true when in compilation-state, false otherwise.
+	bool get compilationState {
+		return dataSpace.fetchCell(addrSTATE) == flagTRUE ? true : false;
+	}
+	/// Enters compilation-state when set to true, otherwise if false.
+	void set compilationState(bool flag) {
+		dataSpace.storeCell(addrSTATE, flag ? flagTRUE : flagFALSE );
+	}
+
+	/// Returns true when in interpretation-state, false otherwise.
+	bool get interpretationState {
+		return dataSpace.fetchCell(addrSTATE) == flagTRUE ? false : true;
+	}
+
+	/// Enters interpretation-state when set to true, otherwise if false.
+	void set interpretationState(bool flag) {
+		dataSpace.storeCell(addrSTATE, flag ? flagFALSE : flagTRUE );
+	}
+}

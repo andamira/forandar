@@ -1,9 +1,11 @@
-library forandar_web;
+library forandar_web.exception;
 
+// Core
 import 'package:forandar/src/core/input.dart';
 
-export 'package:forandar/forandar.dart';
-export 'package:forandar/src/web/primitives.dart';
+// Core Exception
+export 'package:forandar/exception/forandar.dart';
+export 'package:forandar/src/web/exception/primitives.dart';
 
 // TODO:
 // - define WEB class, with common methods

@@ -1,9 +1,7 @@
 library forandar.core.input;
 
-import 'virtual_machine.dart'; // XXX recursive
-
-/// Supported types of input.
-enum InputType { String, File, Url }
+// Core
+import 'package:forandar/src/core/globals.dart';
 
 class InputQueueElement {
 	InputType type;
@@ -20,9 +18,6 @@ class InputQueueElement {
 /// Stores in order the series of source codes for interpreting,
 /// either as a string, or as a file / URL to be loaded.
 class InputQueue {
-
-	/// Reference to the parent forth virtual machine.
-	VirtualMachine vm; // XXX is this necessary?
 
 	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];

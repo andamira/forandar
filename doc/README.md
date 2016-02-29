@@ -1,20 +1,14 @@
-# <img src="https://raw.githubusercontent.com/andamira/forandar/master/web/img/logo-55x120.png" valign="bottom">  forandar
-
 A Forth implementation in Dart.
-
-![Version pre-alpha](https://img.shields.io/badge/version-pre--alpha-C70300.svg)
-[![Build Status](https://travis-ci.org/andamira/forandar.svg?branch=master)](https://travis-ci.org/andamira/forandar)
-[![Coverage Status](https://coveralls.io/repos/github/andamira/forandar/badge.svg?branch=master)](https://coveralls.io/github/andamira/forandar?branch=master)
 
 ## Information
 
 ### Features and WIP
 
-- :globe_with_meridians: An interface-independent library.
-- :new_moon: Includes a Command Line Interface.
-- :earth_asia: Includes a Web Interface. :soon:
-- :o: [Forth Standard](http://forth-standard.org/) compliant. :soon:
-- :ideograph_advantage: Supports UTF-8.
+- An interface-independent library.
+- Includes a Command Line Interface.
+- Includes a Web Interface.
+- [Forth Standard](http://forth-standard.org/) compliant.
+- Supports UTF-8.
 
 ### Future Goals
 

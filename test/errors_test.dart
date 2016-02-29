@@ -3,7 +3,7 @@ library forandar.core.errors_test;
 import "package:test/test.dart";
 
 import "package:forandar/src/core/errors.dart";
-import "package:forandar/src/core/stack.dart";
+import "package:forandar/src/core/globals.dart";
 
 void main() {
 

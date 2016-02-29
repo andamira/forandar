@@ -2,8 +2,8 @@ library forandar.core.errors;
 
 import 'package:stack_trace/stack_trace.dart';
 
-import 'globals.dart';
-import 'stack.dart';
+// Core
+import 'package:forandar/src/core/globals.dart';
 
 /// An instance of a specific Forth Error.
 class ForthError implements Error {
@@ -19,8 +19,11 @@ class ForthError implements Error {
 	///
 	/// This is a beautifier for errors not managed by this class.
 	/// Ideally all errors that pop up should be instances of ForthError.
-	static String unmanaged(String error) {
-		return "UNMANAGED ERROR: $error\n${new Trace.current().terse}";
+	static String unmanaged(String error, {String preMsg, String postMsg}) {
+		preMsg == null ? preMsg = 'UNMANAGED ERROR: ' : preMsg =  "$preMsg ";
+		postMsg == null ? postMsg = '' : postMsg = " $postMsg";
+
+		return "${preMsg}${error}${postMsg}\n${new Trace.current().terse}";
 	}
 
 	ForthError(this.number, {this.preMsg, this.postMsg}) {
@@ -342,9 +345,7 @@ class ForthError implements Error {
 		preMsg == null ? preMsg = '' : preMsg =  "$preMsg ";
 		postMsg == null ? postMsg = '' : postMsg = " $postMsg";
 
-		if (errStr == '' && preMsg == '' && postMsg == '') return '';
-
-		return "Error ${number}: ${preMsg}${errStr}${postMsg}";
+		return "Error $number: ${preMsg}${errStr}${postMsg}";
 	}
 }
 

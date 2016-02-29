@@ -1,12 +1,14 @@
-library forandar_cli;
+library forandar_cli.exception;
 
 import 'dart:async';
 import 'dart:io';
 
+// Core
 import 'package:forandar/src/core/input.dart';
 
-export 'package:forandar/forandar.dart';
-export 'package:forandar/src/cli/primitives.dart';
+// Core Exception
+export 'package:forandar/exception/forandar.dart';
+export 'package:forandar/src/cli/exception/primitives.dart';
 
 // TODO:
 // - load forandar version from here

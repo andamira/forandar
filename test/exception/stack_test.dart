@@ -2,8 +2,11 @@ library forandar.core.stack_test;
 
 import "package:test/test.dart";
 
+// Core
 import "package:forandar/src/core/globals.dart";
-import "package:forandar/src/core/stack.dart";
+
+// Core Exception
+import "package:forandar/src/core/exception/stack.dart";
 
 void main() {
 
@@ -13,8 +16,11 @@ void main() {
 	const int dsMaxSize = 7;
 	const int fsMaxSize = 7;
 
+	// TODO: Test all the overflow & underflow errors.
+	// TODO: Test the int and double limits.
+
 	/// Tests the [Stack] class.
-	group("[Stack]", () {
+	group("[Stack] (Exception)", () {
 
 		group("int:", () {
 
@@ -62,10 +68,29 @@ void main() {
 				expect(ds.content(), equals([82, 0, -25]));
 			});
 
+			test("push(n) overflow", () {
+				ds.clear();
+				var error;
+				try {
+					for (int i = 0; i <= dsMaxSize; i++) {
+						ds.push(i);
+					}
+				} catch(e) { error = e; }
+				expect(error.number, equals(-3));
+			});
+
 			test("pushList(List<n>)", () {
 				s.clear();
 				s.pushList([83, 0, -24]);
 				expect(s.content(), equals([83, 0, -24]));
+			});
+
+			test("pushList(List<n>) overflow", () {
+				ds.clear();
+				var error;
+				try { ds.pushList([0, 1, 2, 3, 4, 5, 6, 7]); }
+				catch(e) { error = e; }
+				expect(error.number, equals(-3));
 			});
 
 			test("pop() return value", () {
@@ -220,10 +245,29 @@ void main() {
 				expect(fs.content(), equals([82.0, 0.0, -25.0]));
 			});
 
+			test("push(n) overflow", () {
+				fs.clear();
+				var error;
+				try {
+					for (int i = 0; i <= fsMaxSize; i++) {
+						fs.push(0.0 + i);
+					}
+				} catch(e) { error = e; }
+				expect(error.number, equals(-44));
+			});
+
 			test("pushList(List<n>)", () {
 				fs.clear();
 				fs.pushList([83.0, 0.1, -24.0]);
 				expect(fs.content(), equals([83.0, 0.1, -24.0]));
+			});
+
+			test("pushList(List<n>) overflow", () {
+				fs.clear();
+				var error;
+				try { fs.pushList([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]); }
+				catch(e) { error = e; }
+				expect(error.number, equals(-44));
 			});
 
 			test("pop() return value", () {
@@ -235,6 +279,13 @@ void main() {
 				fs.replace([1.0, 2.0, 3.0]);
 				fs.pop();
 				expect(fs.content(), equals([1.0, 2.0]));
+			});
+
+			test("pop() stack underflow", () {
+				fs.clear();
+				var error;
+				try { fs.pop(); } catch(e) { error = e; }
+				expect(error.number, equals(-45));
 			});
 
 			test("dup()", () {

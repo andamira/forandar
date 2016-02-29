@@ -3,7 +3,8 @@ library forandar.core.data_space;
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'globals.dart';
+// Core
+import 'package:forandar/src/core/globals.dart';
 
 /// The forth main data space.
 class DataSpace {

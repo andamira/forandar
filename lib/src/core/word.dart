@@ -1,3 +1,4 @@
+/// The structure of a forth [Word].
 library forandar.core.word;
 
 /// A Forth definition.
