@@ -1,4 +1,4 @@
-library forandar.core.vm_test;
+library forandar.core.virtual_machine_test;
 
 import "package:test/test.dart";
 

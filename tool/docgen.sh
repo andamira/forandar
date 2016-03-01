@@ -8,6 +8,6 @@
 mv README.md README.md.bkp
 cp doc/README.md README.md
 
-dartdoc --include forandar,forandar_cli,forandar_web
+dartdoc --include forandar.core,forandar.core.debug,forandar.cli,forandar.web
 
 mv README.md.bkp README.md

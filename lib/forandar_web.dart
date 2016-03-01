@@ -1,21 +1,8 @@
-library forandar_web;
+library forandar.web;
 
-import 'package:forandar/src/core/input.dart';
-
+// Core
 export 'package:forandar/forandar.dart';
+
+// Web
+export 'package:forandar/src/web/input.dart';
 export 'package:forandar/src/web/primitives.dart';
-
-// TODO:
-// - define WEB class, with common methods
-// - sublibraries:: canvas, dom, svg, js-interop
-
-// The input queue for the Web interface.
-class InputQueueWeb extends InputQueue {
-
-	@override
-	String loadUrl(String u) {
-		// TODO
-		return "";
-	}
-}
-

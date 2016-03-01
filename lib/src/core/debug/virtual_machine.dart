@@ -8,9 +8,9 @@ import 'package:forandar/src/core/globals.dart';
 import 'package:forandar/src/core/input.dart';
 import 'package:forandar/src/core/object_space.dart';
 
-// Core Exception
-import 'package:forandar/src/core/exception/primitives.dart';
-import 'package:forandar/src/core/exception/stack.dart';
+// Core Debug
+import 'package:forandar/src/core/debug/primitives.dart';
+import 'package:forandar/src/core/debug/stack.dart';
 
 // Common
 part 'package:forandar/src/core/common/virtual_machine.dart';

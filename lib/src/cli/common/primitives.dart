@@ -1,4 +1,4 @@
-part of forandar_cli.primitives;
+part of forandar.cli.primitives;
 
 /// Forth Primitives that depends on the CLI interface.
 /// 

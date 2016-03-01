@@ -1,12 +1,12 @@
-library forandar.core.stack_test;
+library forandar.core.debug.stack_test;
 
 import "package:test/test.dart";
 
 // Core
 import "package:forandar/src/core/globals.dart";
 
-// Core Exception
-import "package:forandar/src/core/exception/stack.dart";
+// Core Debug
+import "package:forandar/src/core/debug/stack.dart";
 
 void main() {
 

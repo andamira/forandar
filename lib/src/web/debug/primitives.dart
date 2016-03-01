@@ -1,4 +1,4 @@
-library forandar_web.primitives;
+library forandar.web.primitives;
 
 // Core
 import 'package:forandar/src/core/dictionary.dart';

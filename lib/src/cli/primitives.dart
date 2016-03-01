@@ -1,4 +1,4 @@
-library forandar_cli.primitives;
+library forandar.cli.primitives;
 
 import 'dart:io';
 

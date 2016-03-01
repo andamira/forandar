@@ -1,5 +1,5 @@
-/// Core functionality of the Forth Virtual Machine.
-library forandar.core;
+/// Core functionality of the Forth Virtual Machine, with debugging.
+library forandar.core.debug;
 
 // Core
 export 'package:forandar/src/core/configuration.dart';
@@ -10,11 +10,13 @@ export 'package:forandar/src/core/globals.dart';
 export 'package:forandar/src/core/input.dart';
 export 'package:forandar/src/core/nt_primitives.dart';
 export 'package:forandar/src/core/object_space.dart';
-export 'package:forandar/src/core/primitives.dart';
-export 'package:forandar/src/core/stack.dart';
 export 'package:forandar/src/core/utility.dart';
-export 'package:forandar/src/core/virtual_machine.dart';
 export 'package:forandar/src/core/word.dart';
+
+// Core Debug
+export 'package:forandar/src/core/debug/primitives.dart';
+export 'package:forandar/src/core/debug/stack.dart';
+export 'package:forandar/src/core/debug/virtual_machine.dart';
 
 /// The version of this library.
 ///
