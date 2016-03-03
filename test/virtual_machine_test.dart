@@ -12,7 +12,7 @@ void main() {
 	group("[VirtualMachine]", () {
 
 		test("Constructor", () {
-			vm = new VirtualMachine(config: new Configuration(), input: new InputQueue());
+			vm = new VirtualMachine(config: new Configuration());
 			expect(vm, isNotNull);
 		});
 

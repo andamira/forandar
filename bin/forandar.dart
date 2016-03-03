@@ -11,7 +11,7 @@ VirtualMachine forth;
 main(List<String> args) async {
 
 	/// Creates the Forth [VirtualMachine].
-	forth = new VirtualMachine(input: new InputQueueCli(), args: args, argParser: argParser);
+	forth = new VirtualMachine(input: new InputQueue(), args: args, argParser: argParser);
 
 	/// Includes the primitives dependent on the CLI interface.
 	includeWordsCli(forth, forth.dict);

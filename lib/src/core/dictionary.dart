@@ -13,16 +13,16 @@ import 'package:forandar/src/core/word.dart';
 class Dictionary {
 
 	/// List of [Word]s retrievable by the word's name.
-	Map<String, Word> wordsMap = new SplayTreeMap();
+	Map<String, Word> _wordsMap = new SplayTreeMap();
 
 	/// List of [Word]s retrievable by index.
 	///
 	/// Starting size is the number of reserved nt.
-	List<Word> wordsList = new List()..length = Nt.values.length;
+	List<Word> _wordsList = new List()..length = Nt.values.length;
 
 	/// Constants for the flags of the [Word].
-	static const immediate      = true;
-	static const compileOnly    = true;
+//	static const immediate      = true;
+//	static const compileOnly    = true;
 
 	// Singleton constructor, allowing only one instance.
 	factory Dictionary() {
@@ -41,17 +41,17 @@ class Dictionary {
 	Dictionary._internal();
 
 	/// Returns the number of [Word]s definitions.
-	int get length => wordsMap.length;
+	int get length => _wordsMap.length;
 
-	/// Adds a new word to this dictionary's [wordsMap] and [wordsList].
+	/// Adds a new word to this dictionary's [_wordsMap] and [_wordsList].
 	addWord(String name, Function f, {Nt nt, bool immediate: false, bool compileOnly: false}) {
 		name = name.toUpperCase();
 		if (nt == null) {
-			wordsList.add(new Word(immediate, compileOnly, f, name, wordsList.length));
-			wordsMap[name] = wordsList.last;
+			_wordsList.add(new Word(immediate, compileOnly, f, name, _wordsList.length));
+			_wordsMap[name] = _wordsList.last;
 		} else {
-			wordsList[nt.index] = new Word(immediate, compileOnly, f, name, nt);
-			wordsMap[name] = wordsList[nt.index];
+			_wordsList[nt.index] = new Word(immediate, compileOnly, f, name, nt);
+			_wordsMap[name] = _wordsList[nt.index];
 		}
 	}
 
@@ -71,22 +71,38 @@ class Dictionary {
 	/// This is inteded to be used only in conjunction with [addWordNope].
 	addWordOver(String name, Function f, {bool immediate: false, bool compileOnly: false}) {
 		name = name.toUpperCase();
-		if (wordsMap.containsKey(name)) {
-			int nt = wordsMap[name].nt;
-			wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
-			wordsMap[name] = wordsList[nt];
+		if (_wordsMap.containsKey(name)) {
+			int nt = _wordsMap[name].nt;
+			_wordsList[nt] = new Word(immediate, compileOnly, f, name, nt);
+			_wordsMap[name] = _wordsList[nt];
 		} else {
 			throw new ForthError(-257, postMsg: name);
 		}
 	}
 
 	/// Executes a word referenced by its nt.
-	execNt(Nt nt) => wordsList[nt.index].exec();
+	execNt(Nt nt) => _wordsList[nt.index].exec();
 
 	/// Executes a list of words referenced by their nt.
-	execNts(List<Nt> nts) => nts.forEach( (nt) => wordsList[nt.index].exec());
+	execNts(List<Nt> nts) => nts.forEach( (nt) => _wordsList[nt.index].exec());
 
 	/// Executes a word referenced by its name.
-	execWord(String wordName) => wordsMap[wordName].exec();
+	execWord(String wordName) => _wordsMap[wordName].exec();
+
+	/// Returns a Word searching it by its name.
+	Word wordByName(String name) => _wordsMap[name.toUpperCase()];
+
+	/// Returns a Word searching it by its nt.
+	Word wordByNt(Nt nt) => _wordsList[nt.index];
+
+	/// Returns a list of all the words in the dictionary.
+	List<Word> get words {
+		List<Word> L = [];
+		for (Word w in _wordsList.reversed) {
+			// Makes sure the word isn't an empty reserved nt slot
+			if (w != null) L.add(w);
+		}
+		return L;
+	}
 }
 

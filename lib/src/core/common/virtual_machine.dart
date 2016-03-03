@@ -18,7 +18,7 @@ class VirtualMachine {
 	DataSpace dataSpace;
 	ObjectSpace objectSpace;
 
-	InputQueue source;
+	InputQueueBase source;
 	Configuration config;
 
 	// Singleton constructor, allowing only one instance.
@@ -26,12 +26,12 @@ class VirtualMachine {
 			List<String> args,
 			Function argParser,
 			Configuration config,
-			InputQueue input,
+			InputQueueBase input,
 			bool loadPrimitives: true}) {
 
 		if (_instance == null) {
 			config ??= new Configuration();
-			input ??= new InputQueue();
+			input ??= new InputQueueBase();
 
 			_instance = new VirtualMachine._internal(args, argParser, config, input, loadPrimitives);
 		}

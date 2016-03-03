@@ -4,7 +4,7 @@ library forandar.web.input;
 import 'package:forandar/src/core/input.dart';
 
 // The input queue for the Web interface.
-class InputQueueWeb extends InputQueue {
+class InputQueue extends InputQueueBase {
 
 	@override
 	String loadUrl(String u) {

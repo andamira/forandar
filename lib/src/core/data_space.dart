@@ -63,12 +63,15 @@ class DataSpace {
 	void storeChar(int address, int value) => _data.setInt8(address, value);
 
 	/// Stores a char integer at the current pointer position, and increments it.
-	void storeCharHere(int value) => _data.setInt8(pointer++, value);
+	void storeCharHere(int value) {
+		_data.setInt8(pointer, value);
+		pointer += sizeCHAR;
+	}
 
 	/// Stores a char integer at the specified address, and increments the current pointer position.
 	void storeCharInc(int address, int value) {
 		_data.setInt8(address, value);
-		pointer++;
+		pointer += sizeCHAR;
 	}
 
 	/// Stores a char integer at the specified address.
@@ -77,7 +80,7 @@ class DataSpace {
 	/// Stores a cell integer at the current pointer position, and increments it.
 	void storeCellHere(int value) {
 		_data.setInt32(pointer, value);
-		pointer += cellSize;
+		pointer += sizeCELL;
 	}
 
 	/// Stores a cell integer at the specified address, and increments the current pointer position.
@@ -85,7 +88,7 @@ class DataSpace {
 	/// This is mainly useful for the initilization of the data space.
 	void storeCellInc(int address, int value) {
 		_data.setInt32(address, value);
-		pointer += cellSize;
+		pointer += sizeCELL;
 	}
 
 	/// Stores a float at the specified address.
@@ -94,13 +97,13 @@ class DataSpace {
 	/// Stores a float at the current pointer position, and increments it.
 	void storeFloatHere(double value) {
 		_data.setFloat64(pointer, value);
-		pointer += floatSize;
+		pointer += sizeFLOAT;
 	}
 
 	/// Stores a float at the specified address, and increments the current pointer position.
 	void storeFloatInc(int address, double value) {
 		_data.setFloat64(address, value);
-		pointer += floatSize;
+		pointer += sizeFLOAT;
 	}
 
 	/// Stores a string at the specified address, encoded as UTF-8.

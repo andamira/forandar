@@ -80,6 +80,12 @@ void main() {
 				expect(ds.content(), equals([1, 2]));
 			});
 
+			test("popList(n)", () {
+				s.clear();
+				s.pushList([11, 12, 13, 14]);
+				expect(s.popList(3), equals([12, 13, 14]));
+			});
+
 			test("dup()", () {
 				ds.replace([1]);
 				ds.dup();
@@ -236,6 +242,12 @@ void main() {
 				fs.replace([1.0, 2.0, 3.0]);
 				fs.pop();
 				expect(fs.content(), equals([1.0, 2.0]));
+			});
+
+			test("popList(n)", () {
+				fs.clear();
+				fs.pushList([11.0, 12.0, 13.0, 14.0]);
+				expect(fs.popList(3), equals([12.0, 13.0, 14.0]));
 			});
 
 			test("dup()", () {

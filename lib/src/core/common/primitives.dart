@@ -43,7 +43,7 @@ class Primitives {
 		//
 		// Implemented:
 		//
-		// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
+		// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP EVALUATE HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
 		//
 		// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PARSE PARSE-NAME PICK REFILL ROLL SOURCE-ID TRUE TUCK U>
 		//
@@ -54,7 +54,7 @@ class Primitives {
 		// : ; <# >BODY >NUMBER ABORT
 		// ABORT" ACCEPT BEGIN
 		// CHAR CONSTANT COUNT CREATE DO DOES>
-		// ELSE EMIT ENVIRONMENT? EVALUATE EXECUTE EXIT FILL FIND FM/MOD
+		// ELSE EMIT ENVIRONMENT? EXECUTE EXIT FILL FIND FM/MOD
 		// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 		// MOVE POSTPONE RECURSE REPEAT
 		// S" S>D SIGN SM/REM THEN TYPE UM*
@@ -213,7 +213,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/TwoStore
 		vm.dict.addWord("2!", (){
 			int addr = vm.dataStack.pop();
-			vm.dataSpace.storeCell(addr + cellSize, vm.dataStack.pop() );
+			vm.dataSpace.storeCell(addr + sizeCELL, vm.dataStack.pop() );
 			vm.dataSpace.storeCell(addr, vm.dataStack.pop() );
 		}, nt: Nt.TwoStore);
 
@@ -224,7 +224,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/TwoFetch
 		vm.dict.addWord("2@", (){
 			int addr = vm.dataStack.pop();
-			vm.dataStack.push(vm.dataSpace.fetchCell(addr + cellSize));
+			vm.dataStack.push(vm.dataSpace.fetchCell(addr + sizeCELL));
 			vm.dataStack.push(vm.dataSpace.fetchCell(addr));
 		}, nt: Nt.TwoFetch);
 
@@ -358,6 +358,30 @@ class Primitives {
 			vm.dataStack.push(vm.dataStack.pop().abs());
 		}, nt: Nt.ABS);
 
+		/// If the data-space pointer is not aligned, reserve enough space to align it.
+		///
+		/// This word does nothing in this implementation.
+		///
+		/// [ALIGN][link] ( -- )
+		/// [link]: http://forth-standard.org/standard/core/ALIGN
+		vm.dict.addWordNope("ALIGN", nt: Nt.ALIGN);
+
+		/// a-addr is the first aligned address greater than or equal to addr.
+		///
+		/// This word does nothing in this implementation.
+		///
+		/// [ALIGNED][link] ( addr -- a-addr )
+		/// [link]: http://forth-standard.org/standard/core/ALIGNED
+		vm.dict.addWordNope("ALIGNED", nt: Nt.ALIGNED);
+
+		/// If n > 0, reserve n address units of data space. If n < 0, release | n | address units of data space.
+		///
+		/// [ALLOT][link] ( n -- )
+		/// [link]: http://forth-standard.org/standard/core/ALLOT
+		vm.dict.addWord("ALLOT", () {
+			vm.dataSpace.pointer += vm.dataStack.pop();
+		}, nt: Nt.ALLOT);
+
 		/// x3 is the bit-by-bit logical "and" of x1 with x2.
 		///
 		/// [AND][link] ( x1 x2 -- x3 )
@@ -365,6 +389,14 @@ class Primitives {
 		vm.dict.addWord("AND", (){
 			vm.dataStack.push(vm.dataStack.pop() & vm.dataStack.pop());
 		}, nt: Nt.AND);
+
+		/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
+		///
+		/// [BASE][link] ( -- a-addr )
+		/// [link]: http://forth-standard.org/standard/core/BASE
+		vm.dict.addWord("BASE", () {
+			vm.dataStack.push(addrBASE);
+		}, nt: Nt.BASE);
 
 		/// char is the character value for a space.
 		///
@@ -404,7 +436,7 @@ class Primitives {
 		/// [CELL+][link] ( a-addr1 -- a-addr2 )
 		/// [link]: http://forth-standard.org/standard/core/CELLPlus
 		vm.dict.addWord("CELL+", (){
-			vm.dataStack.push(vm.dataStack.pop() + cellSize);
+			vm.dataStack.push(vm.dataStack.pop() + sizeCELL);
 		}, nt: Nt.CELLPlus);
 
 		/// n2 is the size in address units of n1 cells.
@@ -412,7 +444,7 @@ class Primitives {
 		/// [CELLS][link] ( n1 -- n2 )
 		/// [link]: http://forth-standard.org/standard/core/CELLS
 		vm.dict.addWord("CELLS", (){
-			vm.dataStack.push(vm.dataStack.pop() * cellSize);
+			vm.dataStack.push(vm.dataStack.pop() * sizeCELL);
 		}, nt: Nt.CELLS);
 
 		/// Add the size in address units of a character to c-addr1, giving c-addr2.
@@ -421,7 +453,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/CHARPlus
 		vm.dict.addWord("CHAR+", (){
 			// TODO: support extended characters
-			vm.dataStack.push(vm.dataStack.pop() + 1);
+			vm.dataStack.push(vm.dataStack.pop() + sizeCHAR);
 		}, nt: Nt.CHARPlus);
 
 		/// n2 is the size in address units of n1 characters.
@@ -431,53 +463,6 @@ class Primitives {
 		/// [CHARS][link] ( n1 -- n2 )
 		/// [link]: http://forth-standard.org/standard/core/CHARS
 		vm.dict.addWordNope("CHARS", nt: Nt.CHARS);
-		// TODO: support extended characters
-
-		/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
-		///
-		/// [DEPTH][link] ( -- +n )
-		/// [link]: http://forth-standard.org/standard/core/DEPTH
-		vm.dict.addWord("DEPTH", (){
-			vm.dataStack.push(vm.dataStack.size);
-		}, nt: Nt.DEPTH);
-
-		/// Duplicate x.
-		///
-		/// [DUP][link] ( x -- x x )
-		/// [link]: http://forth-standard.org/standard/core/DUP
-		vm.dict.addWord("DUP", vm.dataStack.dup, nt: Nt.DUP);
-
-		/// If the data-space pointer is not aligned, reserve enough space to align it.
-		///
-		/// This word does nothing in this implementation.
-		///
-		/// [ALIGN][link] ( -- )
-		/// [link]: http://forth-standard.org/standard/core/ALIGN
-		vm.dict.addWordNope("ALIGN", nt: Nt.ALIGN);
-
-		/// a-addr is the first aligned address greater than or equal to addr.
-		///
-		/// This word does nothing in this implementation.
-		///
-		/// [ALIGNED][link] ( addr -- a-addr )
-		/// [link]: http://forth-standard.org/standard/core/ALIGNED
-		vm.dict.addWordNope("ALIGNED", nt: Nt.ALIGNED);
-
-		/// If n > 0, reserve n address units of data space. If n < 0, release | n | address units of data space.
-		///
-		/// [ALLOT][link] ( n -- )
-		/// [link]: http://forth-standard.org/standard/core/ALLOT
-		vm.dict.addWord("ALLOT", () {
-			vm.dataSpace.pointer += vm.dataStack.pop();
-		}, nt: Nt.ALLOT);
-
-		/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
-		///
-		/// [BASE][link] ( -- a-addr )
-		/// [link]: http://forth-standard.org/standard/core/BASE
-		vm.dict.addWord("BASE", () {
-			vm.dataStack.push(addrBASE);
-		}, nt: Nt.BASE);
 
 		/// Cause subsequent output to appear at the beginning of the next line.
 		///
@@ -495,11 +480,71 @@ class Primitives {
 			vm.dataSpace.storeCell(addrBASE, 10);
 		}, nt: Nt.DECIMAL);
 
+		/// +n is the number of single-cell values contained in the data stack before +n was placed on the stack.
+		///
+		/// [DEPTH][link] ( -- +n )
+		/// [link]: http://forth-standard.org/standard/core/DEPTH
+		vm.dict.addWord("DEPTH", (){
+			vm.dataStack.push(vm.dataStack.size);
+		}, nt: Nt.DEPTH);
+
+		/// Duplicate x.
+		///
+		/// [DUP][link] ( x -- x x )
+		/// [link]: http://forth-standard.org/standard/core/DUP
+		vm.dict.addWord("DUP", vm.dataStack.dup, nt: Nt.DUP);
+
 		/// Remove x from the stack.
 		///
 		/// [DROP][link] ( x -- )
 		/// [link]: http://forth-standard.org/standard/core/DROP
 		vm.dict.addWord("DROP", vm.dataStack.drop, nt: Nt.DROP);
+
+		/// Evaluate a string.
+		///
+		/// [EVALUATE][link] ( i * x c-addr u -- j * x )
+		/// [link]: http://forth-standard.org/standard/core/EVALUATE
+		vm.dict.addWord("EVALUATE", (){
+
+			// Save the current input source specification.
+			vm.dict.execNt(Nt.SAVE_INPUT); // TODO
+
+			// Store minus-one (-1) in SOURCE-ID if it is present.
+			vm.source.id = -1;
+
+			// Make the string described by c-addr and u both the input source and input buffer.
+
+			// TEMP FIXME
+			vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
+			vm.source.length = inputUTF8.length;
+
+
+			// set >IN to zero
+			vm.dataSpace.storeCell(addrToIN, 0);
+
+			try {
+				// Interpret.
+				vm.dict.execNt(Nt.INTERPRET);
+
+			} on ForthError catch(error) {
+				print(error);
+
+			} catch(error) {
+				print(ForthError.unmanaged(error, preMsg: "EVALUATE »"));
+
+			} finally {
+				// Clear the stacks in any case.
+				vm.dataStack.clear();
+				vm.floatStack.clear();
+				vm.returnStack.clear();
+				vm.controlStack.clear();
+			}
+
+			// When the parse area is empty, restore the prior input source specification.
+			// TODO
+			vm.dict.execNt(Nt.RESTORE_INPUT); // TODO
+
+		}, nt: Nt.EVALUATE);
 
 		/// If u is greater than zero, clear all bits in each of u consecutive address units of memory beginning at addr.
 		///
@@ -606,6 +651,14 @@ class Primitives {
 		/// [NIP][link] ( x1 x2 -- x2 )
 		/// [link]: http://forth-standard.org/standard/core/NIP
 		vm.dict.addWord("NIP", vm.dataStack.nip, nt: Nt.NIP);
+
+		/// Remove n+1 items from the data stack and store them for later retrieval by NR>.
+		///
+		/// [N>R][link] ( i * n +n -- ) ( R: -- j * x +n ) 
+		/// [link]: http://forth-standard.org/standard/core/NtoR
+		vm.dict.addWord("N>R", () {
+			vm.dataStack.push(vm.returnStack.pop());
+		}, nt: Nt.NtoR, immediate: true);
 
 		/// x3 is the bit-by-bit inclusive-or of x1 with x2.
 		///
@@ -726,11 +779,16 @@ class Primitives {
 				} on ForthError catch(error) {
 					print(error);
 
+					// Clear the stacks.
+					vm.dataStack.clear();
+					vm.floatStack.clear();
+					vm.returnStack.clear();
+					vm.controlStack.clear();
+
 				} catch(error) {
 					print(ForthError.unmanaged(error, preMsg: "QUIT » INTERPRET »"));
 
-				} finally {
-					// Clear the stacks in any case.
+					// Clear the stacks.
 					vm.dataStack.clear();
 					vm.floatStack.clear();
 					vm.returnStack.clear();
@@ -836,6 +894,17 @@ class Primitives {
 
 		}, nt: Nt.REFILL, immediate: true);
 
+		/// Attempt to restore the input source specification to the state described by x1 through xn.
+		///
+		/// flag is true if the input source specification cannot be so restored.
+		///
+		/// [RESTORE-INPUT][link] ( xn ... x1 n -- flag )
+		/// [link]: http://forth-standard.org/standard/core/RESTORE-INPUT
+		vm.dict.addWord("RESTORE_INPUT", (){
+			// CHECK: An ambiguous condition exists if the input source represented
+			// by the arguments is not the same as the current input source.
+		}, nt: Nt.RESTORE_INPUT);
+
 		/// Rotate the top three stack entries.
 		///
 		/// [ROT][link] ( x1 x2 x3 -- x2 x3 x1 )
@@ -849,8 +918,17 @@ class Primitives {
 		vm.dict.addWord("RSHIFT", (){
 			vm.dataStack.swap();
 			vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
-			// CHECK: An ambiguous condition exists if u is greater than or equal to the number of bits in a cell.
+			// CHECK: An ambiguous condition exists if u is greater than
+			// or equal to the number of bits in a cell.
 		}, nt: Nt.RSHIFT);
+
+		/// x1 through xn describe the current state of the input source specification for later use by RESTORE-INPUT.
+		///
+		/// [SAVE-INPUT][link] ( -- xn ... x1 n )
+		/// [link]: http://forth-standard.org/standard/core/SAVE-INPUT
+		vm.dict.addWord("SAVE_INPUT", () {
+
+		}, nt: Nt.SAVE_INPUT);
 
 		/// c-addr is the address of, and u is the number of characters in, the input buffer.
 		///
@@ -991,7 +1069,7 @@ class Primitives {
 				}
 
 				/// Search for this word in the current dictionary.
-				Word word = vm.dict.wordsMap[wordStr.toUpperCase()];
+				Word word = vm.dict.wordByName(wordStr);
 
 				/// If the word is found.
 				if( word != null) {
@@ -1059,7 +1137,7 @@ class Primitives {
 					// automatically interpret any '0x' prefixed integers with hexadecimal base.
 					number = int.parse(wordStr, radix: base == 10 ? null : base, onError: (wordStr) => null);
 
-					//print("\nWORD $wordStr; BASE $base; PREFIX $prefix; DOUBLE: $isDouble; FLOAT: ${!isInt}"); // TEMP
+					// print("\nWORD $wordStr; BASE $base; PREFIX $prefix; DOUBLE: $isDouble; FLOAT: ${!isInt}"); // TEMP
 
 					// If it couldn't be parsed, then tries it again as a prefixed integer.
 					if (number == null) {
@@ -1128,18 +1206,24 @@ class Primitives {
 					/// If we are compiling, compile the number in the data space.
 					if (vm.compilationState) {
 						// TODO
+						print("\t» compile the number"); // TEMP
 
 					/// If we are interpreting leave it on the stack.
 					} else {
 
 						// Integers go to the dataStack.
 						if (isInt) {
+							// print("\t» number to the dataStack"); // TEMP
 							vm.dataStack.push(number.toInt());
 
-							if (isDouble) vm.dataStack.push(0); // FIXME (this is a temporary workaround for small ints)
+							if (isDouble) {
+								// print("\t» is double number"); // TEMP
+								vm.dataStack.push(0); // FIXME (this is a temporary workaround for small ints)
+							}
 
 						// Floats go to the floatStack.
 						} else {
+							// print("\t» number to the floatStack"); // TEMP
 							vm.floatStack.push(number);
 						}
 
@@ -1260,22 +1344,6 @@ class Primitives {
 
 		/// Prints the object space content.
 		vm.dict.addWordNope("ODUMP"); // TODO
-
-		/// List the definition names and its st.
-		///
-		vm.dict.addWord("WORDS+NT", (){
-			// TODO FIXME: Move this to the Dictionary class
-			var str = new StringBuffer();
-			for (Word w in vm.dict.wordsList.reversed) {
-				try {
-					str.write("${w.name} ${w.nt} ");
-				} catch(e) {
-					// empty word slot (reserved nt) //TEMP
-				}
-			}
-			print(str);
-		});
-
 
 		// Words from gforth
 
@@ -1837,15 +1905,8 @@ class Primitives {
 		/// [WORDS][link] ( -- )
 		/// [link]: http://forth-standard.org/standard/tools/WORDS
 		vm.dict.addWord("WORDS", (){
-			// TODO FIXME: Move this to the Dictionary class
 			var str = new StringBuffer();
-			for (Word w in vm.dict.wordsList.reversed) {
-				try {
-					str.write("${w.name} ");
-				} catch(e) {
-					// empty word slot (reserved st) //TEMP
-				}
-			}
+			vm.dict.words.forEach((w) { str.write("${w.name} "); }); 
 			print(str);
 		}, nt: Nt.WORDS);
 

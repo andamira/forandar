@@ -1,5 +1,5 @@
 name: forandar
-version: 0.9.0
+version: 0.9.1
 description: A Forth implementation in Dart
 author: José Luis Cruz <joseluis@andamira.net>
 homepage: https://github.com/andamira/forandar
@@ -11,8 +11,8 @@ dependencies:
 dev_dependencies:
     test: '^0.12.6'
 executables:
-    forandar: forandar
-    forandar: forandar_debug
+    forandar:
+    forandar_debug:
 transformers:
 - dart_to_js_script_rewriter
 - $dart2js:

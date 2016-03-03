@@ -65,17 +65,17 @@ void main() {
 
 		test("storeCharHere()", () {
 			d.storeCharHere(-10);
-			expect(d.fetchChar(d.pointer - 1), equals(-10));
+			expect(d.fetchChar(d.pointer - sizeCHAR), equals(-10));
 		});
 
 		test("storeCellHere()", () {
 			d.storeCellHere(-6000);
-			expect(d.fetchCell(d.pointer - cellSize), equals(-6000));
+			expect(d.fetchCell(d.pointer - sizeCELL), equals(-6000));
 		});
 
 		test("storeFloatHere()", () {
 			d.storeFloatHere(-35000.075);
-			expect(d.fetchFloat(d.pointer - floatSize), equals(-35000.075));
+			expect(d.fetchFloat(d.pointer - sizeFLOAT), equals(-35000.075));
 		});
 
 		test("storeCharInc()", () {
@@ -86,7 +86,7 @@ void main() {
 		test("storeCharInc() (inc. pointer)", () {
 			int p = d.pointer;
 			d.storeCharInc(100, 7);
-			expect(d.pointer, equals(p + 1));
+			expect(d.pointer, equals(p + sizeCHAR));
 		});
 
 		test("storeCellInc()", () {
@@ -97,7 +97,7 @@ void main() {
 		test("storeCellInc() (inc. pointer)", () {
 			int p = d.pointer;
 			d.storeCellInc(100, 7777);
-			expect(d.pointer, equals(p + cellSize));
+			expect(d.pointer, equals(p + sizeCELL));
 		});
 
 		test("storeFloatInc()", () {
@@ -108,7 +108,7 @@ void main() {
 		test("storeFloatInc() (inc. pointer)", () {
 			int p = d.pointer;
 			d.storeFloatInc(100, -7654321.98);
-			expect(d.pointer, equals(p + floatSize));
+			expect(d.pointer, equals(p + sizeFLOAT));
 		});
 
 		test("storeString() & fetchString() (ASCII)", () {

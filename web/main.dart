@@ -10,7 +10,7 @@ var consoleOutput;
 main() async {
 
 	var c = new Configuration();
-	var i = new InputQueueWeb();
+	var i = new InputQueue();
 
 	// TODO https://stackoverflow.com/questions/26848783/wait-for-future-to-complete/26962630#26962630
 

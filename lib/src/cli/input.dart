@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:forandar/src/core/input.dart';
 
 // The input queue adapted for the CLI interface.
-class InputQueueCli extends InputQueue {
+class InputQueue extends InputQueueBase {
 
 	@override
 	Future<String> loadFile(String f) async {

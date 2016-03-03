@@ -27,8 +27,9 @@ const int flagTRUE = -1;
 const int flagFALSE = 0;
 
 /// The size of a cell in bytes.
-const int cellSize = 4;
-const int floatSize = cellSize * 2;
+const int sizeCHAR =  1;
+const int sizeCELL =  4;
+const int sizeFLOAT = 8;
 
 /// The size for the input buffer.
 ///
@@ -44,7 +45,7 @@ const int padSize = inputBufferSize;
 /// and some minimum free space after that.
 const int minDataSpaceSize =
 	// Cells.
-	cellSize * 3        // BASE STATE >IN
+	sizeCELL * 3        // BASE STATE >IN
 
 	// Buffers.
 	+ inputBufferSize   // SOURCE
@@ -61,17 +62,17 @@ const int addrBASE = 0;
 /// Address returned by STATE .
 ///
 /// When in compilation state this flag is set to true (meaning != flagFALSE).
-const int addrSTATE = addrBASE + cellSize;
+const int addrSTATE = addrBASE + sizeCELL;
 
 /// Address returned by >IN .
 ///
 /// The offset from the start of the input buffer to the start of the parse area.
-const int addrToIN = addrSTATE + cellSize;
+const int addrToIN = addrSTATE + sizeCELL;
 
 /// Address returned by SOURCE .
 ///
 /// SOURCE returns this address AND the length of the input buffer.
-const int addrInputBuffer = addrToIN + cellSize;
+const int addrInputBuffer = addrToIN + sizeCELL;
 
 /// Address returned by PAD .
 ///

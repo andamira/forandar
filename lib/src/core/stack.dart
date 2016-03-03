@@ -125,6 +125,18 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 		return _data[--_size];
 	}
 
+	/// Returns a list of i items from the top of the stack.
+	///
+	/// ( a b c ... i -- )
+	List<T> popList(int i) {
+		// CHECK: performance vs pop()
+		List<T> L = [];
+		for (i; i > 0; i--) {
+			L.insert(0, _data[--_size]);
+		}
+		return L;
+	}
+
 	/// Adds an additional stack item.
 	///
 	/// ( -- a )

@@ -13,11 +13,11 @@ class InputQueueElement {
 	}
 }
 
-/// The global source code (input) queue.
+/// Base class for implementing a source code input queue.
 ///
 /// Stores in order the series of source codes for interpreting,
-/// either as a string, or as a file / URL to be loaded.
-class InputQueue {
+/// either as a code string, or as a file / URL to be loaded.
+class InputQueueBase {
 
 	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];
@@ -50,6 +50,8 @@ class InputQueue {
 	void clear() {
 		queue = [ ];
 	}
+
+	// Methods dependent on the specific interface:
 
 	loadFile(String f) {}
 	loadUrl(String u) {}
