@@ -33,44 +33,11 @@ import 'dart:typed_data';
 import 'package:forandar/src/core/errors.dart';
 import 'package:forandar/src/core/globals.dart';
 
-abstract class Stack<T extends num> {
-
-	final List _data;
-	final int _maxSize;
-	int _size = 0;
-	final StackType _type;
-
-	Stack(this._maxSize, this._data, this._type);
-
-	/// Returns the type of the stack.
-	StackType get type => _type;
-
-	/// Returns the size of the stack.
-	int get size => _size;
-
-	/// Returns the maximum size of the stack.
-	int get maxSize => _maxSize;
-
-	/// Clears the contents of the stack.
-	void clear() { _size = 0; }
-
-	/// Returns the representation of the stack.
-	List<T> content() => _data.sublist(0, _size);
-
-	/// Replaces the content of the [Stack] with the elements of the list.
-	void replace(List<T> l) {
-		_size = 0;
-		l.forEach( (v){
-			_data[_size++] = v;
-		});
-	}
-
-	@override
-	String toString() => "<${_size}> ${content()}";
-}
+// Common
+part 'package:forandar/src/core/common/stack.dart';
 
 /// Last In First Out Stack Implementation.
-abstract class LifoStack<T extends num> extends Stack<T> {
+abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStackIface {
 
 	LifoStack(maxSize, data, type) : super(maxSize, data, type);
 
@@ -218,6 +185,17 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 		}
 	}
 
+	/// Returns a list of i items from the top of the stack.
+	///
+	/// ( a b c ... i -- )
+	List<T> popList(int i) {
+		List<T> L = [];
+		for (i; i > 0; i--) {
+			L.insert(0, _data[--_size]);
+		}
+		return L;
+	}
+
 	/// Adds an additional stack item.
 	///
 	/// ( -- a )
@@ -330,14 +308,4 @@ abstract class LifoStack<T extends num> extends Stack<T> {
 			}
 		}
 	}
-}
-
-class LifoStackInt<int> extends LifoStack {
-	LifoStackInt(maxSize, [StackType type = StackType.unknown]) :
-		super(maxSize, new Int32List(maxSize), type);
-}
-
-class LifoStackFloat<double> extends LifoStack {
-	LifoStackFloat(maxSize, [StackType type = StackType.unknown]) :
-		super(maxSize, new Float64List(maxSize), type);
 }

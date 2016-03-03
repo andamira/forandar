@@ -7,6 +7,12 @@ library forandar.core.configuration;
 /// in the case of web apps, or with command line parameters.
 class Configuration {
 
+	static const defaultDataStackSize    = 256;
+	static const defaultFloatStackSize   = 128;
+	static const defaultReturnStackSize  = 32;
+	static const defaultControlStackSize = 32;
+	static const defaultDataSpaceSize    = 1024 * 1024; // in bytes
+
 	// The Map that stores the options.
 	Map<String, dynamic> option = new Map();
 
@@ -19,12 +25,12 @@ class Configuration {
 
 	/// Creates the configuration object with the default values.
 	Configuration._internal() {
-		option['dataStackSize']    = 256; // in cells
-		option['floatStackSize']   = 128;
-		option['returnStackSize']  = 32;
-		option['controlStackSize'] = 32;
+		option['dataStackSize']    = defaultDataStackSize;
+		option['floatStackSize']   = defaultFloatStackSize;
+		option['returnStackSize']  = defaultReturnStackSize;
+		option['controlStackSize'] = defaultControlStackSize;
 
-		option['dataSpaceSize']    = 1024 * 1024; // in bytes (1M)
+		option['dataSpaceSize']    = defaultDataSpaceSize;
 	}
 }
 

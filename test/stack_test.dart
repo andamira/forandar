@@ -47,6 +47,10 @@ void main() {
 				expect(ds.size, equals(3));
 			});
 
+			test("maxSize", () {
+				expect(ds.maxSize, greaterThanOrEqualTo(3));
+			});
+
 			test("toString()", () {
 				expect(ds.toString(), equals("<3> [10, -23, 4]"));
 			});

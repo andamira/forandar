@@ -12,6 +12,9 @@ import 'package:forandar/src/core/word.dart';
 /// Defines the primitives and contains both primitives and : words.
 class Dictionary {
 
+	/// Reference to the last defined word.
+	Word _lastWord;
+
 	/// List of [Word]s retrievable by the word's name.
 	Map<String, Word> _wordsMap = new SplayTreeMap();
 
@@ -49,9 +52,11 @@ class Dictionary {
 		if (nt == null) {
 			_wordsList.add(new Word(immediate, compileOnly, f, name, _wordsList.length));
 			_wordsMap[name] = _wordsList.last;
+			_lastWord = _wordsList.last;
 		} else {
 			_wordsList[nt.index] = new Word(immediate, compileOnly, f, name, nt);
 			_wordsMap[name] = _wordsList[nt.index];
+			_lastWord = _wordsList[nt.index];
 		}
 	}
 
@@ -89,6 +94,9 @@ class Dictionary {
 	/// Executes a word referenced by its name.
 	execWord(String wordName) => _wordsMap[wordName].exec();
 
+	/// Returns the last defined [Word].
+	Word get lastWord => _lastWord;
+
 	/// Returns a Word searching it by its name.
 	Word wordByName(String name) => _wordsMap[name.toUpperCase()];
 
@@ -105,4 +113,3 @@ class Dictionary {
 		return L;
 	}
 }
-

@@ -515,9 +515,8 @@ class Primitives {
 			// Make the string described by c-addr and u both the input source and input buffer.
 
 			// TEMP FIXME
-			vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
-			vm.source.length = inputUTF8.length;
-
+			//vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
+			//vm.source.length = inputUTF8.length;
 
 			// set >IN to zero
 			vm.dataSpace.storeCell(addrToIN, 0);
@@ -587,7 +586,7 @@ class Primitives {
 		/// [IMMEDIATE][link] ( -- )
 		/// [link]: http://forth-standard.org/standard/core/IMMEDIATE
 		vm.dict.addWord("IMMEDIATE", () {
-			vm.dict.wordsList.last.isImmediate = true;
+			vm.dict.lastWord.isImmediate = true;
 		}, nt: Nt.IMMEDIATE);
 
 		/// Invert all bits of x1, giving its logical inverse x2.

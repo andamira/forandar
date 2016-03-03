@@ -7,7 +7,7 @@ ALL_TESTS="test/all_tests.dart test/debug/all_tests.dart"
 
 # Verify that the libraries are error and warning-free.
 echo "Running dartanalyzer..."
-dartanalyzer $DARTANALYZER_FLAGS bin/forandar.dart bin/forandar_debug.dart web/main.dart $ALL_TESTS | grep -v "^\[info\]"
+source tool/analyzer.sh
 
 # Run the tests.
 echo "Running tests..."

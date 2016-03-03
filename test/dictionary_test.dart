@@ -25,8 +25,6 @@ void main() {
 			expect(d.length, equals(0));
 		});
 
-		// TODO: test variations with optional parameters
-
 		test("addWordNope()", () {
 			d.addWordNope("W1");
 			expect(d.length, equals(1));
@@ -40,7 +38,19 @@ void main() {
 			});
 			expect(d.length, equals(2));
 		});
-		
+	
+		test("wordByName()", () {
+			expect(d.wordByName("W2").name, equals('W2'));
+		});
+	
+		test("words", () {
+			expect(d.words, equals([d.wordByName('W2'), d.wordByName('W1')]));
+		});
+
+		test("lastWord", () {
+			expect(d.lastWord, equals(d.wordByName('W2')));
+		});
+
 		test("execWord()", () {
 			expect(d.execWord("W2"), equals(s));
 		});
@@ -48,6 +58,10 @@ void main() {
 		test("addWord() (with optional parameters)", () {
 			d.addWord("W3", () { return 33; }, nt: Nt.Store, immediate: true, compileOnly:true);
 			expect(d.length, equals(3));
+		});
+	
+		test("wordByNt()", () {
+			expect(d.wordByNt(Nt.Store).name, equals('W3'));
 		});
 
 		test("addWordOver()", () {
@@ -74,6 +88,7 @@ void main() {
 		test("execNt()", () {
 			expect(d.execNt(Nt.Store), equals(33));
 		});
+
 		test("execNts()", () {
 			d.addWord("W4", () => 44, nt: Nt.Fetch);
 			d.addWord("W5", () => 55, nt: Nt.Minus);
