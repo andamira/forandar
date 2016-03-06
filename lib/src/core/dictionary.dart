@@ -85,8 +85,11 @@ class Dictionary {
 		}
 	}
 
-	/// Executes a word referenced by its nt.
+	/// Executes a word referenced by its nt (as enum).
 	execNt(Nt nt) => _wordsList[nt.index].exec();
+
+	/// Executes a word referenced by its nt (as index).
+	execNtIndex(int nt) => _wordsList[nt].exec();
 
 	/// Executes a list of words referenced by their nt.
 	execNts(List<Nt> nts) => nts.forEach( (nt) => _wordsList[nt.index].exec());

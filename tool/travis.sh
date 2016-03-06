@@ -7,7 +7,7 @@ ALL_TESTS="test/all_tests.dart test/debug/all_tests.dart"
 
 # Verify that the libraries are error and warning-free.
 echo "Running dartanalyzer..."
-source tool/analyzer.sh
+tool/analyzer.sh
 
 # Run the tests.
 echo "Running tests..."

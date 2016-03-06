@@ -93,14 +93,14 @@ void main() {
 				expect(error.number, equals(-3));
 			});
 
-			test("pop() return value", () {
+			test("pop return value", () {
 				ds.replace([1, 2, 3]);
-				expect(ds.pop(), equals(3));
+				expect(ds.pop, equals(3));
 			});
 
-			test("pop() stack effect", () {
+			test("pop stack effect", () {
 				ds.replace([1, 2, 3]);
-				ds.pop();
+				ds.pop;
 				expect(ds.content(), equals([1, 2]));
 			});
 
@@ -146,25 +146,25 @@ void main() {
 				expect(ds.content(), equals([1, 2, 3, 4, 5, 2, 3]));
 			});
 
-			test("peek() return value", () {
+			test("peek return value", () {
 				ds.replace([1, 2]);
-				expect(ds.peek(), equals(2));
+				expect(ds.peek, equals(2));
 			});
 
-			test("peek() stack effect", () {
+			test("peek stack effect", () {
 				ds.replace([1, 2]);
-				ds.peek();
+				ds.peek;
 				expect(ds.content(), equals([1, 2]));
 			});
 
-			test("peekNOS() return value", () {
+			test("peekNOS return value", () {
 				ds.replace([1, 2, 3]);
-				expect(ds.peekNOS(), equals(2));
+				expect(ds.peekNOS, equals(2));
 			});
 
-			test("peekNOS() stack effect", () {
+			test("peekNOS stack effect", () {
 				ds.replace([1, 2, 3]);
-				ds.peekNOS();
+				ds.peekNOS;
 				expect(ds.content(), equals([1, 2, 3]));
 			});
 
@@ -270,21 +270,21 @@ void main() {
 				expect(error.number, equals(-44));
 			});
 
-			test("pop() return value", () {
+			test("pop return value", () {
 				fs.replace([1.0, 2.0, 3.0]);
-				expect(fs.pop(), equals(3.0));
+				expect(fs.pop, equals(3.0));
 			});
 
-			test("pop() stack effect", () {
+			test("pop stack effect", () {
 				fs.replace([1.0, 2.0, 3.0]);
-				fs.pop();
+				fs.pop;
 				expect(fs.content(), equals([1.0, 2.0]));
 			});
 
-			test("pop() stack underflow", () {
+			test("pop stack underflow", () {
 				fs.clear();
 				var error;
-				try { fs.pop(); } catch(e) { error = e; }
+				try { fs.pop; } catch(e) { error = e; }
 				expect(error.number, equals(-45));
 			});
 
@@ -330,25 +330,25 @@ void main() {
 				expect(fs.content(), equals([1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0]));
 			});
 
-			test("peek() return value", () {
+			test("peek return value", () {
 				fs.replace([1.0, 2.0]);
-				expect(fs.peek(), equals(2.0));
+				expect(fs.peek, equals(2.0));
 			});
 
-			test("peek() stack effect", () {
+			test("peek stack effect", () {
 				fs.replace([1.0, 2.0]);
-				fs.peek();
+				fs.peek;
 				expect(fs.content(), equals([1.0, 2.0]));
 			});
 
-			test("peekNOS() return value", () {
+			test("peekNOS return value", () {
 				fs.replace([1.0, 2.0, 3.0]);
-				expect(fs.peekNOS(), equals(2.0));
+				expect(fs.peekNOS, equals(2.0));
 			});
 
-			test("peekNOS() stack effect", () {
+			test("peekNOS stack effect", () {
 				fs.replace([1.0, 2.0, 3.0]);
-				fs.peekNOS();
+				fs.peekNOS;
 				expect(fs.content(), equals([1.0, 2.0, 3.0]));
 			});
 

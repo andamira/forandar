@@ -67,16 +67,12 @@ abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStac
 	/// Returns the last stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	T peek() {
-		return _data[_size - 1];
-	}
+	T get peek => _data[_size - 1];
 
 	/// Returns the Next Of Stack item WITHOUT removing it.
 	///
 	/// ( a -- )
-	T peekNOS() {
-		return _data[_size - 2];
-	}
+	T get peekNOS => _data[_size - 2];
 
 	/// Copies i to the top of the stack.
 	///
@@ -89,9 +85,7 @@ abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStac
 	/// Returns the last stack item.
 	///
 	/// ( a -- )
-	T pop() {
-		return _data[--_size];
-	}
+	T get pop =>  _data[--_size];
 
 	/// Returns a list of i items from the top of the stack.
 	///

@@ -13,37 +13,64 @@ class Primitives {
 		// ----------------
 
 		// Core standard words.
-		StandardCore();
+		standardCore();
 
 		// Core non-standard words of common use.
-		NonstandardCore();
+		nonStandardCore();
+
+		// Useful non-standard extra words.
+		nonStandardExtra();
 
 		// OPTIONAL DEFINITIONS
 		// --------------------
 
-		// Useful non-standard extra words.
-		NonstandardExtra();
-
-		// Floats.
-		StandardOptionalFloat();
-
 		// Block.
-		StandardOptionalBlock();
+		standardOptionalBlock();
+
+		// Double.
+		standardOptionalDouble();
+
+		// Exception.
+		standardOptionalException();
+
+		// Facility.
+		standardOptionalFacility();
+
+		// File.
+		standardOptionalFile();
+
+		// Floating-Point.
+		standardOptionalFloat();
+
+		// Locals.
+		standardOptionalLocals();
+
+		// Memory.
+		standardOptionalMemory();
 
 		// Programming-tools.
-		StandardOptionalProgrammingTools();
+		standardOptionalTools();
+
+		// Search.
+		standardOptionalSearch();
+
+		// String.
+		standardOptionalString();
+
+		// Extended-Character.
+		standardOptionalXChar();
 	}
 
 	/// Defines the [Forth standard CORE primitives][link].
 	///
 	/// [link]: http://forth-standard.org/standard/core/
-	StandardCore() {
+	standardCore() {
 
 		// Total: 182 (133 main + 49 extended)
 		//
 		// Implemented:
 		//
-		// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP EVALUATE HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
+		// ! * + +! - , . / /MOD 0< 0= 1+ 1- 2! 2@ 2DROP 2DUP 2OVER 2SWAP ?DUP < = > >IN >R @ ABS AND ALIGN ALIGNED ALLOT BASE BL C! C, C@ CELL+ CELLS CHAR+ CHARS CR DEPTH DECIMAL DROP DUP EVALUATE EXECUTE HERE IMMEDIATE INVERT LSHIFT MAX MIN MOD NEGATE OR OVER QUIT R> R@ ROT RSHIFT SOURCE SPACE SPACES STATE SWAP U. U< XOR
 		//
 		// 0<> 0> 2>R 2R> 2R@ <> ERASE FALSE HEX NIP PAD PARSE PARSE-NAME PICK REFILL ROLL SOURCE-ID TRUE TUCK U>
 		//
@@ -54,7 +81,7 @@ class Primitives {
 		// : ; <# >BODY >NUMBER ABORT
 		// ABORT" ACCEPT BEGIN
 		// CHAR CONSTANT COUNT CREATE DO DOES>
-		// ELSE EMIT ENVIRONMENT? EXECUTE EXIT FILL FIND FM/MOD
+		// ELSE EMIT ENVIRONMENT? EXIT FILL FIND FM/MOD
 		// HOLD I IF J KEY LEAVE LITERAL LOOP M*
 		// MOVE POSTPONE RECURSE REPEAT
 		// S" S>D SIGN SM/REM THEN TYPE UM*
@@ -76,7 +103,7 @@ class Primitives {
 		// https://api.dartlang.org/stable/dart-typed_data/ByteData/setInt32.html
 		// https://en.wikipedia.org/wiki/Two%27s_complement
 		vm.dict.addWord("!", (){
-			vm.dataSpace.storeCell(vm.dataStack.pop(), vm.dataStack.pop());
+			vm.dataSpace.storeCell(vm.dataStack.pop, vm.dataStack.pop);
 		}, nt: Nt.Store);
 
 		/// Multiply n1 | u1 by n2 | u2 giving the product n3 | u3.
@@ -84,7 +111,7 @@ class Primitives {
 		/// [*][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
 		/// [link]: http://forth-standard.org/standard/core/Times
 		vm.dict.addWord("*", (){
-			vm.dataStack.push((vm.dataStack.pop() * vm.dataStack.pop()));
+			vm.dataStack.push((vm.dataStack.pop * vm.dataStack.pop));
 		}, nt: Nt.Times);
 
 		/// Add n2 | u2 to n1 | u1, giving the sum n3 | u3.
@@ -92,7 +119,7 @@ class Primitives {
 		/// [+][link] ( n1 | u1 n2 | u2 -- n3 | u3 )
 		/// [link]: http://forth-standard.org/standard/core/Plus
 		vm.dict.addWord("+", (){
-			vm.dataStack.push(vm.dataStack.pop() + vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop + vm.dataStack.pop);
 		}, nt: Nt.Plus);
 
 		/// Add n | u to the single-cell number at a-addr.
@@ -100,8 +127,8 @@ class Primitives {
 		/// [+!][link] ( n | u a-addr -- )
 		/// [link]: http://forth-standard.org/standard/core/PlusStore
 		vm.dict.addWord("+!", (){
-			int addr = vm.dataStack.pop();
-			vm.dataSpace.storeCell(addr, vm.dataSpace.fetchCell(addr) + vm.dataStack.pop());
+			int addr = vm.dataStack.pop;
+			vm.dataSpace.storeCell(addr, vm.dataSpace.fetchCell(addr) + vm.dataStack.pop);
 		}, nt: Nt.PlusStore);
 
 		/// Reserve one cell of data space and store x in the cell.
@@ -109,7 +136,7 @@ class Primitives {
 		/// [,][link] ( x -- )
 		/// [link]: http://forth-standard.org/standard/core/Comma
 		vm.dict.addWord(",", (){
-			vm.dataSpace.storeCellHere(vm.dataStack.pop());
+			vm.dataSpace.storeCellHere(vm.dataStack.pop);
 		}, nt: Nt.Comma);
 
 		/// Subtract n2 | u2 from n1 | u1, giving the difference n3 | u3.
@@ -118,7 +145,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/Minus
 		vm.dict.addWord("-", (){
 			vm.dataStack.swap();
-			vm.dataStack.push(vm.dataStack.pop() - vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop - vm.dataStack.pop);
 		}, nt: Nt.Minus);
 
 		/// Display n in free field format.
@@ -126,7 +153,7 @@ class Primitives {
 		/// [.][link] ( n -- )
 		/// [link]: http://forth-standard.org/standard/core/d
 		vm.dict.addWord(".", (){
-			print(vm.dataStack.pop());
+			print(vm.dataStack.pop);
 		}, nt: Nt.d);
 
 		/// Divide n1 by n2, , giving the single-cell quotient n3.
@@ -135,7 +162,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/Div
 		vm.dict.addWord("/", (){
 			vm.dataStack.swap();
-			vm.dataStack.push(vm.dataStack.pop() ~/ vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop ~/ vm.dataStack.pop);
 			// CHECK: An ambiguous condition exists if n2 is zero.
 			// If n1 and n2 differ in sign, the implementation-defined result
 			// returned will be the same as that returned by either the phrase
@@ -148,8 +175,8 @@ class Primitives {
 		/// 2DUP MOD -ROT / ;
 		/// [link]: http://forth-standard.org/standard/core/DivMOD
 		vm.dict.addWord("/MOD", (){
-			int x = vm.dataStack.pop();
-			int y = vm.dataStack.pop();
+			int x = vm.dataStack.pop;
+			int y = vm.dataStack.pop;
 			vm.dataStack.push( y % x);
 			vm.dataStack.push( y ~/ x);
 			// CHECK: An ambiguous condition exists if n2 is zero.
@@ -163,7 +190,7 @@ class Primitives {
 		/// [0<][link] ( x -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Zeroless
 		vm.dict.addWord("0<", (){
-			vm.dataStack.pop() < 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop < 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.Zeroless);
 
 		/// flag is true if and only if x is not equal to zero.
@@ -171,7 +198,7 @@ class Primitives {
 		/// [0<>][link] ( x -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Zerone
 		vm.dict.addWord("0<>", (){
-			vm.dataStack.pop() != 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop != 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.Zerone);
 
 		/// flag is true if and only if x is equal to zero.
@@ -179,7 +206,7 @@ class Primitives {
 		/// [0=][link] ( x -- flag )
 		/// [link]: http://forth-standard.org/standard/core/ZeroEqual
 		vm.dict.addWord("0=", (){
-			vm.dataStack.pop() == 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop == 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.ZeroEqual);
 
 		/// flag is true if and only if n is greater than zero.
@@ -187,7 +214,7 @@ class Primitives {
 		/// [0>][link] ( x -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Zeromore
 		vm.dict.addWord("0>", (){
-			vm.dataStack.pop() > 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop > 0 ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.Zeromore);
 
 		/// Add one (1) to n1 | u1 giving the sum n2 | u2.
@@ -195,7 +222,7 @@ class Primitives {
 		/// [1+][link] ( n1 | u1 -- n2 | u2 )
 		/// [link]: http://forth-standard.org/standard/core/OnePlus
 		vm.dict.addWord("1+", (){
-			vm.dataStack.push(vm.dataStack.pop() + 1);
+			vm.dataStack.push(vm.dataStack.pop + 1);
 		}, nt: Nt.OnePlus);
 
 		/// Subtract one (1) from n1 | u1 giving the difference n2 | u2.
@@ -203,7 +230,7 @@ class Primitives {
 		/// [1-][link] ( n1 | u1 -- n2 | u2 )
 		/// [link]: http://forth-standard.org/standard/core/OneMinus
 		vm.dict.addWord("1-", (){
-			vm.dataStack.push(vm.dataStack.pop() - 1);
+			vm.dataStack.push(vm.dataStack.pop - 1);
 		}, nt: Nt.OneMinus);
 
 		/// Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the next consecutive cell.
@@ -212,9 +239,9 @@ class Primitives {
 		/// SWAP OVER ! CELL+ ! ;
 		/// [link]: http://forth-standard.org/standard/core/TwoStore
 		vm.dict.addWord("2!", (){
-			int addr = vm.dataStack.pop();
-			vm.dataSpace.storeCell(addr + sizeCELL, vm.dataStack.pop() );
-			vm.dataSpace.storeCell(addr, vm.dataStack.pop() );
+			int addr = vm.dataStack.pop;
+			vm.dataSpace.storeCell(addr + sizeCELL, vm.dataStack.pop );
+			vm.dataSpace.storeCell(addr, vm.dataStack.pop );
 		}, nt: Nt.TwoStore);
 
 		/// Fetch the cell pair x1 x2 stored at a-addr. x2 is stored at a-addr and x1 at the next consecutive cell.
@@ -223,7 +250,7 @@ class Primitives {
 		/// DUP CELL+ @ SWAP @ ;
 		/// [link]: http://forth-standard.org/standard/core/TwoFetch
 		vm.dict.addWord("2@", (){
-			int addr = vm.dataStack.pop();
+			int addr = vm.dataStack.pop;
 			vm.dataStack.push(vm.dataSpace.fetchCell(addr + sizeCELL));
 			vm.dataStack.push(vm.dataSpace.fetchCell(addr));
 		}, nt: Nt.TwoFetch);
@@ -235,8 +262,8 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/TwotoR
 		vm.dict.addWord("2>R", () {
 			vm.dataStack.swap();
-			vm.returnStack.push(vm.dataStack.pop());
-			vm.returnStack.push(vm.dataStack.pop());
+			vm.returnStack.push(vm.dataStack.pop);
+			vm.returnStack.push(vm.dataStack.pop);
 		}, nt: Nt.TwotoR, immediate: true);
 
 		/// Drop cell pair x1 x2 from the stack.
@@ -270,8 +297,8 @@ class Primitives {
 		/// R> R> SWAP ; IMMEDIATE
 		/// [link]: http://forth-standard.org/standard/core/TwoRfrom
 		vm.dict.addWord("2R>", () {
-			vm.dataStack.push(vm.returnStack.pop());
-			vm.dataStack.push(vm.returnStack.pop());
+			vm.dataStack.push(vm.returnStack.pop);
+			vm.dataStack.push(vm.returnStack.pop);
 			vm.dataStack.swap();
 		}, nt: Nt.TwoRfrom, immediate: true);
 
@@ -281,8 +308,8 @@ class Primitives {
 		/// R> R> 2DUP >R >R SWAP ; IMMEDIATE
 		/// [link]: http://forth-standard.org/standard/core/TwoRFetch
 		vm.dict.addWord("2R@", () {
-			vm.dataStack.push(vm.returnStack.peek());
-			vm.dataStack.push(vm.returnStack.peek());
+			vm.dataStack.push(vm.returnStack.peek);
+			vm.dataStack.push(vm.returnStack.peek);
 			vm.dataStack.swap();
 		}, nt: Nt.TwoRFetch, immediate: true);
 
@@ -291,7 +318,7 @@ class Primitives {
 		/// [<][link] ( n1 n2 -- flag )
 		/// [link]: http://forth-standard.org/standard/core/less
 		vm.dict.addWord("<", (){
-			vm.dataStack.pop() > vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop > vm.dataStack.pop ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.less);
 
 		/// flag is true if and only if x1 is not bit-for-bit the same as x2.
@@ -299,7 +326,7 @@ class Primitives {
 		/// [<>][link] ( n1 n2 -- flag )
 		/// [link]: http://forth-standard.org/standard/core/ne
 		vm.dict.addWord("<>", (){
-			vm.dataStack.pop() != vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop != vm.dataStack.pop ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.ne);
 
 		/// flag is true if and only if x1 is bit-for-bit the same as x2.
@@ -307,7 +334,7 @@ class Primitives {
 		/// [=][link] ( n1 n2 -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Equal
 		vm.dict.addWord("=", (){
-			vm.dataStack.pop() == vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop == vm.dataStack.pop ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.Equal);
 
 		/// flag is true if and only if n1 is more than n2.
@@ -315,7 +342,7 @@ class Primitives {
 		/// [>][link] ( n1 n2 -- flag )
 		/// [link]: http://forth-standard.org/standard/core/more
 		vm.dict.addWord(">", (){
-			vm.dataStack.pop() < vm.dataStack.pop() ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
+			vm.dataStack.pop < vm.dataStack.pop ? vm.dataStack.push(flagTRUE) : vm.dataStack.push(flagFALSE);
 		}, nt: Nt.more);
 
 		/// a-addr is the address of a cell containing the offset in characters from the start of the input buffer to the start of the parse area.
@@ -331,7 +358,7 @@ class Primitives {
 		/// [>R][link] ( x -- ) ( R: -- x )
 		/// [link]: http://forth-standard.org/standard/core/toR
 		vm.dict.addWord(">R", () {
-			vm.returnStack.push(vm.dataStack.pop());
+			vm.returnStack.push(vm.dataStack.pop);
 		}, nt: Nt.toR, immediate: true);
 
 		/// Duplicate x if it is non-zero.
@@ -339,7 +366,7 @@ class Primitives {
 		/// [?DUP][link] ( x -- 0 | x x )
 		/// [link]: http://forth-standard.org/standard/core/qDUP
 		vm.dict.addWord("?DUP", () {
-			if (vm.dataStack.peek() != 0) vm.dataStack.dup();
+			if (vm.dataStack.peek != 0) vm.dataStack.dup();
 		}, nt: Nt.qDUP);
 
 		/// x is the value stored at a-addr.
@@ -347,7 +374,7 @@ class Primitives {
 		/// [@][link] ( a-addr -- x )
 		/// [link]: http://forth-standard.org/standard/core/Fetch
 		vm.dict.addWord("@", (){
-			vm.dataStack.push(vm.dataSpace.fetchCell(vm.dataStack.pop()));
+			vm.dataStack.push(vm.dataSpace.fetchCell(vm.dataStack.pop));
 		}, nt: Nt.Fetch);
 
 		/// u is the absolute value of n.
@@ -355,7 +382,7 @@ class Primitives {
 		/// [ABS][link] ( n -- u )
 		/// [link]: http://forth-standard.org/standard/core/ABS
 		vm.dict.addWord("ABS", (){
-			vm.dataStack.push(vm.dataStack.pop().abs());
+			vm.dataStack.push(vm.dataStack.pop.abs());
 		}, nt: Nt.ABS);
 
 		/// If the data-space pointer is not aligned, reserve enough space to align it.
@@ -379,7 +406,7 @@ class Primitives {
 		/// [ALLOT][link] ( n -- )
 		/// [link]: http://forth-standard.org/standard/core/ALLOT
 		vm.dict.addWord("ALLOT", () {
-			vm.dataSpace.pointer += vm.dataStack.pop();
+			vm.dataSpace.pointer += vm.dataStack.pop;
 		}, nt: Nt.ALLOT);
 
 		/// x3 is the bit-by-bit logical "and" of x1 with x2.
@@ -387,7 +414,7 @@ class Primitives {
 		/// [AND][link] ( x1 x2 -- x3 )
 		/// [link]: http://forth-standard.org/standard/core/AND
 		vm.dict.addWord("AND", (){
-			vm.dataStack.push(vm.dataStack.pop() & vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop & vm.dataStack.pop);
 		}, nt: Nt.AND);
 
 		/// Puts in the stack the address of a cell containing the current number-conversion radix {{2...36}}.
@@ -411,7 +438,7 @@ class Primitives {
 		/// [C!][link] ( char a-addr -- )
 		/// [link]: http://forth-standard.org/standard/core/CStore
 		vm.dict.addWord("C!", (){
-			vm.dataSpace.storeChar(vm.dataStack.pop(), vm.dataStack.pop());
+			vm.dataSpace.storeChar(vm.dataStack.pop, vm.dataStack.pop);
 		}, nt: Nt.CStore);
 
 		/// Reserve space for one character in the data space and store char in the space.
@@ -419,7 +446,7 @@ class Primitives {
 		/// [C,][link] ( x -- )
 		/// [link]: http://forth-standard.org/standard/core/CComma
 		vm.dict.addWord("C,", (){
-			vm.dataSpace.storeCharHere(vm.dataStack.pop());
+			vm.dataSpace.storeCharHere(vm.dataStack.pop);
 		}, nt: Nt.CComma);
 
 		/// Fetch the character stored at c-addr.
@@ -428,7 +455,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/CFetch
 		//
 		vm.dict.addWord("C@", (){
-			vm.dataStack.push(vm.dataSpace.fetchChar(vm.dataStack.pop()));
+			vm.dataStack.push(vm.dataSpace.fetchChar(vm.dataStack.pop));
 		}, nt: Nt.CFetch);
 
 		/// Add the size in address units of a cell to a-addr1, giving a-addr2.
@@ -436,7 +463,7 @@ class Primitives {
 		/// [CELL+][link] ( a-addr1 -- a-addr2 )
 		/// [link]: http://forth-standard.org/standard/core/CELLPlus
 		vm.dict.addWord("CELL+", (){
-			vm.dataStack.push(vm.dataStack.pop() + sizeCELL);
+			vm.dataStack.push(vm.dataStack.pop + sizeCELL);
 		}, nt: Nt.CELLPlus);
 
 		/// n2 is the size in address units of n1 cells.
@@ -444,7 +471,7 @@ class Primitives {
 		/// [CELLS][link] ( n1 -- n2 )
 		/// [link]: http://forth-standard.org/standard/core/CELLS
 		vm.dict.addWord("CELLS", (){
-			vm.dataStack.push(vm.dataStack.pop() * sizeCELL);
+			vm.dataStack.push(vm.dataStack.pop * sizeCELL);
 		}, nt: Nt.CELLS);
 
 		/// Add the size in address units of a character to c-addr1, giving c-addr2.
@@ -453,7 +480,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/CHARPlus
 		vm.dict.addWord("CHAR+", (){
 			// TODO: support extended characters
-			vm.dataStack.push(vm.dataStack.pop() + sizeCHAR);
+			vm.dataStack.push(vm.dataStack.pop + sizeCHAR);
 		}, nt: Nt.CHARPlus);
 
 		/// n2 is the size in address units of n1 characters.
@@ -550,12 +577,20 @@ class Primitives {
 		/// [ERASE][link] ( addr u -- )
 		/// [link]: http://forth-standard.org/standard/core/ERASE
 		vm.dict.addWord("ERASE", (){
-			int length = vm.dataStack.pop();
-			int address =  vm.dataStack.pop();
+			int length = vm.dataStack.pop;
+			int address =  vm.dataStack.pop;
 			if (length > 0) {
 				vm.dataSpace.fillCharRange(address, length, 0);
 			}
 		}, nt: Nt.ERASE);
+
+		/// Remove xt from the stack and perform the semantics identified by it. Other stack effects are due to the word EXECUTEd.
+		///
+		/// [EXECUTE][link] ( i * x xt -- j * x )
+		/// [link]: http://forth-standard.org/standard/core/EXECUTE
+		vm.dict.addWord("EXECUTE", (){
+			vm.dict.execNtIndex(vm.dataStack.pop);
+		}, nt: Nt.EXECUTE);
 
 		/// Return a false flag.
 		///
@@ -594,7 +629,7 @@ class Primitives {
 		/// [INVERT][link] ( x1 -- x2 )
 		/// [link]: http://forth-standard.org/standard/core/INVERT
 		vm.dict.addWord("INVERT", (){
-			vm.dataStack.push(~vm.dataStack.pop());
+			vm.dataStack.push(~vm.dataStack.pop);
 		}, nt: Nt.INVERT);
 
 		/// Perform a logical left shift of u bit-places on x1, giving x2.
@@ -603,7 +638,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/LSHIFT
 		vm.dict.addWord("LSHIFT", (){
 			vm.dataStack.swap();
-			vm.dataStack.push(vm.dataStack.pop() << vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop << vm.dataStack.pop);
 			// CHECK: An ambiguous condition exists if u is greater thans
 			// or equal to the number of bits in a cell.
 		}, nt: Nt.LSHIFT);
@@ -613,7 +648,7 @@ class Primitives {
 		/// [MAX][link] ( n1 n2 -- n3 )
 		/// [link]: http://forth-standard.org/standard/core/MAX
 		vm.dict.addWord("MAX", (){
-			vm.dataStack.push(max(vm.dataStack.pop(), vm.dataStack.pop()));
+			vm.dataStack.push(max(vm.dataStack.pop, vm.dataStack.pop));
 		}, nt: Nt.MAX);
 
 		/// n3 is the lesser of n1 and n2.
@@ -621,7 +656,7 @@ class Primitives {
 		/// [MIN][link] ( n1 n2 -- n3 )
 		/// [link]: http://forth-standard.org/standard/core/MIN
 		vm.dict.addWord("MIN", (){
-			vm.dataStack.push(min(vm.dataStack.pop(), vm.dataStack.pop()));
+			vm.dataStack.push(min(vm.dataStack.pop, vm.dataStack.pop));
 		}, nt: Nt.MIN);
 
 		/// Divide n1 by n2, giving the single-cell remainder n3.
@@ -630,7 +665,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/MOD
 		vm.dict.addWord("MOD", (){
 			vm.dataStack.swap();
-			vm.dataStack.push(vm.dataStack.pop() % vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop % vm.dataStack.pop);
 			// CHECK: An ambiguous condition exists if n2 is zero.
 			// If n1 and n2 differ in sign, the implementation-defined result
 			// returned will be the same as that returned by either the phrase
@@ -642,7 +677,7 @@ class Primitives {
 		/// [NEGATE][link] ( n1 -- n2 )
 		/// [link]: http://forth-standard.org/standard/core/NEGATE
 		vm.dict.addWord("NEGATE", (){
-			vm.dataStack.push(-vm.dataStack.pop());
+			vm.dataStack.push(-vm.dataStack.pop);
 		}, nt: Nt.NEGATE);
 
 		/// Drop the first item below the top of stack.
@@ -651,20 +686,12 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/NIP
 		vm.dict.addWord("NIP", vm.dataStack.nip, nt: Nt.NIP);
 
-		/// Remove n+1 items from the data stack and store them for later retrieval by NR>.
-		///
-		/// [N>R][link] ( i * n +n -- ) ( R: -- j * x +n ) 
-		/// [link]: http://forth-standard.org/standard/core/NtoR
-		vm.dict.addWord("N>R", () {
-			vm.dataStack.push(vm.returnStack.pop());
-		}, nt: Nt.NtoR, immediate: true);
-
 		/// x3 is the bit-by-bit inclusive-or of x1 with x2.
 		///
 		/// [OR][link] ( x1 x2 -- x3 )
 		/// [link]: http://forth-standard.org/standard/core/OR
 		vm.dict.addWord("OR", (){
-			vm.dataStack.push(vm.dataStack.pop() | vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop | vm.dataStack.pop);
 		}, nt: Nt.OR);
 
 		/// Place a copy of x1 on top of the stack.
@@ -712,12 +739,12 @@ class Primitives {
 			// Skip the leading delimiter characters (space).
 			vm.dict.execNts([Nt.BL, Nt.SKIP]);
 
-			int startWord = vm.dataStack.peekNOS();
+			int startWord = vm.dataStack.peekNOS;
 
 			// Get the string until the next delimiter.
 			vm.dict.execNts([Nt.BL, Nt.SCAN]);
 
-			int endWord = vm.dataStack.peekNOS();
+			int endWord = vm.dataStack.peekNOS;
 
 			vm.dict.execNt(Nt.TwoDROP);
 
@@ -735,7 +762,7 @@ class Primitives {
 		/// [PICK][link] ( xu...x1 x0 u -- xu...x1 x0 xu )
 		/// [link]: http://forth-standard.org/standard/core/PICK
 		vm.dict.addWord("PICK", () {
-			vm.dataStack.pick(vm.dataStack.pop());
+			vm.dataStack.pick(vm.dataStack.pop);
 		}, nt: Nt.PICK);
 
 		/// Remove u. Rotate u+1 items on the top of the stack.
@@ -743,7 +770,7 @@ class Primitives {
 		/// [ROLL][link] ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )
 		/// [link]: http://forth-standard.org/standard/core/ROLL
 		vm.dict.addWord("ROLL", () {
-			vm.dataStack.roll(vm.dataStack.pop());
+			vm.dataStack.roll(vm.dataStack.pop);
 			// CHECK: An ambiguous condition exists if there are less
 			// than u+2 items on the stack before ROLL is executed.
 		}, nt: Nt.ROLL);
@@ -769,7 +796,7 @@ class Primitives {
 				await vm.dict.execNt(Nt.REFILL);
 
 				// If REFILL failed, break the loop (Normally it shouldn't happen).
-				if (vm.dataStack.pop() == flagFALSE) break;
+				if (vm.dataStack.pop == flagFALSE) break;
 
 				try {
 					// Interpret.
@@ -811,7 +838,7 @@ class Primitives {
 		/// [R>][link] ( -- x  ( R: x -- )
 		/// [link]: http://forth-standard.org/standard/core/Rfrom
 		vm.dict.addWord("R>", () {
-			vm.dataStack.push(vm.returnStack.pop());
+			vm.dataStack.push(vm.returnStack.pop);
 		}, nt: Nt.Rfrom, immediate: true);
 
 		/// Copy x from the return stack to the data stack.
@@ -819,7 +846,7 @@ class Primitives {
 		/// [R@][link] ( -- x ) ( R: x -- x )
 		/// [link]: http://forth-standard.org/standard/core/RFetch
 		vm.dict.addWord("R@", () {
-			vm.dataStack.push(vm.returnStack.peek());
+			vm.dataStack.push(vm.returnStack.peek);
 		}, nt: Nt.RFetch, immediate: true);
 
 		/// Attempt to fill the input buffer from the input source, returning a true flag if successful.
@@ -916,7 +943,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/RSHIFT
 		vm.dict.addWord("RSHIFT", (){
 			vm.dataStack.swap();
-			vm.dataStack.push(vm.dataStack.pop() >> vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop >> vm.dataStack.pop);
 			// CHECK: An ambiguous condition exists if u is greater than
 			// or equal to the number of bits in a cell.
 		}, nt: Nt.RSHIFT);
@@ -995,7 +1022,7 @@ class Primitives {
 		/// [XOR][link] ( x1 x2 -- x3 )
 		/// [link]: http://forth-standard.org/standard/core/XOR
 		vm.dict.addWord("XOR", (){
-			vm.dataStack.push(vm.dataStack.pop() ^ vm.dataStack.pop());
+			vm.dataStack.push(vm.dataStack.pop ^ vm.dataStack.pop);
 		}, nt: Nt.XOR);
 
 		/// Display u in free field format.
@@ -1003,7 +1030,7 @@ class Primitives {
 		/// [U.][link] ( u -- )
 		/// [link]: http://forth-standard.org/standard/core/Ud
 		vm.dict.addWord("U.", (){
-			print(vm.dataStack.pop().toUnsigned(32));
+			print(vm.dataStack.pop.toUnsigned(32));
 		}, nt: Nt.Ud);
 
 		/// flag is true if and only if u1 is less than u2.
@@ -1011,7 +1038,7 @@ class Primitives {
 		/// [U<][link] ( u -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Uless
 		vm.dict.addWord("U<", (){
-			if (vm.dataStack.pop().toUnsigned(32) > vm.dataStack.pop().toUnsigned(32)) {
+			if (vm.dataStack.pop.toUnsigned(32) > vm.dataStack.pop.toUnsigned(32)) {
 				vm.dataStack.push(flagTRUE);
 			} else {
 				vm.dataStack.push(flagFALSE);
@@ -1023,19 +1050,19 @@ class Primitives {
 		/// [U>][link] ( u -- flag )
 		/// [link]: http://forth-standard.org/standard/core/Umore
 		vm.dict.addWord("U>", (){
-			if (vm.dataStack.pop().toUnsigned(32) < vm.dataStack.pop().toUnsigned(32)) {
+			if (vm.dataStack.pop.toUnsigned(32) < vm.dataStack.pop.toUnsigned(32)) {
 				vm.dataStack.push(flagTRUE);
 			} else {
 				vm.dataStack.push(flagFALSE);
 			}
 		}, nt: Nt.Umore);
 
-	} // includeStandardCore
+	} // standardCore
 
 
 	/// Core words that are not part of the standard.
 	///
-	NonstandardCore() {
+	nonStandardCore() {
 
 		// Implemented:
 		//
@@ -1061,7 +1088,7 @@ class Primitives {
 				vm.dict.execNt(Nt.PARSE_NAME);
 
 				vm.dataStack.swap();
-				String wordStr = vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop());
+				String wordStr = vm.dataSpace.fetchString(vm.dataStack.pop, vm.dataStack.pop);
 
 				if (wordStr.isEmpty) {
 					break;
@@ -1242,9 +1269,9 @@ class Primitives {
 		///
 		/// ( c-addr1 u1 char -- c-addr2 u2 )
 		vm.dict.addWord("SCAN", (){
-			int char    = vm.dataStack.pop();
-			int length  = vm.dataStack.pop();
-			int address = vm.dataStack.pop();
+			int char    = vm.dataStack.pop;
+			int length  = vm.dataStack.pop;
+			int address = vm.dataStack.pop;
 
 			List codePoints = vm.dataSpace.fetchString(address, length).runes.toList();
 
@@ -1268,9 +1295,9 @@ class Primitives {
 		///
 		/// ( c-addr1 u1 char -- c-addr2 u2 | c-addr1 u1 )
 		vm.dict.addWord("SKIP", (){
-			int char    = vm.dataStack.pop();
-			int length  = vm.dataStack.pop();
-			int address = vm.dataStack.pop();
+			int char    = vm.dataStack.pop;
+			int length  = vm.dataStack.pop;
+			int address = vm.dataStack.pop;
 
 			List codePoints = vm.dataSpace.fetchString(address, length).runes.toList();
 			int skippedBytes = 0;
@@ -1287,12 +1314,12 @@ class Primitives {
 			vm.dataStack.push(length);
 		}, nt: Nt.SKIP);
 
-	} // includeNonstandardCore
+	} // nonstandardCore
 
 	/// Useful words that are not part of the standard.
 	///
 	/// [Gforth Word Index][http://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Word-Index.html#Word-Index]
-	NonstandardExtra() {
+	nonStandardExtra() {
 
 		// Implemented:
 		//
@@ -1333,12 +1360,12 @@ class Primitives {
 		/// Display the string stored at ( c-addr u -- )
 		vm.dict.addWord("?STRING", (){
 			vm.dataStack.swap();
-			print(vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop()));
+			print(vm.dataSpace.fetchString(vm.dataStack.pop, vm.dataStack.pop));
 		}, nt: Nt.qSTRING);
 
 		/// Display an integer binary format.
 		vm.dict.addWord("BIN.", () {
-			print(util.int32ToBin(vm.dataStack.pop()));
+			print(util.int32ToBin(vm.dataStack.pop));
 		});
 
 		/// Prints the object space content.
@@ -1354,12 +1381,31 @@ class Primitives {
 		// fnip ftuck fpick
 		// f~abs f~rel
 
-	} // includeNonstandardExtra
+	} // nonstandardExtra
+
+	/// The optional Block word set.
+	///
+	/// http://forth-standard.org/standard/block
+	standardOptionalBlock() {
+
+		// Total: 14 (8 main + 6 extended)
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//   BLK BLOCK BUFFER EVALUATE FLUSH LOAD SAVE-BUFFERS UPDATE
+		//
+		//   EMPTY-BUFFERS LIST REFILL SCR THRU \
+
+	} // standardOptionalBlock
 
 	/// The optional Double-Number word set
 	///
 	/// http://forth-standard.org/standard/double
-	StandardOptionalDouble() {
+	standardOptionalDouble() {
 
 		// Total: 23 (20 main + 3 extended)
 		//
@@ -1375,12 +1421,81 @@ class Primitives {
 		// 2ROT 2VALUE DU<
 		//
 
-	} // includeStandardOptionalDouble
+	} // standardOptionalDouble
+
+	/// The optional Exception word set.
+	///
+	/// http://forth-standard.org/standard/exception
+	standardOptionalException() {
+
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalException
+
+	/// The optional Facility word set.
+	///
+	/// https://forth-standard.org/standard/facility
+	standardOptionalFacility() {
+
+		// Total: 23 (3 main + 3 extended)
+		//
+		// Implemented:
+		//
+		// TIME&DATE
+		//
+		// Not Implemented:
+		//
+		// AT-XY KEY? PAGE
+		//
+		// +FIELD BEGIN-STRUCTURE CFIELD: EKEY EKEY>CHAR EKEY>FKEY EKEY? EMIT? END-STRUCTURE FIELD: K-ALT-MASK K-CTRL-MASK K-DELETE K-DOWN K-END K-F1 K-F10 K-F11 K-F12 K-F2 K-F3 K-F4 K-F5 K-F6 K-F7 K-F8 K-F9 K-HOME K-INSERT K-LEFT K-NEXT K-PRIOR K-RIGHT K-SHIFT-MASK K-UP MS
+
+		/// Return the current time and date.
+		///
+		/// +n1 is the second {0...59}, +n2 is the minute {0...59}, +n3 is the hour {0...23},
+		/// +n4 is the day {1...31}, +n5 is the month {1...12} and +n6 is the year (e.g., 1991).
+		///
+		/// [TIME&DATE][link] ( -- +n1 +n2 +n3 +n4 +n5 +n6 )
+		/// [link]: http://forth-standard.org/standard/float/TIMEandDATE
+		vm.dict.addWord("TIME&DATE", (){
+			DateTime d = new DateTime.now();
+			vm.dataStack.pushList([d.second, d.minute, d.hour, d.day, d.month, d.year]);
+		}, nt: Nt.TIMEandDATE);
+
+	} // standardOptionalFacility
+
+	/// The optional File word set.
+	///
+	/// http://forth-standard.org/standard/file
+	standardOptionalFile() {
+
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalFile
 
 	/// The optional Floating-Point word set
 	///
 	/// http://forth-standard.org/standard/float
-	StandardOptionalFloat() {
+	standardOptionalFloat() {
 
 		// Total: 79 (31 main + 48 extended)
 		//
@@ -1403,7 +1518,7 @@ class Primitives {
 		/// [D>F][link] ( d -- ) ( F: -- r ) 
 		/// [link]: http://forth-standard.org/standard/float/DtoF
 		vm.dict.addWord("D>F", (){
-			vm.floatStack.push(vm.dataStack.pop().toDouble());
+			vm.floatStack.push(vm.dataStack.pop.toDouble());
 		}, nt: Nt.DtoF);
 
 		/// If the data-space pointer is not double-float aligned, reserve enough data space to make it so.
@@ -1432,7 +1547,7 @@ class Primitives {
 		// https://api.dartlang.org/stable/dart-typed_data/ByteData/setFloat64.html
 		// https://en.wikipedia.org/wiki/Double-precision_floating-point_format
 		vm.dict.addWord("F!", (){
-			vm.dataSpace.storeFloat(vm.dataStack.pop(), vm.floatStack.pop());
+			vm.dataSpace.storeFloat(vm.dataStack.pop, vm.floatStack.pop);
 		}, nt: Nt.FStore);
 
 		/// r is the value stored at f-addr.
@@ -1442,7 +1557,7 @@ class Primitives {
 		//
 		// Fetches a floating point number using eight bytes at the specified address.
 		vm.dict.addWord("F@", (){
-			vm.floatStack.push(vm.dataSpace.fetchFloat(vm.dataStack.pop()));
+			vm.floatStack.push(vm.dataSpace.fetchFloat(vm.dataStack.pop));
 		}, nt: Nt.FFetch);
 
 		/// Multiply r1 by r2 giving r3.
@@ -1450,7 +1565,7 @@ class Primitives {
 		/// [F*][link] ( F: r1 r2 -- r3 )
 		/// [link]: http://forth-standard.org/standard/float/FTimes
 		vm.dict.addWord("F*", (){
-			vm.floatStack.push(vm.floatStack.pop() * vm.floatStack.pop());
+			vm.floatStack.push(vm.floatStack.pop * vm.floatStack.pop);
 		}, nt: Nt.FTimes);
 
 		/// Add r1 to r2 giving the sum r3.
@@ -1458,7 +1573,7 @@ class Primitives {
 		/// [F+][link] ( F: r1 r2 -- r3 )
 		/// [link]: http://forth-standard.org/standard/float/FPlus 
 		vm.dict.addWord("F+", (){
-			vm.floatStack.push(vm.floatStack.pop() + vm.floatStack.pop());
+			vm.floatStack.push(vm.floatStack.pop + vm.floatStack.pop);
 		}, nt: Nt.FPlus);
 
 		/// Subtract r2 from r1, giving r3.
@@ -1467,7 +1582,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/float/FMinus
 		vm.dict.addWord("F-", (){
 			vm.floatStack.swap();
-			vm.floatStack.push(vm.floatStack.pop() - vm.floatStack.pop());
+			vm.floatStack.push(vm.floatStack.pop - vm.floatStack.pop);
 		}, nt: Nt.FMinus);
 
 		/// Divide r1 by r2, giving the quotient r3.
@@ -1476,7 +1591,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/float/FDiv
 		vm.dict.addWord("F/", (){
 			vm.floatStack.swap();
-			vm.floatStack.push(vm.floatStack.pop() / vm.floatStack.pop());
+			vm.floatStack.push(vm.floatStack.pop / vm.floatStack.pop);
 		}, nt: Nt.FDiv);
 
 		/// Raise r1 to the power r2, giving the product r3.
@@ -1485,7 +1600,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/float/FTimesTimes
 		vm.dict.addWord("F**", (){
 			vm.floatStack.swap();
-			vm.floatStack.push(pow(vm.floatStack.pop(), vm.floatStack.pop()));
+			vm.floatStack.push(pow(vm.floatStack.pop, vm.floatStack.pop));
 		}, nt: Nt.FTimesTimes);
 
 		/// Display, with a trailing space, the top number on the floating-point stack using fixed-point notation.
@@ -1493,7 +1608,7 @@ class Primitives {
 		/// [F.][link] ( -- ) ( F: r -- )
 		/// [link]: http://forth-standard.org/standard/float/Fd
 		vm.dict.addWord("F.", (){
-			print(vm.floatStack.pop());
+			print(vm.floatStack.pop);
 			// CHECK: An ambiguous condition exists if the value of BASE is not (decimal) ten or if the
 			// character string representation exceeds the size of the pictured numeric output string buffer.
 		}, nt: Nt.Fd);
@@ -1503,7 +1618,7 @@ class Primitives {
 		/// [F>D][link] ( -- d ) ( F: r -- )
 		/// [link]: http://forth-standard.org/standard/float/FtoD
 		vm.dict.addWord("F>D", (){
-			vm.dataStack.push(vm.floatStack.pop().toInt()); // FIXME TODO make it double
+			vm.dataStack.push(vm.floatStack.pop.toInt()); // FIXME TODO make it double
 		}, nt: Nt.FtoD);
 
 		/// d is the single-cell signed-integer equivalent of the integer portion of r.
@@ -1511,7 +1626,7 @@ class Primitives {
 		/// [F>S][link] ( -- d ) ( F: r -- )
 		/// [link]: http://forth-standard.org/standard/float/FtoS
 		vm.dict.addWord("F>S", (){
-			vm.dataStack.push(vm.floatStack.pop().toInt());
+			vm.dataStack.push(vm.floatStack.pop.toInt());
 		}, nt: Nt.FtoS);
 
 		/// r2 is the absolute value of r1.
@@ -1519,7 +1634,7 @@ class Primitives {
 		/// [FABS][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FABS
 		vm.dict.addWord("FABS", (){
-			vm.floatStack.push(vm.floatStack.pop().abs());
+			vm.floatStack.push(vm.floatStack.pop.abs());
 		}, nt: Nt.FABS);
 
 		/// r2 is the principal radian angle whose cosine is r1.
@@ -1527,7 +1642,7 @@ class Primitives {
 		/// [FACOS][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FACOS
 		vm.dict.addWord("FACOS", (){
-			vm.floatStack.push(acos(vm.floatStack.pop()));
+			vm.floatStack.push(acos(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if | r1 | is greater than one.
 		}, nt: Nt.FACOS);
 
@@ -1536,7 +1651,7 @@ class Primitives {
 		/// [FACOSH][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FACOSH
 		vm.dict.addWord("FACOSH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push(log(x + sqrt(x * x - 1)));
 		}, nt: Nt.FACOSH);
 
@@ -1561,7 +1676,7 @@ class Primitives {
 		/// [FALOG][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FALOG
 		vm.dict.addWord("FALOG", (){
-			vm.floatStack.push(pow(10, vm.floatStack.pop()));
+			vm.floatStack.push(pow(10, vm.floatStack.pop));
 		}, nt: Nt.FALOG);
 
 		/// r2 is the principal radian angle whose sine is r1.
@@ -1569,7 +1684,7 @@ class Primitives {
 		/// [FASIN][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FASIN
 		vm.dict.addWord("FASIN", (){
-			vm.floatStack.push(asin(vm.floatStack.pop()));
+			vm.floatStack.push(asin(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if | r1 | is greater than one.
 		}, nt: Nt.FASIN);
 
@@ -1578,7 +1693,7 @@ class Primitives {
 		/// [FASINH][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FASINH
 		vm.dict.addWord("FASINH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push(log(x + sqrt(x * x + 1)));
 		}, nt: Nt.FASINH);
 
@@ -1587,7 +1702,7 @@ class Primitives {
 		/// [FATAN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FATAN
 		vm.dict.addWord("FATAN", (){
-			vm.floatStack.push(atan(vm.floatStack.pop()));
+			vm.floatStack.push(atan(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 		}, nt: Nt.FATAN);
 
@@ -1597,7 +1712,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/float/FATANTwo
 		vm.dict.addWord("FATAN2", (){
 			vm.floatStack.swap();
-			vm.floatStack.push(atan2(vm.floatStack.pop(), vm.floatStack.pop()));
+			vm.floatStack.push(atan2(vm.floatStack.pop, vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists r1 and r2 are zero.
 		}, nt: Nt.FATANTwo);
 
@@ -1606,7 +1721,7 @@ class Primitives {
 		/// [FATANH][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FATANH
 		vm.dict.addWord("FATANH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push(log((1+x)/(1-x)) / 2);
 			// CHECK: An ambiguous condition exists if r1 is outside the range of -1E0 to 1E0.
 		}, nt: Nt.FATANH);
@@ -1616,7 +1731,7 @@ class Primitives {
 		/// [FCOS][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FCOS
 		vm.dict.addWord("FCOS", (){
-			vm.floatStack.push(cos(vm.floatStack.pop()));
+			vm.floatStack.push(cos(vm.floatStack.pop));
 		}, nt: Nt.FCOS);
 
 		/// r2 is the hyperbolic cosine of r1.
@@ -1624,7 +1739,7 @@ class Primitives {
 		/// [FCOSH][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FCOSH
 		vm.dict.addWord("FCOSH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push((exp(2*x) + 1) / (2 * exp(x)));
 		}, nt: Nt.FCOSH);
 
@@ -1653,7 +1768,7 @@ class Primitives {
 		/// [FEXP][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FEXP
 		vm.dict.addWord("FEXP", (){
-			vm.floatStack.push(exp(vm.floatStack.pop()));
+			vm.floatStack.push(exp(vm.floatStack.pop));
 		}, nt: Nt.FEXP);
 
 		/// Raise e to the power r1 and subtract one, giving r2.
@@ -1661,7 +1776,7 @@ class Primitives {
 		/// [FEXPM1][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FEXPMOne
 		vm.dict.addWord("FEXPM1", (){
-			vm.floatStack.push(exp(vm.floatStack.pop()) - 1);
+			vm.floatStack.push(exp(vm.floatStack.pop) - 1);
 		}, nt: Nt.FEXPMOne);
 
 		/// r2 is the base-ten logarithm of r1.
@@ -1669,7 +1784,7 @@ class Primitives {
 		/// [FLOG][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FLOG
 		vm.dict.addWord("FLOG", (){
-			vm.floatStack.push(log(vm.floatStack.pop()) / LN10);
+			vm.floatStack.push(log(vm.floatStack.pop) / LN10);
 			// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 		}, nt: Nt.FLOG);
 
@@ -1678,7 +1793,7 @@ class Primitives {
 		/// [FLOOR][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FLOOR
 		vm.dict.addWord("FLOOR", (){
-			vm.floatStack.push(vm.floatStack.pop().floorToDouble());
+			vm.floatStack.push(vm.floatStack.pop.floorToDouble());
 		}, nt: Nt.FLOOR);
 
 		/// r2 is the natural logarithm of r1. 
@@ -1686,7 +1801,7 @@ class Primitives {
 		/// [FLN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FLN
 		vm.dict.addWord("FLN", (){
-			vm.floatStack.push(log(vm.floatStack.pop()));
+			vm.floatStack.push(log(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if r1 is less than or equal to zero.
 		}, nt: Nt.FLN);
 
@@ -1695,7 +1810,7 @@ class Primitives {
 		/// [FLN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FLNPOne
 		vm.dict.addWord("FLNP1", (){
-			vm.floatStack.push(log(vm.floatStack.pop() + 1));
+			vm.floatStack.push(log(vm.floatStack.pop + 1));
 			// CHECK: An ambiguous condition exists if r1 is less than or equal to negative one.
 		}, nt: Nt.FLNPOne);
 
@@ -1704,7 +1819,7 @@ class Primitives {
 		/// [FMAX][link] ( F: r1 r2 -- r3 )
 		/// [link]: http://forth-standard.org/standard/float/FMAX
 		vm.dict.addWord("FMAX", (){
-			vm.floatStack.push(max(vm.floatStack.pop(), vm.floatStack.pop()));
+			vm.floatStack.push(max(vm.floatStack.pop, vm.floatStack.pop));
 		}, nt: Nt.FMAX);
 
 		/// r3 is the lesser of r1 and r2.
@@ -1712,7 +1827,7 @@ class Primitives {
 		/// [FMIN][link] ( F: r1 r2 -- r3 )
 		/// [link]: http://forth-standard.org/standard/float/FMIN
 		vm.dict.addWord("FMIN", (){
-			vm.floatStack.push(min(vm.floatStack.pop(), vm.floatStack.pop()));
+			vm.floatStack.push(min(vm.floatStack.pop, vm.floatStack.pop));
 		}, nt: Nt.FMIN);
 
 		/// r2 is the negation of r1.
@@ -1720,7 +1835,7 @@ class Primitives {
 		/// [FNEGATE][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FNEGATE
 		vm.dict.addWord("FNEGATE", (){
-			vm.floatStack.push(-vm.floatStack.pop());
+			vm.floatStack.push(-vm.floatStack.pop);
 		}, nt: Nt.FNEGATE);
 
 		/// Place a copy of r1 on top of the floating-point stack.
@@ -1740,7 +1855,7 @@ class Primitives {
 		/// [FROUND][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FROUND
 		vm.dict.addWord("FROUND", (){
-			vm.floatStack.push(vm.floatStack.pop().roundToDouble());
+			vm.floatStack.push(vm.floatStack.pop.roundToDouble());
 		}, nt: Nt.FROUND);
 
 		/// r2 is the sine of the radian angle r1.
@@ -1748,7 +1863,7 @@ class Primitives {
 		/// [FSIN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FSIN
 		vm.dict.addWord("FSIN", (){
-			vm.floatStack.push(sin(vm.floatStack.pop()));
+			vm.floatStack.push(sin(vm.floatStack.pop));
 		}, nt: Nt.FSIN);
 
 		/// r2 is the sine of the radian angle r1. r3 is the cosine of the radian angle r1.
@@ -1756,7 +1871,7 @@ class Primitives {
 		/// [FSINCOS][link] ( F: r1 -- r2 r3 )	
 		/// [link]: http://forth-standard.org/standard/float/FSINCOS
 		vm.dict.addWord("FSINCOS", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push(sin(x));
 			vm.floatStack.push(cos(x));
 		}, nt: Nt.FSINCOS);
@@ -1766,7 +1881,7 @@ class Primitives {
 		/// [FSINH][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FSINH
 		vm.dict.addWord("FSINH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push((exp(2*x) - 1) / (2 * exp(x)));
 		}, nt: Nt.FSINH);
 
@@ -1775,7 +1890,7 @@ class Primitives {
 		/// [FTAN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FTANH
 		vm.dict.addWord("FTANH", (){
-			double x = vm.floatStack.pop();
+			double x = vm.floatStack.pop;
 			vm.floatStack.push(
 				((exp(2*x) - 1) / (2 * exp(x))) / ((exp(2*x) + 1) / (2 * exp(x)))
 			);
@@ -1808,7 +1923,7 @@ class Primitives {
 		/// [FSQRT][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/FSQRT
 		vm.dict.addWord("FSQRT", (){
-			vm.floatStack.push(sqrt(vm.floatStack.pop()));
+			vm.floatStack.push(sqrt(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if r1 is less than zero.
 		}, nt: Nt.FSQRT);
 
@@ -1817,7 +1932,7 @@ class Primitives {
 		/// [FTAN][link] ( F: r1 -- r2 )	
 		/// [link]: http://forth-standard.org/standard/float/FTAN
 		vm.dict.addWord("FTAN", (){
-			vm.floatStack.push(tan(vm.floatStack.pop()));
+			vm.floatStack.push(tan(vm.floatStack.pop));
 			// CHECK: An ambiguous condition exists if (r1) is zero.
 		}, nt: Nt.FTAN);
 
@@ -1826,17 +1941,17 @@ class Primitives {
 		/// [FTRUNC][link] ( F: r1 -- r2 )
 		/// [link]: http://forth-standard.org/standard/float/TRUNC
 		vm.dict.addWord("FTRUNC", (){
-			vm.floatStack.push(vm.floatStack.pop().truncateToDouble());
+			vm.floatStack.push(vm.floatStack.pop.truncateToDouble());
 		}, nt: Nt.FTRUNC);
 
-	} // includeStandardOptionalFloat
+	} // standardOptionalFloat
 
-	/// The optional Block word set.
+	/// The optional Locals word set.
 	///
-	/// http://forth-standard.org/standard/block
-	StandardOptionalBlock() {
+	/// http://forth-standard.org/standard/locals
+	standardOptionalLocals() {
 
-		// Total: 14 (8 main + 6 extended)
+		// Total:  ()
 		//
 		// Implemented:
 		//
@@ -1844,17 +1959,36 @@ class Primitives {
 		//
 		// Not implemented:
 		//
-		//   BLK BLOCK BUFFER EVALUATE FLUSH LOAD SAVE-BUFFERS UPDATE
 		//
-		//   EMPTY-BUFFERS LIST REFILL SCR THRU \
+		//
+		//
 
-	} // includeStandardOptionalBlock
+	} // standardOptionalLocals
+
+	/// The optional Memory word set.
+	///
+	/// http://forth-standard.org/standard/memory
+	standardOptionalMemory() {
+
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalMemory
 
 	/// The optional Programming-Tools word set.
 	///
-	/// Contains words most often used during the development of applications.
+	/// contains words most often used during the development of applications.
 	/// http://forth-standard.org/standard/tools
-	StandardOptionalProgrammingTools() {
+	standardOptionalTools() {
 
 		// Total: 27 (5 main + 22 extended)
 		//
@@ -1862,7 +1996,7 @@ class Primitives {
 		//
 		//   .S ? DUMP WORDS
 		//
-		//   BYE STATE
+		//   BYE NR> N>R STATE
 		//
 		// Not implemented:
 		//
@@ -1870,7 +2004,7 @@ class Primitives {
 		//
 		//   AHEAD ASSEMBLER [DEFINED] [ELSE] [IF] [THEN] [UNDEFINED] CODE
 		//   CS-PICK CS-ROLL EDITOR FORGET NAME>COMPILE NAME>INTERPRET
-		//   NAME>STRING NR> N>R SYNONYM ;CODE TRAVERSE-WORDLIST
+		//   NAME>STRING SYNONYM ;CODE TRAVERSE-WORDLIST
 
 		/// Copy and display the values currently on the data stack.
 		///
@@ -1880,15 +2014,6 @@ class Primitives {
 			print("dataStack: ${vm.dataStack}");
 		}, nt: Nt.DotS);
 
-		/// Display the contents of u consecutive addresses starting at addr.
-		///
-		/// [DUMP][link] ( addr u -- )
-		/// [link]: http://forth-standard.org/standard/tools/DUMP
-		vm.dict.addWord("DUMP", (){
-			vm.dataStack.over();
-			print( util.dumpBytes(vm.dataSpace.getCharRange(vm.dataStack.pop(), vm.dataStack.pop()), vm.dataStack.pop()) );
-		}, nt: Nt.DUMP);
-
 		/// Display the value stored at a-addr.
 		///
 		/// It's re-implemented in CLI.
@@ -1896,8 +2021,46 @@ class Primitives {
 		/// [?][link] ( a-addr -- )
 		/// [link]: http://forth-standard.org/standard/tools/q
 		vm.dict.addWord("?", (){
-			print(vm.dataSpace.fetchCell(vm.dataStack.pop()).toRadixString(vm.dataSpace.fetchCell(addrBASE)));
+			print(vm.dataSpace.fetchCell(vm.dataStack.pop).toRadixString(vm.dataSpace.fetchCell(addrBASE)));
 		}, nt: Nt.q);
+
+		/// Display the contents of u consecutive addresses starting at addr.
+		///
+		/// [DUMP][link] ( addr u -- )
+		/// [link]: http://forth-standard.org/standard/tools/DUMP
+		vm.dict.addWord("DUMP", (){
+			vm.dataStack.over();
+			print( util.dumpBytes(vm.dataSpace.getCharRange(vm.dataStack.pop, vm.dataStack.pop), vm.dataStack.pop) );
+		}, nt: Nt.DUMP);
+
+		/// Remove n+1 items from the data stack and store them for later retrieval by NR>.
+		///
+		/// [N>R][link] ( i * n +n -- ) ( R: -- j * x +n )
+		/// [link]: http://forth-standard.org/standard/core/NtoR
+		vm.dict.addWord("N>R", () {
+			// CHECK: The return stack may be used to store the data.
+			// Until this data has been retrieved by NR>:
+			//   - this data will not be overwritten by a subsequent invocation of N>R and
+			//   - a program may not access data placed on the return stack before the invocation of N>R.
+			vm.returnStack.pushList(vm.dataStack.popList(vm.dataStack.peek + 1));
+		}, nt: Nt.NtoR, immediate: true);
+
+		/// Retrieve the items previously stored by an invocation of N>R.
+		///
+		/// [NR>][link] ( -- i * x +n ) ( R: j * x +n -- )
+		/// [link]: http://forth-standard.org/standard/core/NRfrom
+		vm.dict.addWord("NR>", () {
+			// CHECK: It is an ambiguous condition if NR> is used with data not stored by N>R.
+			vm.dataStack.pushList(vm.returnStack.popList(vm.returnStack.peek + 1));
+		}, nt: Nt.NRfrom, immediate: true);
+
+		/// Return control to the host operating system, if any.
+		///
+		/// It's re-implemented in CLI.
+		///
+		/// [BYE][link] ( -- )
+		/// [link]: http://forth-standard.org/standard/tools/BYE
+		vm.dict.addWordNope("BYE", nt: Nt.BYE);
 
 		/// List the definition names in the first word list of the search order.
 		///
@@ -1909,15 +2072,62 @@ class Primitives {
 			print(str);
 		}, nt: Nt.WORDS);
 
-		/// Return control to the host operating system, if any.
-		///
-		/// It's re-implemented in CLI.
-		///
-		/// [BYE][link] ( -- )
-		/// [link]: http://forth-standard.org/standard/tools/BYE
-		vm.dict.addWordNope("BYE", nt: Nt.BYE);
+	} // standardOptionalTools
 
-	} // includeStandardOptionalProgrammingTools
+	/// The optional Search word set.
+	///
+	/// http://forth-standard.org/standard/search
+	standardOptionalSearch() {
 
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalSearch
+
+	/// The optional String word set.
+	///
+	/// http://forth-standard.org/standard/string
+	standardOptionalString() {
+
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalString
+
+	/// The optional Extended-Character word set.
+	///
+	/// http://forth-standard.org/standard/xchar
+	standardOptionalXChar() {
+
+		// Total:  ()
+		//
+		// Implemented:
+		//
+		//
+		//
+		// Not implemented:
+		//
+		//
+		//
+		//
+
+	} // standardOptionalXChar
 }
-

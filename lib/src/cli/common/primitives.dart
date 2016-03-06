@@ -18,7 +18,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [.][link] ( n -- )
 	/// [link]: http://forth-standard.org/standard/core/d
 	d.addWordOver(".", (){
-		stdout.write("${vm.dataStack.pop()} ");
+		stdout.write("${vm.dataStack.pop} ");
 	});
 
 	/// Display one space.
@@ -34,7 +34,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [SPACES][link] ( u -- )
 	/// [link]: http://forth-standard.org/standard/core/SPACES
 	d.addWordOver("SPACES", () {
-		var times = vm.dataStack.pop();
+		var times = vm.dataStack.pop;
 		if (times > 0) {
 			var str = new StringBuffer();
 			for (int i = 0; i < times; i++) {
@@ -49,7 +49,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [U.][link] ( u -- )
 	/// [link]: http://forth-standard.org/standard/core/Ud
 	d.addWordOver("U.", (){
-		stdout.write("${vm.dataStack.pop().toUnsigned(32)} ");
+		stdout.write("${vm.dataStack.pop.toUnsigned(32)} ");
 	});
 }
 
@@ -72,7 +72,7 @@ void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictiona
 	/// [?][link] ( a-addr -- )
 	/// [link]: http://forth-standard.org/standard/tools/q
 	d.addWordOver("?", (){
-		stdout.write("${vm.dataSpace.fetchCell(vm.dataStack.pop()).toRadixString(vm.dataSpace.fetchCell(addrBASE))} ");
+		stdout.write("${vm.dataSpace.fetchCell(vm.dataStack.pop).toRadixString(vm.dataSpace.fetchCell(addrBASE))} ");
 	});
 
 	/// Return control to the host operating system, if any.
@@ -91,15 +91,21 @@ void includeWordsCliNotStandardExtra(VirtualMachine vm, Dictionary d) {
 	/// Display the string stored at ( c-addr u -- )
 	d.addWord("?STRING", (){
 		vm.dataStack.swap();
-		stdout.write(vm.dataSpace.fetchString(vm.dataStack.pop(), vm.dataStack.pop()));
+		stdout.write(vm.dataSpace.fetchString(vm.dataStack.pop, vm.dataStack.pop));
 	});
 
 	/// Display an integer binary format.
 	d.addWordOver("BIN.", () {
-		stdout.write("${util.int32ToBin(vm.dataStack.pop())} ");
+		stdout.write("${util.int32ToBin(vm.dataStack.pop)} ");
 	});
 
-	/// Prints the object space content. TODO
+	/// Display an integer binary format.
+	d.addWordOver("BOOTMESSAGE", () {
+		stdout.writeln("forandar 0.9.X, on Dart VM ${Platform.version.split(" ")[0]} on ${Platform.operatingSystem}.");
+		stdout.writeln("Type `bye' to exit");
+	});
+
+	/// TODO: Prints the object space content.
 	d.addWordOver("ODUMP", () {
 		for (var obj in vm.objectSpace.data) {
 			stdout.write("$obj ");

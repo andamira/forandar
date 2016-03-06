@@ -7,7 +7,10 @@
 
 set -e
 
+FLAGS="--fatal-warnings $@"
+
 dartanalyzer \
+	$FLAGS \
 	lib/forandar.dart \
 	lib/debug/forandar.dart \
 	bin/forandar.dart \

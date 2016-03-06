@@ -44,10 +44,10 @@ abstract class LifoStackIface<T extends num> {
 	nip();
 	over();
 	over2();
-	peek();
-	peekNOS();
+	T get peek;
+	T get peekNOS;
 	pick(int i);
-	T pop();
+	T get pop;
 	List<T> popList(int i);
 	push(T i);
 	pushList(List<T> L);
