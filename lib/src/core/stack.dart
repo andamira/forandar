@@ -9,7 +9,7 @@ import 'package:forandar/src/core/globals.dart';
 part 'package:forandar/src/core/common/stack.dart';
 
 /// Last In First Out Stack Implementation.
-abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStackIface {
+abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStackInterface {
 
 	LifoStack(maxSize, data, type) : super(maxSize, data, type);
 

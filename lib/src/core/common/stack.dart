@@ -36,7 +36,7 @@ abstract class StackBase<T extends num> {
 	String toString() => "<${_size}> ${content()}";
 }
 
-abstract class LifoStackIface<T extends num> {
+abstract class LifoStackInterface<T extends num> {
 	drop();
 	drop2();
 	dup();

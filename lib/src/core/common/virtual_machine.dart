@@ -54,14 +54,17 @@ class VirtualMachine {
 			argParser(args, config, source);
 		}
 
+		// Updates the global configuration.
+		globalConfig = config;
+
 		/// Creates the Stacks.
-		dataStack    = new LifoStackInt(config.option['dataStackSize'], StackType.dataStack);
-		returnStack  = new LifoStackInt(config.option['returnStackSize'], StackType.returnStack);
-		controlStack = new LifoStackInt(config.option['controlStackSize'], StackType.controlStack);
-		floatStack   = new LifoStackFloat(config.option['floatStackSize'], StackType.floatStack);
+		dataStack    = new LifoStackInt(config.getOption('dataStackSize'), StackType.dataStack);
+		returnStack  = new LifoStackInt(config.getOption('returnStackSize'), StackType.returnStack);
+		controlStack = new LifoStackInt(config.getOption('controlStackSize'), StackType.controlStack);
+		floatStack   = new LifoStackFloat(config.getOption('floatStackSize'), StackType.floatStack);
 
 		/// Creates and initializes the main data space.
-		dataSpace = new DataSpace(config.option['dataSpaceSize']);
+		dataSpace = new DataSpace(config.getOption('dataSpaceSize'));
 
 		/// Creates the object space.
 		objectSpace = new ObjectSpace();

@@ -19,6 +19,16 @@ enum InputType { String, File, Url }
 /// All the interface types.
 enum InterfaceType { undefined, cli, web }
 
+/// All the terminal types.
+enum TerminalType { auto, simple, ansi }
+
+
+// Global Variables
+// ----------------
+
+var globalConfig; // CHECK
+
+
 // Global Constants
 // ----------------
 

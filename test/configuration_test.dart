@@ -17,29 +17,25 @@ void main() {
 			expect(c, isNotNull);
 		});
 
-		test("Constructor (singleton test)", () {
-			expect(c.hashCode, equals(new Configuration().hashCode));
-		});
-
 		group("Option:", () {
 			test("dataStackSize", () {
-				expect(c.option['dataStackSize'], greaterThan(31));
+				expect(c.getOption('dataStackSize'), greaterThan(31));
 			});
 
 			test("floatStackSize", () {
-				expect(c.option['floatStackSize'], greaterThan(5));
+				expect(c.getOption('floatStackSize'), greaterThan(5));
 			});
 
 			test("returnStackSize", () {
-				expect(c.option['returnStackSize'], greaterThan(5));
+				expect(c.getOption('returnStackSize'), greaterThan(5));
 			});
 
 			test("controlStackSize", () {
-				expect(c.option['controlStackSize'], greaterThan(5));
+				expect(c.getOption('controlStackSize'), greaterThan(5));
 			});
 
 			test("dataSpaceSize", () {
-				expect(c.option['dataSpaceSize'], greaterThan(minDataSpaceSize));
+				expect(c.getOption('dataSpaceSize'), greaterThan(minDataSpaceSize));
 			});
 
 		});
