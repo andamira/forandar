@@ -89,7 +89,6 @@ void argParser(List<String> args, Configuration c, InputQueue i) {
 		..addOption('terminal-type', abbr: 'T',
 			allowMultiple: false,
 			valueHelp: TerminalType.values.join("|").replaceAll("TerminalType.", ""),
-			allowed: TerminalType.values.join("|").replaceAll("TerminalType.", "").split('|'),
 			help: "Specify the terminal type ${_defaultValue(Configuration.defaultTerminalType.toString().split('.').last)}"
 		)
 

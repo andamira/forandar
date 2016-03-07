@@ -9,7 +9,8 @@ import 'package:forandar/src/core/input.dart';
 import 'package:forandar/src/core/globals.dart';
 
 // Cli
-//import 'package:forandar/src/cli/ansi.dart';
+import 'package:forandar/src/cli/ansi.dart';
+import 'package:forandar/src/cli/terminal.dart';
 
 // The input queue adapted for the CLI interface.
 class InputQueue extends InputQueueBase {
@@ -39,15 +40,13 @@ class InputQueue extends InputQueueBase {
 		}
 	}
 
-
-	// A simple terminal, that works.
+	// A simple unfeatured terminal, that simply works.
 	Future<String> readLineFromSimpleTerminal() async {
 		return await stdin.readLineSync();
 	}
 
-	// An ANSI compatible terminal, with extended functionality.
+	// An ANSI full-featured terminal, with extra functionality.
 	Future<String> readLineFromAnsiTerminal() async {
-		return await stdin.readLineSync(); // TEMP
+		return await Terminal.readLineSync(); // works, but problem is UTF8
 	}
-
 }

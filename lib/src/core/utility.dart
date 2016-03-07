@@ -111,7 +111,7 @@ int UTF8CodeUnitsPerCodePoint(int codePoint) {
 	return 4; // <= 0x10FFFF
 }
 
-/// Returns the number of codeUnits necessary to encode a list of codepoints in UTF-8.
+/// Returns the number of codeUnits necessary to encode a list of code points in UTF-8.
 int UTF8CodeUnitsPerCodePointsList(List<int> codePointsList) {
 	int codeUnits = 0;
 	for (int cp in codePointsList) {

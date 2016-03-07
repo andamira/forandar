@@ -16,7 +16,7 @@ class Dictionary {
 	Word _lastWord;
 
 	/// List of [Word]s retrievable by the word's name.
-	Map<String, Word> _wordsMap = new SplayTreeMap();
+	Map<String, Word> _wordsMap = new HashMap();
 
 	/// List of [Word]s retrievable by index.
 	///
