@@ -49,8 +49,8 @@ void main() {
 
 		test("ForthError.unmanaged()", () {
 			String s = "XYZ25";
-			expect(ForthError.unmanaged(s), allOf(
-				startsWith("UNMANAGED ERROR"),
+			expect(ForthError.unmanaged(s, preMsg: "ABC"), allOf(
+				startsWith("\nABC"),
 				contains(s),
 				contains("package:")
 			));

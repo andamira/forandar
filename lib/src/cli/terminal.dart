@@ -1,4 +1,3 @@
-/// The [Terminal] class provides the methods to ue
 library forandar.cli.terminal;
 
 import 'dart:convert';
@@ -8,7 +7,8 @@ import 'dart:io';
 import 'package:forandar/src/core/errors.dart';
 
 // Cli
-import 'package:forandar/src/cli/ansi.dart';
+import 'package:forandar/src/cli/xterm_control.dart';
+import 'package:forandar/src/cli/xterm_keycodes.dart';
 
 class Terminal {
 
@@ -22,30 +22,59 @@ class Terminal {
 	static int get lineLength => _lineCodePoints.length;
 
 	/// The number of columns of the current terminal.
-	static int get columns => stdout.terminalColumns;
+	static int get columns {
+		try {
+			return stdout.terminalColumns;
+		} catch (e) {
+			// BUG INFO issue #1
+			throw "Please run forandar with `dart bin/forandar.dart` to use the xterm terminal type.\nSee https://github.com/andamira/forandar/issues/1/ for more info.\n\n$e";
+		}
+	}
 
 	/// The number of rows of the current terminal.
-	static int get rows => stdout.terminalLines;
+	static int get lines {
+		try {
+			return stdout.terminalLines;
+		} catch (e) {
+			// BUG INFO issue #1
+			throw "Please run forandar with `dart bin/forandar.dart` to use the xterm terminal type.\nSee https://github.com/andamira/forandar/issues/1/ for more info.\n\n$e";
+		}
+	}
 
-	// Signals
+	// Signals CHECK
 	static Stream get onSIGINT => ProcessSignal.SIGINT.watch();
 	static Stream get onResize => ProcessSignal.SIGWINCH.watch();
 
+
+	// Inner properties for interpretation REFACTOR
+
+
+	// A flag for sending the line.
+	static bool lineIsComplete = false;
+
+	// Store a list of bytes that represents a key code.
+	static final List<int> keyCode = [];
+
+	// A counter to keep track of remaining UTF-8 code points.
+	static int _UTF8RemainingChars = 0;
+
+
+
 	static void cursorHome() {
 		_lineCursorIndex = 0;
-		ANSI.moveToColumn(0);
+		XTerm.moveToColumn(0);
 	}
 
 	/// Moves the cursor to the end of the line.
 	static void cursorEnd() {
 		_lineCursorIndex = lineLength;
-		ANSI.moveToColumn(lineLength);
+		XTerm.moveToColumn(lineLength);
 	}
 
 	/// Moves the cursor to the left.
 	static void cursorLeft() {
 		if (_lineCursorIndex > 0 && lineLength > 0) {
-			ANSI.cursorBack();
+			XTerm.cursorBack();
 			_lineCursorIndex--;
 		}
 	}
@@ -53,7 +82,7 @@ class Terminal {
 	/// Moves the cursor to the right.
 	static void cursorRight() {
 		if (_lineCursorIndex < lineLength) {
-			ANSI.cursorForward();
+			XTerm.cursorForward();
 			_lineCursorIndex++;
 		}
 	}
@@ -93,18 +122,15 @@ class Terminal {
 	static String readLineSync() {
 		try {
 			return _readLineSync();
-		} catch(e) {
+		} catch(e, st) {
 			stdin.echoMode = true;
 			stdin.lineMode = true;
-			print(ForthError.unmanaged(e));
+			print(ForthError.unmanaged("$e\n$st"));
 			return "";
 		}
 	}
 
 	static String _readLineSync({encoding: UTF8}) {
-
-		// Flags for multiple bytes that represent a key code.
-		final List<int> _keyCode = [];
 
 		// A temporary list of bytes for UTF-8 multi-byte conversion.
 		final List<int> _codeUnits = [];
@@ -112,11 +138,7 @@ class Terminal {
 		// A representation of the terminal line as a [String].
 		String _lineString = "";
 
-		// A counter to keep track of remaining UTF-8 code points.
-		int _UTF8RemainingChars = 0;
-
-		// A flag for sending the line.
-		bool sendLine = false;
+		// XTerm.mouseOn(); // TEMP
 
 		stdin.echoMode = false;
 		stdin.lineMode = false;
@@ -129,246 +151,51 @@ class Terminal {
 
 
 			// A single char (or the first of a sequence)
-			// ------------------------------------------
-			if (_keyCode.isEmpty) {
-
-				// ASCII control characters.
-				//
-				// ^Key means Ctrl+Key (Pressing the Control and the key)
-				//
-				// https://en.wikipedia.org/wiki/ASCII#ASCII_control_characters
-				if (byte < 32 || byte == 127) {
-
-					switch (byte) {
-
-						// Common control characters
-						// -------------------------
-
-						case 27: // ESC \e ^[
-							// Start an ESCAPE sequence.
-							_keyCode.add(byte);
-							continue;
-
-						case 8:  // BS - Backspace \b ^H
-						case 127:// DEL - Delete ^?
-							deleteBackwards();
-							break;
-
-						case 10: // LF  - Line Feed \n ^J
-						case 13: // CR  - Carriage Return \r ^M
-							sendLine = true;
-							break;
-
-						// The rest of the control characters
-						// ----------------------------------
-
-						case 0:  // NUL - null \0 ^@
-						case 3:  // ETX - End of text ^C
-						case 4:  // EOT - End of transmission ^D
-							// IDEA: bye
-						case 5:  // ENQ - Enquiry ^E
-						case 6:  // ACK - Acknowledgement ^F
-						case 7:  // BEL - Bell \a ^G
-						case 9:  // HT - Horizontal Tab \t ^I
-							// IDEA: autocompletion
-						case 11: // VT  - Vertical Tab \ ^v
-						case 12: // FF  - Form Feed \f ^L
-						case 14: // SO  - Shift Out ^N
-						case 15: // SI  - Shift In ^O
-						case 16: // DLE - Data Link Escape ^P
-						case 17: // DC1 - Device Control 1 (XON) ^Q
-						case 18: // DC2 - Device Control 2 ^R
-						case 19: // DC3 - Device Control 3 (XOFF) ^S
-						case 20: // DC4 - Device Control 4 ^T
-						case 21: // NAK - Negative Acknowledgement ^U
-						case 22: // SYN - Synchronous Idle ^V
-						case 23: // ETB - End of Transmission Block ^W
-						case 24: // CAN - Cancel ^X
-						case 25: // EM  - End of Medium ^Y
-						case 26: // SUB - Substitute ^Z
-						case 28: // FS  - File Separator ^\
-						case 29: // GS  - Group Separator ^]
-						case 30: // RS  - Record Separator ^^
-						case 31: // US  - Unit Separator ^_
-							continue;
-					}
-				}
+			if (keyCode.isEmpty) {
 
 				// Returns `null` if no bytes preceeded the end of input.
-				else if (byte < 0) {
-					throw "CHECK: (byte < 0)"; //TEMP DEBUG if this is necessary.
+				if (byte < 0) {
+					throw "Warning: (byte < 0)"; // CHECK if this is necessary.
 					if (_lineCodePoints.isEmpty) return null;
 					break;
 				}
 
-				// The rest of the characters.
-				else {
-
-					// Add the byte to the temporary code points list,
-					// which will be parsed depending on the encoding.
-					_codeUnits.add(byte);
+				// ASCII control characters.
+				else if (byte < 32 || byte == 127) {
+					if (KeyCodes.asciiControl(byte)) continue;
 				}
 
-				// If we are supporting UTF8.
+				// In any other case, add the byte to the temporary code points list,
+				else { _codeUnits.add(byte); }
+
+				// UTF8 decoding.
 				if (encoding.name == UTF8.name) {
-
-					// Detect if the byte is part of a multi-byte UTF-8 sequence.
-					if (byte & 128 == 128) { // 10000000
-						// a 2+ byte sequence.
-						if (byte & 64 == 64) { // 01000000
-							_UTF8RemainingChars++;
-							// a 3+ byte sequence.
-							if (byte & 32 == 32) { // 00100000
-								_UTF8RemainingChars++;
-								// a 4 byte sequence.
-								if (byte & 16 == 16) { // 00010000
-									_UTF8RemainingChars++;
-								}
-							}
-						} else {
-							_UTF8RemainingChars--;
-						}
-
-						// Make sure to update the line only after receiving
-						// the last character of the unicode sequence in progress.
-						if (_UTF8RemainingChars > 0) continue;
-					}
+					if (_detectUTF8Byte(byte)) continue;
 				}
 			}
 
-
 			// The continuation of a key-code sequence
-			// ---------------------------------------
 			else {
 
-				// Determining the 2nd byte...
-				if (_keyCode.length == 1) {
+				// Determine the 2nd byte
+				if (keyCode.length == 1) {
 
-					// Of a ESCAPE sequence.
-					if(_keyCode.single == 27 ) {
+					if(keyCode.single == 27 ) { // Of a ESCAPE sequence
+						if (KeyCodes.sequence27(byte)) continue;
+					}
 
-						// Support these sequences paths:
-						switch (byte) {
-							case 79:
-							case 91:
-								_keyCode.add(byte);
-								continue;
-						}
+				// Determine the 3rd byte or more
+				} else {
+
+					if (keyCode[1] == 79) { // 27 79
+						if (KeyCodes.sequence27_79(byte)) continue;
+					}
+
+					else if (keyCode[1] == 91) { // 27 91
+						if (KeyCodes.sequence27_91(byte)) continue;
 					}
 				}
-
-				// Determining the 3+ bytes...
-				else {
-
-					// Of a ESCAPE sequence.
-					if (_keyCode[0] == 27) {
-
-						// home, end ...
-						//
-						// 27 79
-						if (_keyCode[1] == 79) {
-
-							switch (byte) {
-
-								// End (27 79 70)
-								case 70:
-									cursorEnd();
-									break;
-
-								// Home (27 79 72)
-								case 72:
-									cursorHome();
-									break;
-							}
-
-							_keyCode.clear();
-
-						}
-
-						// arrow keys, delete, numeric: home, end...
-						// F5-F12, control + arrow keys (FIXME <F9>)
-						//
-						// 27 91
-						else if (_keyCode[1] == 91) {
-
-							// NOTE: add nesting level here: lenght > 2
-							// 27 91 49 59 53 68 0 ctl-left
-							// 27 91 49 59 53 67 0 ctl-right
-							// if (_keyCode.length > 2)  TODO FIXME TEMP
-
-							switch (byte) {
-
-								// 27 91 65
-								case 65: // Up arrow (27 91 65)
-									historyPrevious();
-									_keyCode.clear();
-									continue;
-
-								// 27 91 66
-								case 66: // Down arrow (27 91 66)
-									historyNext();
-									_keyCode.clear();
-									continue;
-
-								//
-								case 67: // Right arrow (27 91 67)
-									cursorRight();
-									_keyCode.clear();
-									continue;
-
-								case 68: // Left arrow (27 91 68)
-									cursorLeft();
-									_keyCode.clear();
-									continue;
-
-								// Preludes for byte 126.
-								case 49: // home(>126) ctrl+left(>59 53 68)
-								case 50: // F9-F12, insert
-								case 51: // delete
-								case 52: // end
-								case 53: // pgup
-								case 54: // pgdown
-									_keyCode.add(byte);
-									continue;
-
-								case 126:
-									// Delete (27 91 51 126)
-									if(_keyCode[2] == 51) {
-										deleteForward();
-
-									// Home (27 91 49 126)
-									} else if (_keyCode[2] == 49) {
-										cursorHome();
-
-									// End (27 91 52 126)
-									} else if (_keyCode[2] == 52) {
-										cursorEnd();
-
-									// PgUp (27 91 53 126)
-									} else if (_keyCode[2] == 53) {
-
-									// PgDown (27 91 64 126)
-									} else if (_keyCode[2] == 54) {
-
-									// TODO: add: F5-F12
-									// http://www.murga-linux.com/puppy/viewtopic.php?t=63539&sid=6bfc5ec76447c71821cfee88c2d48fc6
-									}
-
-									_keyCode.clear();
-									break;
-									
-								// Case...
-
-
-							} // switch byte
-
-						} // [1] == 91 
-
-					} // [0] == 27
-
-				} // _keyCode.length > 1
-
-			} // _keyCode.isEmpty | isNotEmpty
+			}
 
 
 			// Insert Code point
@@ -395,18 +222,19 @@ class Terminal {
 			if (_lineCodePoints.length > columns) {
 				// TODO: make it work with multi-line input
 			}
-			ANSI.overwriteLine(_lineString);
+			XTerm.overwriteLine(_lineString);
 
 			// Updates the cursor.
-			ANSI.moveToColumn(_lineCursorIndex + 1);
+			XTerm.moveToColumn(_lineCursorIndex + 1);
 
 
 		// End the byte reading loop
-		} while (!sendLine);
+		} while (!lineIsComplete);
 
 
-		// Send line
-		// ---------
+		// Sends a completed line
+		// ----------------------
+		lineIsComplete = false;
 
 		stdin.echoMode = true;
 		stdin.lineMode = true;
@@ -415,8 +243,40 @@ class Terminal {
 		_lineCodePoints.clear();
 		_lineCursorIndex = 0;
 
+		// XTerm.mouseOff(); // TEMP
+
 		return _lineString;
 
 	} // _readLineSync()
+
+
+	/// Returns true if the byte is part of a multi-byte UTF-8 sequence.
+	static bool _detectUTF8Byte(int byte) {
+
+		if (byte & 128 == 128) { // 10000000
+
+			// a 2+ byte sequence.
+			if (byte & 64 == 64) { // 01000000
+				_UTF8RemainingChars++;
+
+				// a 3+ byte sequence.
+				if (byte & 32 == 32) { // 00100000
+					_UTF8RemainingChars++;
+
+					// a 4 byte sequence.
+					if (byte & 16 == 16) { // 00010000
+						_UTF8RemainingChars++;
+					}
+				}
+			} else {
+				_UTF8RemainingChars--;
+			}
+
+			// Make sure to update the line only after receiving
+			// the last character of the unicode sequence in progress.
+			if (_UTF8RemainingChars > 0) return true;
+		}
+		return false;
+	}
 
 }

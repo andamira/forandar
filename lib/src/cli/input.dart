@@ -9,7 +9,6 @@ import 'package:forandar/src/core/input.dart';
 import 'package:forandar/src/core/globals.dart';
 
 // Cli
-import 'package:forandar/src/cli/ansi.dart';
 import 'package:forandar/src/cli/terminal.dart';
 
 // The input queue adapted for the CLI interface.
@@ -27,14 +26,14 @@ class InputQueue extends InputQueueBase {
 		// Be the most compatible by default.
 		if (globalConfig.getOption('terminalType') == TerminalType.auto) {
 
-			if (Platform.isWindows) {
-				return await readLineFromSimpleTerminal();
+			if (Platform.isLinux || Platform.isMacOS) {
+				return await readLineFromXTerm();
 			} else {
-				return await readLineFromAnsiTerminal();
+				return await readLineFromSimpleTerminal();
 			}
 
-		} else if (globalConfig.getOption('terminalType') == TerminalType.ansi) {
-			return await readLineFromAnsiTerminal();
+		} else if (globalConfig.getOption('terminalType') == TerminalType.xterm) {
+			return await readLineFromXTerm();
 		} else {
 			return await readLineFromSimpleTerminal();
 		}
@@ -45,8 +44,8 @@ class InputQueue extends InputQueueBase {
 		return await stdin.readLineSync();
 	}
 
-	// An ANSI full-featured terminal, with extra functionality.
-	Future<String> readLineFromAnsiTerminal() async {
+	// An XTerm compatible full-featured terminal, with extra functionality.
+	Future<String> readLineFromXTerm() async {
 		return await Terminal.readLineSync(); // works, but problem is UTF8
 	}
 }

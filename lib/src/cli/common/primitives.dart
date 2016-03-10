@@ -4,8 +4,9 @@ part of forandar.cli.primitives;
 /// 
 void includeWordsCli(VirtualMachine vm, Dictionary d) {
 	includeWordsCliStandardCore(vm, d);
+	includeWordsCliStandardOptionalFacility(vm, d);
 	includeWordsCliStandardOptionalFile(vm, d);
-	includeWordsCliStandardOptionalProgrammingTools(vm, d);
+	includeWordsCliStandardOptionalTools(vm, d);
 	includeWordsCliNotStandardExtra(vm, d);
 }
 
@@ -19,6 +20,21 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	/// [link]: http://forth-standard.org/standard/core/d
 	d.addWordOver(".", (){
 		stdout.write("${vm.dataStack.pop} ");
+	});
+
+	/// Receive one character char.
+	///
+	/// [KEY][link] ( -- char )
+	/// [link]: https://forth-standard.org/standard/core/KEY
+	d.addWordOver("KEY", () {
+		vm.dataStack.push(stdin.readByteSync());
+
+		if (vm.input.keyBuffer >= 0) {
+			vm.dataStack.push(vm.input.keyBuffer);
+			vm.source.keyBuffer = -1;
+		} else {
+			vm.dataStack.push(stdin.readByteSync());
+		}
 	});
 
 	/// Display one space.
@@ -53,6 +69,10 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 	});
 }
 
+/// [The optional Facility word set][http://forth-standard.org/standard/facility]
+void includeWordsCliStandardOptionalFacility(VirtualMachine vm, Dictionary d) {
+}
+
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
 void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 
@@ -63,7 +83,8 @@ void includeWordsCliStandardOptionalFile(VirtualMachine vm, Dictionary d) {
 	//d.addWordOver("INCLUDED", () {}); // TODO
 }
 
-void includeWordsCliStandardOptionalProgrammingTools(VirtualMachine vm, Dictionary d) {
+/// [The optional Programming-Tools word set][http://forth-standard.org/standard/tools]
+void includeWordsCliStandardOptionalTools(VirtualMachine vm, Dictionary d) {
 
 	// ? BYE
 

@@ -20,7 +20,7 @@ enum InputType { String, File, Url }
 enum InterfaceType { undefined, cli, web }
 
 /// All the terminal types.
-enum TerminalType { auto, simple, ansi }
+enum TerminalType { auto, simple, xterm }
 
 
 // Global Variables

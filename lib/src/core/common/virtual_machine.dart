@@ -2,7 +2,7 @@ part of forandar.core.virtual_machine;
 
 /// The Forth Virtual Machine.
 ///
-/// Contains the dictionary, stacks, data and object spaces, source queue...
+/// Contains the dictionary, stacks, data and object spaces, input queue...
 class VirtualMachine {
 
 	// Dictionary.
@@ -18,7 +18,7 @@ class VirtualMachine {
 	DataSpace dataSpace;
 	ObjectSpace objectSpace;
 
-	InputQueueBase source;
+	InputQueueBase input;
 	Configuration config;
 
 	// Singleton constructor, allowing only one instance.
@@ -44,14 +44,14 @@ class VirtualMachine {
 			List<String> args,
 			Function argParser,
 			this.config,
-			this.source,
+			this.input,
 			bool loadPrimitives) {
 
 		/// Parses the arguments.
 		///
-		/// Updates the [config]uration and fills the [source]code input queue.
+		/// Updates the [config]uration and fills the sourcecode [input] queue.
 		if (args != null && argParser != null) {
-			argParser(args, config, source);
+			argParser(args, config, input);
 		}
 
 		// Updates the global configuration.

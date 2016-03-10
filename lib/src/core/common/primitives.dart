@@ -537,13 +537,13 @@ class Primitives {
 			vm.dict.execNt(Nt.SAVE_INPUT); // TODO
 
 			// Store minus-one (-1) in SOURCE-ID if it is present.
-			vm.source.id = -1;
+			vm.input.sourceId = -1;
 
 			// Make the string described by c-addr and u both the input source and input buffer.
 
 			// TEMP FIXME
 			//vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
-			//vm.source.length = inputUTF8.length;
+			//vm.input.sourceLength = inputUTF8.length;
 
 			// set >IN to zero
 			vm.dataSpace.storeCell(addrToIN, 0);
@@ -631,6 +631,12 @@ class Primitives {
 		vm.dict.addWord("INVERT", (){
 			vm.dataStack.push(~vm.dataStack.pop);
 		}, nt: Nt.INVERT);
+
+		/// Receive one character char.
+		///
+		/// [KEY][link] ( -- char )
+		/// [link]: http://forth-standard.org/standard/core/KEY
+		vm.dict.addWordNope("KEY", nt: Nt.KEY);
 
 		/// Perform a logical left shift of u bit-places on x1, giving x2.
 		///
@@ -734,7 +740,7 @@ class Primitives {
 			// Put in the data stack the current position in the input buffer.
 			int pointer = vm.dataSpace.fetchCell(addrToIN);
 			vm.dataStack.push(addrInputBuffer + pointer);
-			vm.dataStack.push(vm.source.length - pointer);
+			vm.dataStack.push(vm.input.sourceLength - pointer);
 
 			// Skip the leading delimiter characters (space).
 			vm.dict.execNts([Nt.BL, Nt.SKIP]);
@@ -785,7 +791,7 @@ class Primitives {
 			vm.returnStack.clear();
 
 			// Store 0 in SOURCE-ID .
-			vm.source.id = 0;
+			vm.input.sourceId = 0;
 
 			// Enter interpretation state.
 			vm.interpretationState = true;
@@ -856,13 +862,13 @@ class Primitives {
 		vm.dict.addWord("REFILL", () async {
 
 			// The input source comes from the terminal
-			if (vm.source.fromTerm()) {
+			if (vm.input.fromTerm()) {
 
 				String input;
 
 				// Attempts to receive input into the terminal input buffer.
 				try {
-					input = await vm.source.readLineFromTerminal();
+					input = await vm.input.readLineFromTerminal();
 				}
 				// If there is no input available returns false.
 				catch(e) {
@@ -892,7 +898,7 @@ class Primitives {
 				vm.dataSpace.setCharRange(addrInputBuffer, inputUTF8);
 
 				// Sets the length of the input source.
-				vm.source.length = inputUTF8.length;
+				vm.input.sourceLength = inputUTF8.length;
 
 				// Sets >IN to zero.
 				vm.dataSpace.storeCell(addrToIN, 0);
@@ -962,7 +968,7 @@ class Primitives {
 		/// [link]: http://forth-standard.org/standard/core/SOURCE
 		vm.dict.addWord("SOURCE", () {
 			vm.dataStack.push(addrInputBuffer);
-			vm.dataStack.push(vm.source.length);
+			vm.dataStack.push(vm.input.sourceLength);
 		}, nt: Nt.SOURCE);
 
 		/// Identifies the input source as follows:
@@ -974,7 +980,7 @@ class Primitives {
 		/// [SOURCE-ID][link] ( -- 0 | -1 )
 		/// [link]: http://forth-standard.org/standard/core/SOURCE-ID
 		vm.dict.addWord("SOURCE-ID", (){
-			vm.dataStack.push(vm.source.id);
+			vm.dataStack.push(vm.input.sourceId);
 		}, nt: Nt.SOURCE_ID);
 
 		/// Display one space.

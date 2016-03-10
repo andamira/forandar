@@ -62,8 +62,6 @@ You'll first need to install the appropriate version of [Dart](https://www.dartl
 	pub global activate --source path ./
 	```
 
-*Read more about [pub global](https://www.dartlang.org/tools/pub/cmd/pub-global.html) & [script snapshots](https://www.dartlang.org/articles/snapshots/#how-to-generate-and-use-script-snapshots).*
-
 ### Command Line Interface
 
 **Usage Examples**

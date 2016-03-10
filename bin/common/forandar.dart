@@ -97,7 +97,7 @@ void argParser(List<String> args, Configuration c, InputQueue i) {
 			allowMultiple: false,
 			valueHelp: 'LINES',
 			callback: _checkArgIsPositiveInteger,
-			help: "Specify the history lines in 'ansi' ${_defaultValue(Configuration.defaultTerminalHistoryLines)}"
+			help: "Specify the history lines in 'xterm' ${_defaultValue(Configuration.defaultTerminalHistoryLines)}"
 		)
 
 	    ..addSeparator('Misc options:') // ---
@@ -208,8 +208,8 @@ void argParser(List<String> args, Configuration c, InputQueue i) {
 						case 'simple':
 							c.setOption('terminalType', TerminalType.simple);
 							break;
-						case 'ansi':
-							c.setOption('terminalType', TerminalType.ansi);
+						case 'xterm':
+							c.setOption('terminalType', TerminalType.xterm);
 							break;
 					}
 				} catch(e) {

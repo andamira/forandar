@@ -20,10 +20,10 @@ class ForthError implements Error {
 	/// This is a beautifier for errors not managed by this class.
 	/// Ideally all errors that pop up should be instances of ForthError.
 	static String unmanaged(String error, {String preMsg, String postMsg}) {
-		preMsg == null ? preMsg = 'UNMANAGED ERROR: ' : preMsg =  "$preMsg ";
+		preMsg == null ? preMsg = 'Forth Unmanaged Error: ' : preMsg =  "$preMsg ";
 		postMsg == null ? postMsg = '' : postMsg = " $postMsg";
 
-		return "${preMsg}${error}${postMsg}\n${new Trace.current().terse}";
+		return "\n${preMsg}${error}${postMsg}\n${new Trace.current().terse}";
 	}
 
 	ForthError(this.number, {this.preMsg, this.postMsg}) {

@@ -19,27 +19,32 @@ class InputQueueElement {
 /// either as a code string, or as a file / URL to be loaded.
 class InputQueueBase {
 
+	/// Storage for the history of terminal input lines.
+	///
+	/// TODO: persistant between executions. How?
+	List<String> terminalHistory = [ ];
+
 	/// Storage for the source code input references, in original order.
 	List<InputQueueElement> queue = [ ];
 
 	/// The identification of the input source.
 	///
 	/// This is the value returned by SOURCE-ID.
-	int id = 0;
+	int sourceId = 0;
 
 	/// The number of characters in the input buffer.
 	///
 	/// This is the length value returned by SOURCE.
-	int length = 0;
+	int sourceLength = 0;
 
 	/// Returns true if the input source is set to the interactive terminal.
-	bool fromTerm() => id == 0 ? true : false;
+	bool fromTerm() => sourceId == 0 ? true : false;
 
 	/// Returns true if the input source is set to a string for EVALUATE .
-	bool fromEval() => id == -1 ? true : false;
+	bool fromEval() => sourceId == -1 ? true : false;
 
 	/// Returns true if the input source is set to a file id.
-	bool fromFile() => id > 0 ? true : false;
+	bool fromFile() => sourceId > 0 ? true : false;
 
 	/// Adds a new source to the [queue].
 	void add(InputType t, String s) {
@@ -51,8 +56,15 @@ class InputQueueBase {
 		queue = [ ];
 	}
 
-	// Methods dependent on the specific interface:
+	/// Single character input buffer for the KEY word.
+	///
+	/// A negative value means that the buffer is empty.
+	///
+	/// See [KEY?](http://forth-standard.org/standard/facility/KEYq)
+	/// rationale for more information.
+	int keyBuffer = -1;
 
+	// Methods dependent on the specific interface:
 	loadFile(String f) {}
 	loadUrl(String u) {}
 	readLineFromTerminal() {}
