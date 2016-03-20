@@ -5,12 +5,12 @@ library forandar.core.globals;
 
 /// All the different stack types.
 enum StackType {
-    unknown,
-    dataStack,
-    floatStack,
-    returnStack,
-    controlStack,
-    exceptionStack
+  unknown,
+  dataStack,
+  floatStack,
+  returnStack,
+  controlStack,
+  exceptionStack
 }
 
 /// Supported types of input.
@@ -54,15 +54,15 @@ const int padSize = inputBufferSize;
 /// Reserve some space at the beginning for variables
 /// and some minimum free space after that.
 const int minDataSpaceSize =
-	// Cells.
-	sizeCELL * 3        // BASE STATE >IN
+  // Cells.
+  sizeCELL * 3        // BASE STATE >IN
 
-	// Buffers.
-	+ inputBufferSize   // SOURCE
-	+ padSize           // PAD
+  // Buffers.
+  + inputBufferSize   // SOURCE
+  + padSize           // PAD
 
-	// Minimum free space.
-	+ 1024;
+  // Minimum free space.
+  + 1024;
 
 /// Address returned by BASE .
 ///

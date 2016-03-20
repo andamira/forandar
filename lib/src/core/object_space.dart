@@ -2,17 +2,17 @@ library forandar.core.object_space;
 
 class ObjectSpace {
 
-	List<Object> data = [];
-	int pointer = 0;
+  List<Object> data = [];
+  int pointer = 0;
 
-	// Singleton constructor, allowing only one instance.
-	factory ObjectSpace() {
-		_instance ??= new ObjectSpace._internal();
-		return _instance;
-	}
-	static ObjectSpace _instance;
+  // Singleton constructor, allowing only one instance.
+  factory ObjectSpace() {
+    _instance ??= new ObjectSpace._internal();
+    return _instance;
+  }
+  static ObjectSpace _instance;
 
-	ObjectSpace._internal();
+  ObjectSpace._internal();
 
-	int get length => data.length;
+  int get length => data.length;
 }

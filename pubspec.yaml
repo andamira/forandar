@@ -1,6 +1,6 @@
 name: forandar
-version: 0.9.6
-description: A Forth implementation in Dart
+version: 0.9.7
+description: A Forth system implemented in Dart
 author: José Luis Cruz <joseluis@andamira.net>
 homepage: https://github.com/andamira/forandar
 dependencies:

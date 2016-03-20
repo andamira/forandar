@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/andamira/forandar/master/web/img/logo-55x120.png" valign="bottom">  forandar
 
-A Forth implementation in Dart.
+A Forth system implemented in Dart.
 
 ![Version pre-alpha](https://img.shields.io/badge/version-pre--alpha-C70300.svg)
 [![Build Status](https://travis-ci.org/andamira/forandar.svg?branch=master)](https://travis-ci.org/andamira/forandar)

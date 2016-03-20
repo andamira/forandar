@@ -7,20 +7,20 @@ import "package:forandar/src/core/primitives.dart";
 
 void main() {
 
-	VirtualMachine vm = new VirtualMachine(loadPrimitives: false); 
-	Primitives p;
+  VirtualMachine vm = new VirtualMachine(loadPrimitives: false);
+  Primitives p;
 
-	/// Tests the [Primitives].
-	group("[Primitives]", () {
+  /// Tests the [Primitives].
+  group("[Primitives]", () {
 
-		test("Constructor", () {
-			p = new Primitives(vm);
-			expect(p, isNotNull);
-		});
+    test("Constructor", () {
+      p = new Primitives(vm);
+      expect(p, isNotNull);
+    });
 
-		test("load()", () {
-			expect(p.load(), isNull);
-		});
-		
-	});
+    test("load()", () {
+      expect(p.load(), isNull);
+    });
+
+  });
 }

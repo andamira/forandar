@@ -6,27 +6,27 @@ import "package:forandar/src/core/object_space.dart";
 
 void main() {
 
-	ObjectSpace o;
+  ObjectSpace o;
 
-	/// Tests the [ObjectSpace] class.
-	group("[ObjectSpace]", () {
+  /// Tests the [ObjectSpace] class.
+  group("[ObjectSpace]", () {
 
-		test("Constructor", () {
-			o = new ObjectSpace();
-			expect(o, isNotNull);
-		});
+    test("Constructor", () {
+      o = new ObjectSpace();
+      expect(o, isNotNull);
+    });
 
-		test("Constructor (singleton test)", () {
-			expect(o.hashCode, equals(new ObjectSpace().hashCode));
-		});
+    test("Constructor (singleton test)", () {
+      expect(o.hashCode, equals(new ObjectSpace().hashCode));
+    });
 
-		test("length", () {
-			expect(o.length, greaterThanOrEqualTo(0));
-		});
+    test("length", () {
+      expect(o.length, greaterThanOrEqualTo(0));
+    });
 
-		test("pointer", () {
-			expect(o.pointer, equals(0));
-		});
+    test("pointer", () {
+      expect(o.pointer, equals(0));
+    });
 
-	});
+  });
 }

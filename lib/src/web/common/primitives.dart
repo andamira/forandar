@@ -5,9 +5,9 @@ part of forandar.web.primitives;
 /// [The optional File-Access word set][http://forth-standard.org/standard/file]
 void includeWordsWeb(VirtualMachine vm, Dictionary d) {
 
-	///
-	///
-	/// [][link] ( -- )  name>string type ;
-	/// [link]: 
-	// d.addWord("", () {});
+  ///
+  ///
+  /// [][link] ( -- )  name>string type ;
+  /// [link]: 
+  // d.addWord("", () {});
 }
