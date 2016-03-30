@@ -106,7 +106,6 @@ void argParser(List<String> args, Configuration c, InputQueue i) {
       help: "Print version and exit",
       callback: (version) {
         if (version) {
-          // String v = await getVersion();
           print("Forandar 0.9.X"); // TEMP FIXME
           exit(1);
         }
@@ -257,15 +256,4 @@ _checkArgIsPositiveInteger(arg) {
 void displayUsage(ArgParser parser) {
   print(parser.usage);
   exit(0);
-}
-
-/// Returns version from pubspec.yaml. Updates global the first time.
-// TODO: not in use right now
-Future<String> getVersion() async {
-  if (forandarVersion == "FORANDAR_VERSION") {
-    forandarVersion = await new File('pubspec.yaml').readAsString().then((String contents) {
-      return loadYaml(contents)['version'];
-    });
-  }
-  return forandarVersion;
 }

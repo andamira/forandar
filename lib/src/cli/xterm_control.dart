@@ -29,7 +29,7 @@ class XTerm {
   /// Sets SGR (Select Graphic Rendition) parameters, including text color.
   ///
   /// After CSI can be zero or more parameters separated with ;. With no parameters, CSI m is treated as CSI 0 m (reset / normal), which is typical of most of the ANSI escape sequences. 
-  static void writeSGR(String after) => write("${CSI}${n}m");
+  static void writeSGR(String after) => write("${CSI}${after}m");
 
   // CSI CODES
   // ---------

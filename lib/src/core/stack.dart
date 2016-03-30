@@ -85,7 +85,7 @@ abstract class LifoStack<T extends num> extends StackBase<T> implements LifoStac
   /// Returns the last stack item.
   ///
   /// ( a -- )
-  T get pop =>  _data[--_size];
+  T get pop => _data[--_size];
 
   /// Returns a list of i items from the top of the stack.
   ///

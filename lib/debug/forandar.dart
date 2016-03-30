@@ -18,9 +18,4 @@ export 'package:forandar/src/core/debug/primitives.dart';
 export 'package:forandar/src/core/debug/stack.dart';
 export 'package:forandar/src/core/debug/virtual_machine.dart';
 
-/// The version of this library.
-///
-/// This placeholder must be filled by the implementation.
-String forandarVersion = 'FORANDAR_VERSION';
-
 void main() {}

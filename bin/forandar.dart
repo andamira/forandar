@@ -1,10 +1,8 @@
 library forandar;
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:yaml/yaml.dart';
 
 // Core
 import 'package:forandar/forandar_cli.dart';

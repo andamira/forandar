@@ -31,7 +31,7 @@ void includeWordsCliStandardCore(VirtualMachine vm, Dictionary d) {
 
     if (vm.input.keyBuffer >= 0) {
       vm.dataStack.push(vm.input.keyBuffer);
-      vm.source.keyBuffer = -1;
+      vm.input.keyBuffer = -1;
     } else {
       vm.dataStack.push(stdin.readByteSync());
     }

@@ -60,13 +60,13 @@ abstract class LifoStackInterface<T extends num> {
 }
 
 /// A concrete implementation of [LifoStack] for integers.
-class LifoStackInt<int> extends LifoStack {
+class LifoStackInt extends LifoStack<int> {
   LifoStackInt(maxSize, [StackType type = StackType.unknown]) :
     super(maxSize, new Int32List(maxSize), type);
 }
 
 /// A concrete implementation of [LifoStack] for floating point numbers.
-class LifoStackFloat<double> extends LifoStack {
+class LifoStackFloat extends LifoStack<double> {
   LifoStackFloat(maxSize, [StackType type = StackType.unknown]) :
     super(maxSize, new Float64List(maxSize), type);
 }

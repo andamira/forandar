@@ -16,9 +16,4 @@ export 'package:forandar/src/core/utility.dart';
 export 'package:forandar/src/core/virtual_machine.dart';
 export 'package:forandar/src/core/word.dart';
 
-/// The version of this library.
-///
-/// This placeholder must be filled by the implementation.
-String forandarVersion = 'FORANDAR_VERSION';
-
 void main() {}
